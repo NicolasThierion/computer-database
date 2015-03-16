@@ -16,7 +16,7 @@ public class DaoException extends RuntimeException {
 		UNKNOWN_ERROR(0),
 		DAO_ERROR(1),
 		SQL_ERROR(2),
-		QUERY_ERROR(3),
+		SYNTAX_ERROR(3),
 		RESULT_ERROR(3);
 		
 		private int mCode;

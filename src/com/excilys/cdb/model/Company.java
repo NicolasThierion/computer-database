@@ -18,8 +18,8 @@ public class Company implements Serializable{
 	/* ***
 	 * ATTRIBUTES
 	 */
-	private String mName;
-	private int mId;
+	protected String mName;
+	protected Integer mId;
 	
 	
 	/* ***
@@ -46,11 +46,11 @@ public class Company implements Serializable{
 	 * ACCESSORS
 	 */
 	
-	public void setId(int id) {
+	public void setId(Integer id) {
 		mId = id;
 	}
 	
-	public int getId() {
+	public Integer getId() {
 		return mId;
 	}
 	
@@ -60,6 +60,18 @@ public class Company implements Serializable{
 	
 	public String getName() {
 		return mName;
+	}
+	
+	/* ***
+	 * OBJECT OVERRIDES
+	 */
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("{");
+		sb.append(super.getClass().getSimpleName()).append(":").append(" : id=").append(mId).append(" : name=").append(mName);
+		sb.append("}");
+		return sb.toString();
 	}
 	
 	

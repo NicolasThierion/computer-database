@@ -19,12 +19,21 @@ public interface IDao {
 	public void init();
 	
 	/**
-	 * List computers by name
+	 * List computers, oder by name.
 	 * @param begin order of the computer from which the list begins. Starts from 0.
-	 * @param count count computer to return.
+	 * @param nb count computer to return.. nb=0 for unbound search.
 	 * @return the list of computers
 	 */
-	public List<Computer> listComputersByName(int begin, int count);
+	public List<Computer> listComputersByName(int begin, int nb);
+	
+	/**
+	 * List computers that match the given name.
+	 * @param begin order of the computer from which the list begins. Starts from 0.
+	 * @param nb count computer to return. List all computers available if this number is negative.
+	 * @param case unsensitive name of computers to search for.
+	 * @return the list of computers
+	 */
+	public List<Computer> listComputersByName(int begin, int nb, String name);
 
 	/**
 	 * 
@@ -42,8 +51,13 @@ public interface IDao {
 	public List<Company> listCompaniesByName(int begin, int nb);
 	
 	public void addComputer(Computer computer);
+
+	public void addComputers(List<Computer> computer);
 	
 	public void updateComputer(Computer computer);
 	
 	public void deleteComputer(Computer computer);
+
+	public void deleteComputers(List<Computer> computer);
+
 }
