@@ -8,10 +8,8 @@ import java.util.Date;
  * 
  * @author Nicolas THIERION
  * @version 0.1.0
- *  
  * 
- *     TODO : The class is Serializable according to JavaBean standart
- *
+ *     TODO : The class is Serializable according to JavaBean standard, for eventual future needs.
  */
 public class Computer implements Serializable{
 

@@ -1,4 +1,4 @@
-package com.excilys.cdb;
+package com.excilys.cdb.totrash;
 
 /**
  * 

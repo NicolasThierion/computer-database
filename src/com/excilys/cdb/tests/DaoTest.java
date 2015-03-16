@@ -5,7 +5,6 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.excilys.cdb.dao.DaoException;
@@ -189,7 +188,6 @@ public class DaoTest {
 		Assert.assertFalse(passed);		
 	}
 	
-	//@Ignore("buggy")
 	@Test
 	public void testUpdateComputer() {
 		String computerName = "Surface pro 4";
