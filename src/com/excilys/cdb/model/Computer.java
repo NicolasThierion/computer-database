@@ -7,7 +7,7 @@ import java.util.Date;
 /**
  * 
  * @author Nicolas THIERION
- * @version 0.1.0
+ * @version 0.2.0
  * 
  *     TODO : The class is Serializable according to JavaBean standard, for eventual future needs.
  */
@@ -166,4 +166,61 @@ public class Computer implements Serializable{
 		sb.append("}");
 		return sb.toString();
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((mCompany == null) ? 0 : mCompany.hashCode());
+		result = prime * result
+				+ ((mDiscDate == null) ? 0 : mDiscDate.hashCode());
+		result = prime * result + ((mId == null) ? 0 : mId.hashCode());
+		result = prime * result + ((mName == null) ? 0 : mName.hashCode());
+		result = prime * result
+				+ ((mReleaseDate == null) ? 0 : mReleaseDate.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		
+		
+		Computer other = (Computer) obj;
+		if (mCompany == null) {
+			if (other.mCompany != null)
+				return false;
+		} else if (!mCompany.equals(other.mCompany))
+			return false;
+		if (mDiscDate == null) {
+			if (other.mDiscDate != null)
+				return false;
+		} else if (!mDiscDate.equals(other.mDiscDate))
+			return false;
+		if (mId == null) {
+			if (other.mId != null)
+				return false;
+		} else if (!mId.equals(other.mId))
+			return false;
+		if (mName == null) {
+			if (other.mName != null)
+				return false;
+		} else if (!mName.equals(other.mName))
+			return false;
+		if (mReleaseDate == null) {
+			if (other.mReleaseDate != null)
+				return false;
+		} else if (!mReleaseDate.equals(other.mReleaseDate))
+			return false;
+		return true;
+	}
+	
+	
+	
 }

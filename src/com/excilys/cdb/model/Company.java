@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * 
  * @author Nicolas THIERION
- * @version 0.1.0
+ * @version 0.2.0
  * TODO doc
  *
  */
@@ -19,8 +19,7 @@ public class Company implements Serializable{
 	 * ATTRIBUTES
 	 */
 	protected String mName;
-	protected Integer mId;
-	
+	protected Long mId;
 	
 	/* ***
 	 * CONSTRUCTORS
@@ -28,15 +27,15 @@ public class Company implements Serializable{
 	
 	public Company() {
 		mName = DEFAULT_COMPANY_NAME;
-		mId = -1;
+		mId = -1L;
 	}
 	
 	public Company(String name) {
 		mName = name;
-		mId = -1;
+		mId = -1L;
 	}
 	
-	public Company (int id, String name) {
+	public Company (long id, String name) {
 		mName = name;
 		mId = id;
 	}
@@ -46,11 +45,11 @@ public class Company implements Serializable{
 	 * ACCESSORS
 	 */
 	
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		mId = id;
 	}
 	
-	public Integer getId() {
+	public Long getId() {
 		return mId;
 	}
 	
@@ -72,6 +71,37 @@ public class Company implements Serializable{
 		sb.append(super.getClass().getSimpleName()).append(":").append(" : id=").append(mId).append(" : name=").append(mName);
 		sb.append("}");
 		return sb.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((mId == null) ? 0 : mId.hashCode());
+		result = prime * result + ((mName == null) ? 0 : mName.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Company other = (Company) obj;
+		if (mId == null) {
+			if (other.mId != null)
+				return false;
+		} else if (!mId.equals(other.mId))
+			return false;
+		if (mName == null) {
+			if (other.mName != null)
+				return false;
+		} else if (!mName.equals(other.mName))
+			return false;
+		return true;
 	}
 	
 	

@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.excilys.cdb.dao.*;
+import com.excilys.cdb.dao.mysql.CompanyDao;
+import com.excilys.cdb.dao.mysql.ComputerDao;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 

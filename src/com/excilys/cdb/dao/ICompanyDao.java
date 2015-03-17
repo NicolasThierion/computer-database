@@ -3,7 +3,6 @@ package com.excilys.cdb.dao;
 import java.util.List;
 
 import com.excilys.cdb.model.Company;
-import com.excilys.cdb.model.Computer;
 
 
 /**
@@ -12,8 +11,7 @@ import com.excilys.cdb.model.Computer;
  * @author Nicolas THIERION
  * @version 0.1.0 
  */
-public interface IComputerDao {
-	
+public interface ICompanyDao {
 	
 	/**
 	 * List computers, oder by name.
@@ -21,7 +19,7 @@ public interface IComputerDao {
 	 * @param nb number of computer to return.. nb=0 for unbound search.
 	 * @return the list of computers
 	 */
-	public List<Computer> listByName(int begin, int nb);
+	public List<Company> listByName(int begin, int nb);
 	
 	/**
 	 * List computers that match the given name.
@@ -30,30 +28,13 @@ public interface IComputerDao {
 	 * @param case unsensitive name of computers to search for.
 	 * @return the list of computers
 	 */
-	public List<Computer> listByName(int begin, int nb, String name);
+	public List<Company> listByName(int begin, int nb, String name);
 
 	/**
 	 * 
-	 * @return count of computer entries in database
+	 * @return count of companies entries in database
 	 */
 	public int getCount();
 
-	/**
-	 * Adds the computer to DB, provided that this computer doesn't exist already.
-	 * @param computer Computer to add to DB.
-	 */
-	public void add(Computer computer);
-	
-	/**
-	 * Update the given computer.
-	 * @param computer Computer to update.
-	 * @return 
-	 */
-	public Computer update(Computer computer);
-	
-	/**
-	 * Delete the given compute from DB.
-	 * @param computer
-	 */
-	public void delete(Computer computer);
+
 }

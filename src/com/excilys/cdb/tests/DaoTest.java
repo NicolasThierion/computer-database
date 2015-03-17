@@ -7,12 +7,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.excilys.cdb.dao.CompanyDao;
-import com.excilys.cdb.dao.ComputerDao;
 import com.excilys.cdb.dao.DaoException;
 import com.excilys.cdb.dao.ConnectionFactory;
 import com.excilys.cdb.dao.ICompanyDao;
 import com.excilys.cdb.dao.IComputerDao;
+import com.excilys.cdb.dao.mysql.CompanyDao;
+import com.excilys.cdb.dao.mysql.ComputerDao;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 
@@ -20,14 +20,11 @@ public class DaoTest {
 
 	private IComputerDao mComputerDao;
 	private ICompanyDao mCompanyDao;
-	private ConnectionFactory mConnectionFactory;
-	
 
 	@Before
 	public void init() {
 		mComputerDao = ComputerDao.getInstance();
 		mCompanyDao = CompanyDao.getInstance();
-		mConnectionFactory = ConnectionFactory.getInstance();
 	}
 
 	@After

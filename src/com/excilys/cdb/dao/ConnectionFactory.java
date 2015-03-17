@@ -1,10 +1,14 @@
 package com.excilys.cdb.dao;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import com.excilys.cdb.dao.DaoException.ErrorType;
 
@@ -28,17 +32,15 @@ public class ConnectionFactory {
 	/* ***
 	 * DB PARAMETERS 
 	 */
-	private static final String DB_USER 			= "admincdb";
-	private static final String DB_PASSWD 			= "qwerty1234";
+
 	private static final String DB_DRIVER_PACKAGE 	= "com.mysql.jdbc.Driver";
 	private static final String DB_NAME 			= "computer-database-db";
 	private static final String DB_HOST 			= "localhost";
 	private static final String DB_PORT				= "3306";
-	private static final String DB_OPTIONS 			= "zeroDateTimeBehavior=convertToNull";	
-	private static final String DB_URL = "jdbc:mysql://"
-			+ DB_HOST + ":" + DB_PORT + "/" + DB_NAME 
-			+ "?user=" + DB_USER + "&password=" + DB_PASSWD
-			+ "&" + DB_OPTIONS;
+	private static final String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME ;
+	
+	
+	private static final String PROPERTIES_FILENAME = "res/mysql.properties";
 
 	/* ***
 	 * ATTRIBUTES
@@ -48,6 +50,8 @@ public class ConnectionFactory {
 	private static ConnectionFactory mInstance;
 
 	private List<Connection> mConnections;
+
+	private Properties mProperties;
 
 	/* ***
 	 * CONSTRUCTORS / DESTRUCTORS
@@ -71,11 +75,21 @@ public class ConnectionFactory {
 	 * 
 	 */
 	private ConnectionFactory() {
-		//init sql drivers
 		try {
+			//init sql drivers
 			mConnections = new ArrayList<Connection>();
 			Class.forName(DB_DRIVER_PACKAGE).newInstance();
+			
+			//load connection properties
+			FileInputStream fs = new FileInputStream(new File(PROPERTIES_FILENAME));
+			
+			mProperties = new Properties();
+			mProperties.load(fs);
+			fs.close();
+			
 		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+			throw new DaoException(e.getMessage(), ErrorType.DAO_ERROR);
+		} catch (IOException e) {
 			throw new DaoException(e.getMessage(), ErrorType.DAO_ERROR);
 		}
 	}
@@ -117,7 +131,7 @@ public class ConnectionFactory {
 	 */
 	public Connection open() throws DaoException {
 		try {
-			Connection conn = DriverManager.getConnection (DB_URL);
+			Connection conn = DriverManager.getConnection (DB_URL, mProperties);
 			mConnections.add(conn);
 			return conn;
 		}
