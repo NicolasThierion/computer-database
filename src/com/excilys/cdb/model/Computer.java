@@ -17,7 +17,7 @@ public class Computer implements Serializable{
 
 	//TODO : name is mandatory. Remove default name?
 	private static String DEFAULT_NAME = "Ordinateur sans nom";
-	private static Integer DEFAULT_ID = null;
+	private static Long DEFAULT_ID = null;
 
 	/* ***
 	 * ATTRIBUTES
@@ -32,12 +32,12 @@ public class Computer implements Serializable{
 	/** discontinuation date */
 	private Date mDiscDate;
 	/** id of this computer */
-	private Integer mId = DEFAULT_ID;
+	private Long mId = DEFAULT_ID;
 
 	/* ***
 	 * CONSTRUCTORS
 	 */
-	private void mNewComputer(Integer id, String name, Company manufacturer, Date releaseDate, Date discontinuedDate) {
+	private void mNewComputer(Long id, String name, Company manufacturer, Date releaseDate, Date discontinuedDate) {
 		mName = name;
 		mId  = id;
 		mCompany = manufacturer;
@@ -66,7 +66,7 @@ public class Computer implements Serializable{
 	 * @param name Name of this computer.
 	 * @throws IllegalArgumentException if parameter 'name' is null or empty, or if id provided is invalid.
 	 */
-	public Computer(int id, String name) throws IllegalArgumentException {
+	public Computer(long id, String name) throws IllegalArgumentException {
 		if(id < 1)
 			throw new IllegalArgumentException("Provided id=" + id + " is invalid");
 		if(name == null || name.isEmpty()) {
@@ -84,7 +84,7 @@ public class Computer implements Serializable{
 	 * @param releaseDate when this computer has been released.
 	 * @param discontinuedDate when this computer has been discontinued.
 	 */
-	public Computer(int id, String name, Company manufacturer, Date releaseDate, Date discontinuedDate) {
+	public Computer(long id, String name, Company manufacturer, Date releaseDate, Date discontinuedDate) {
 		mNewComputer(id, name, manufacturer, releaseDate, discontinuedDate);
 	}
 
@@ -106,11 +106,11 @@ public class Computer implements Serializable{
 	 * May return null if this is a new computer, that has not yet been added to database.
 	 * @return
 	 */
-	public Integer getId() {
+	public Long getId() {
 		return mId;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		mId = id;
 	}
 

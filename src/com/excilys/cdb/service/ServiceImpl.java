@@ -2,7 +2,8 @@ package com.excilys.cdb.service;
 
 import java.util.List;
 
-import com.excilys.cdb.dao.IDao;
+import com.excilys.cdb.dao.ICompanyDao;
+import com.excilys.cdb.dao.IComputerDao;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 
@@ -17,37 +18,38 @@ public class ServiceImpl implements Service {
 	/* ***
 	 * ATTRIBUTES
 	 */
-	private IDao mDao;
+	private IComputerDao mComputerDao;
+	private ICompanyDao mCompanyDao;
 	
 	
-	public ServiceImpl(IDao dao) {
-		mDao = dao;
+	public ServiceImpl(IComputerDao dao) {
+		mComputerDao = dao;
 	}
 	
 	
 	@Override
 	public List<Computer> listComputersByName(int begin, int count) {
-		return mDao.listComputersByName(begin, count);
+		return mComputerDao.listByName(begin, count);
 	}
 
 	@Override
 	public List<Company> listCompaniesByName(int begin, int nb) {
-		return mDao.listCompaniesByName(begin, nb);
+		return mCompanyDao.listByName(begin, nb);
 	}
 
 	@Override
 	public void addComputer(Computer computer) {
-		mDao.addComputer(computer);
+		mComputerDao.add(computer);
 	}
 
 	@Override
 	public void updateComputer(Computer computer) {
-		mDao.updateComputer(computer);
+		mComputerDao.update(computer);
 	}
 
 	@Override
 	public void deleteComputer(Computer computer) {
-		mDao.deleteComputer(computer);
+		mComputerDao.delete(computer);
 	}
 
 }

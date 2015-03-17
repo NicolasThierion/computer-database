@@ -12,11 +12,8 @@ import com.excilys.cdb.model.Computer;
  * @author Nicolas THIERION
  * @version 0.1.0 
  */
-public interface IDao {
+public interface IComputerDao {
 	
-	public void destroy();
-
-	public void init();
 	
 	/**
 	 * List computers, oder by name.
@@ -24,7 +21,7 @@ public interface IDao {
 	 * @param nb number of computer to return.. nb=0 for unbound search.
 	 * @return the list of computers
 	 */
-	public List<Computer> listComputersByName(int begin, int nb);
+	public List<Computer> listByName(int begin, int nb);
 	
 	/**
 	 * List computers that match the given name.
@@ -33,56 +30,42 @@ public interface IDao {
 	 * @param case unsensitive name of computers to search for.
 	 * @return the list of computers
 	 */
-	public List<Computer> listComputersByName(int begin, int nb, String name);
+	public List<Computer> listByName(int begin, int nb, String name);
 
 	/**
 	 * 
 	 * @return count of computer entries in database
 	 */
-	public int getComputerCount();
+	public int getCount();
 
-	/**
-	 * 
-	 * @return count of company entries in database
-	 */
-	public int getCompanyCount();
-
-	/**
-	 * List companies, order by company name.
-	 * @param begin 
-	 * @param nb of companies to list. List all companies available if negative.
-	 * @return
-	 */
-	public List<Company> listCompaniesByName(int begin, int nb);
-	
 	/**
 	 * Adds the computer to DB, provided that this computer doesn't exist already.
 	 * @param computer Computer to add to DB.
 	 */
-	public void addComputer(Computer computer);
+	public void add(Computer computer);
 
 	/**
 	 * Adds all computers given in parameters, provided that computers don't exists already.
 	 * @param computers Computers to add to DB.
 	 */
-	public void addComputers(List<Computer> computers);
+	public void add(List<Computer> computers);
 	
 	/**
 	 * Update the given computer.
 	 * @param computer Computer to update.
 	 */
-	public void updateComputer(Computer computer);
+	public void update(Computer computer);
 	
 	/**
 	 * Delete the given compute from DB.
 	 * @param computer
 	 */
-	public void deleteComputer(Computer computer);
+	public void delete(Computer computer);
 
 	/**
 	 * Delete the given computers from DB.
 	 * @param computers
 	 */
-	public void deleteComputers(List<Computer> computers);
+	public void delete(List<Computer> computers);
 
 }

@@ -16,7 +16,8 @@ import com.excilys.cdb.model.Computer;
  */
 public class Cli {
 
-	static IDao dao = DaoImpl.getInstance();
+	static IComputerDao computerDao = ComputerDao.getInstance();
+	static ICompanyDao companyDao = CompanyDao.getInstance();
 	
 	private static final int PAGE_SIZE = 10 ;
 		
@@ -45,7 +46,7 @@ public class Cli {
 		List<Computer> list;
 		Scanner sin = new Scanner(System.in);
 		do {
-			list = dao.listComputersByName(begin, PAGE_SIZE);
+			list = computerDao.listByName(begin, PAGE_SIZE);
 			printList(list);
 			begin+=PAGE_SIZE;
 			System.out.println("'n' to print next page, 'q' to abort");
@@ -67,7 +68,7 @@ public class Cli {
 		List<Company> list;
 		Scanner sin = new Scanner(System.in);
 		do {
-			list = dao.listCompaniesByName(begin, PAGE_SIZE);
+			list = companyDao.listByName(begin, PAGE_SIZE);
 			printList(list);
 			begin+=PAGE_SIZE;
 			System.out.println("'n' to print next page, 'q' to abort");
@@ -95,7 +96,6 @@ public class Cli {
 			printUsage(System.out);
 			return;
 		}
-		dao.init();
 		
 		//help
 		if(args[0].equals("help") || args[0].equals("h")) {
