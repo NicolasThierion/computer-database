@@ -87,7 +87,12 @@ public class ComputerDao implements IComputerDao {
 	 * free up memory & close resources
 	 */
 	public void destroy() {
-
+		try {
+			mDbConn.close();
+		} catch (SQLException e1) {
+			throw new DaoException(e1.getMessage(), ErrorType.SQL_ERROR);
+		}
+		
 		for(PreparedStatement statement : mStatements) {
 			if(statement != null) {
 				try {

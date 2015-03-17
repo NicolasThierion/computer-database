@@ -14,7 +14,7 @@ import com.excilys.cdb.dao.DaoException.ErrorType;
 
 
 /**
- * Data access object singleton. Establish connection to BDD.
+ * Data access object singleton. Establish connections to BDD.
  * Use required creditentials to connect to computer-database-db through JDBC MySQL.
  * 
  * 
@@ -39,16 +39,17 @@ public class ConnectionFactory {
 	private static final String DB_PORT				= "3306";
 	private static final String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME ;
 	
-	
+	/** where DB creditentials are stored */
 	private static final String PROPERTIES_FILENAME = "res/mysql.properties";
 
 	/* ***
 	 * ATTRIBUTES
 	 */
 
-	/** singleton's instance */
+	/** singleton instance */
 	private static ConnectionFactory mInstance;
 
+	/** list of DB connections provided by this factory */
 	private List<Connection> mConnections;
 
 	private Properties mProperties;

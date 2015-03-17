@@ -77,7 +77,12 @@ public class CompanyDao implements ICompanyDao {
 	 * free up memory & clise resources
 	 */
 	public void destroy() {
-
+		try {
+			mDbConn.close();
+		} catch (SQLException e1) {
+			throw new DaoException(e1.getMessage(), ErrorType.SQL_ERROR);
+		}
+		
 		for(PreparedStatement statement : mStatements) {
 			if(statement != null) {
 				try {

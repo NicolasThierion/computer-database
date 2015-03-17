@@ -1,7 +1,7 @@
 package com.excilys.cdb.model;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 
 /**
@@ -28,16 +28,16 @@ public class Computer implements Serializable{
 	/** manufacturer of this computer */
 	private Company mCompany;
 	/** release date */
-	private Date mReleaseDate;
+	private LocalDateTime mReleaseDate;
 	/** discontinuation date */
-	private Date mDiscDate;
+	private LocalDateTime mDiscDate;
 	/** id of this computer */
 	private Long mId = DEFAULT_ID;
 
 	/* ***
 	 * CONSTRUCTORS
 	 */
-	private void mNewComputer(Long id, String name, Company manufacturer, Date releaseDate, Date discontinuedDate) {
+	private void mNewComputer(Long id, String name, Company manufacturer, LocalDateTime releaseDate, LocalDateTime discontinuedDate) {
 		mName = name;
 		mId  = id;
 		mCompany = manufacturer;
@@ -84,7 +84,7 @@ public class Computer implements Serializable{
 	 * @param releaseDate when this computer has been released.
 	 * @param discontinuedDate when this computer has been discontinued.
 	 */
-	public Computer(long id, String name, Company manufacturer, Date releaseDate, Date discontinuedDate) {
+	public Computer(long id, String name, Company manufacturer, LocalDateTime releaseDate, LocalDateTime discontinuedDate) {
 		mNewComputer(id, name, manufacturer, releaseDate, discontinuedDate);
 	}
 
@@ -95,7 +95,7 @@ public class Computer implements Serializable{
 	 * @param releaseDate when this computer has been released.
 	 * @param discontinuedDate when this computer has been discontinued.
 	 */
-	public Computer(String name, Company manufacturer, Date releaseDate, Date discontinuedDate) {
+	public Computer(String name, Company manufacturer, LocalDateTime releaseDate, LocalDateTime discontinuedDate) {
 		mNewComputer(DEFAULT_ID, name, manufacturer, releaseDate, discontinuedDate);
 	}
 
@@ -138,19 +138,19 @@ public class Computer implements Serializable{
 		mCompany = company;
 	}
 
-	public Date getIntroDate() {
+	public LocalDateTime getIntroDate() {
 		return mReleaseDate;
 	}
 
-	public void setReleaseDate(Date releaseDate) {
+	public void setReleaseDate(LocalDateTime releaseDate) {
 		mReleaseDate = releaseDate;
 	}
 
-	public Date getDiscontDate() {
+	public LocalDateTime getDiscontDate() {
 		return mDiscDate;
 	}
 
-	public void setDiscontDate(Date discontDate) {
+	public void setDiscontDate(LocalDateTime discontDate) {
 		mDiscDate = discontDate;
 	}
 

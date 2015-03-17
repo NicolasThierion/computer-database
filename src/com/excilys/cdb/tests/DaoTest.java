@@ -8,7 +8,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.excilys.cdb.dao.DaoException;
-import com.excilys.cdb.dao.ConnectionFactory;
 import com.excilys.cdb.dao.ICompanyDao;
 import com.excilys.cdb.dao.IComputerDao;
 import com.excilys.cdb.dao.mysql.CompanyDao;
