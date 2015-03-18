@@ -1,16 +1,14 @@
 package com.excilys.cdb.dao.mysql;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import com.excilys.cdb.dao.ConnectionFactory;
 import com.excilys.cdb.dao.DaoException;
@@ -30,34 +28,22 @@ public class CompanyDao implements ICompanyDao {
 	/* ***
 	 * DB REQUESTS
 	 * ***/
-	/** where SQL scripts are stored */
-	private static final File SQL_DIR = new File("res/sql");
-
 	/** various sql script user to build preparedStatements */
 	private static final String REQ_SELECT_COMPANIES_FILENAME = "select_companies_paging.sql";
 	private static final String REQ_COUNT_COMPANIES_FILENAME = "select_company_count.sql";
-
-	/* ***
-	 * PREPARED STATEMENTS
-	 */
-	private List<PreparedStatement> mStatements;
-	private PreparedStatement mSelectCompaniesStatement;
-	private PreparedStatement mCountCompaniesStatement;
 
 	/* ***
 	 * ATTRIBUTES
 	 */
 	/** Singleton's instance */
 	private static CompanyDao mInstance = null;
-
-	/** unique DB connection */
-	private Connection mDbConn = ConnectionFactory.getInstance().getConnection();
+	private Map<String, String> mQueryStrings;
 
 	/* ***
 	 * CONSTRUCTORS / DESTRUCTORS
 	 */
 	private CompanyDao() {
-		mInitStatements();
+		mLoadSqlQueries();
 	}
 	
 	/**
@@ -72,38 +58,10 @@ public class CompanyDao implements ICompanyDao {
 		}
 		return mInstance;
 	}
-
-	/**
-	 * free up memory & clise resources
-	 */
-	public void destroy() {
-		try {
-			mDbConn.close();
-		} catch (SQLException e1) {
-			throw new DaoException(e1.getMessage(), ErrorType.SQL_ERROR);
-		}
-		
-		for(PreparedStatement statement : mStatements) {
-			if(statement != null) {
-				try {
-					statement.close();
-				} catch (SQLException e) {
-					throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
-				}
-			}
-		}	
-	}
-
-	@Override
-	public void finalize() {
-		destroy();
-	}
-
-
+	
 	/* ***
 	 * DAO SERVICES
 	 */
-
 
 	@Override
 	public List<Company> listByName(int begin, int nb) throws DaoException {
@@ -116,20 +74,24 @@ public class CompanyDao implements ICompanyDao {
 	@Override
 	public List<Company> listByName(int begin, int nb, String name) {
 		
-		try {
+		try (
+				//get a connection & prepare needed statement
+				Connection dbConn = ConnectionFactory.getInstance().getConnection();
+				PreparedStatement selectCompaniesStatement = dbConn.prepareStatement(mQueryStrings.get(REQ_SELECT_COMPANIES_FILENAME));
+				) {
 			begin = (begin<0 ? 0 : begin);
 			nb = (nb<0 ? Integer.MAX_VALUE : nb);
 
 			name = name.toUpperCase();
 			//set range parameters
-			mSelectCompaniesStatement.setString(1, name);
-			mSelectCompaniesStatement.setInt(2, begin);
-			mSelectCompaniesStatement.setInt(3, nb);
+			selectCompaniesStatement.setString(1, name);
+			selectCompaniesStatement.setInt(2, begin);
+			selectCompaniesStatement.setInt(3, nb);
 
 			List<Company> resList = new LinkedList<Company>();
 
 			//exec query
-			ResultSet res = mSelectCompaniesStatement.executeQuery();
+			ResultSet res = selectCompaniesStatement.executeQuery();
 
 			//parse resultSet to build the list of computers.
 			while(res.next()) {
@@ -153,8 +115,12 @@ public class CompanyDao implements ICompanyDao {
 	public int getCount() {
 		
 		int count = 0;
-		try {
-			ResultSet res = mCountCompaniesStatement.executeQuery();
+		try (
+				//get a connection & prepare needed statement
+				Connection dbConn = ConnectionFactory.getInstance().getConnection();
+				PreparedStatement countCompaniesStatement = dbConn.prepareStatement(mQueryStrings.get(REQ_COUNT_COMPANIES_FILENAME));
+				) {
+			ResultSet res = countCompaniesStatement.executeQuery();
 			while(res.next()) {
 				count = res.getInt(1);
 			}
@@ -164,54 +130,19 @@ public class CompanyDao implements ICompanyDao {
 		return count;
 	}
 
-
-
-	
-
-
 	/* ***
 	 * PRIVATE METHODS
 	 */
 
-	/**
-	 * init prepared statement used for various DAO services.
-	 */
-	private void mInitStatements() {
+	private void mLoadSqlQueries() {
+		mQueryStrings = new HashMap<String, String>();
 
 		try {
-			mStatements = new LinkedList<PreparedStatement>();
-			mSelectCompaniesStatement = mInitStatement(REQ_SELECT_COMPANIES_FILENAME, mDbConn);
-			mCountCompaniesStatement = mInitStatement(REQ_COUNT_COMPANIES_FILENAME, mDbConn);
+			SqlUtils.loadSqlQuery(REQ_SELECT_COMPANIES_FILENAME, mQueryStrings);
+			SqlUtils.loadSqlQuery(REQ_COUNT_COMPANIES_FILENAME, mQueryStrings);
 		
-			//add statements to "to-free" list.
-			mStatements.add(mSelectCompaniesStatement);
-			mStatements.add(mCountCompaniesStatement);
-		} catch (SQLException | IOException e) {
+		} catch (IOException e) {
 			throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
 		}
-	}
-
-	private PreparedStatement mInitStatement(String sqlFileName, Connection conn) throws SQLException, IOException {
-		File sqlFile = new File(SQL_DIR, sqlFileName);
-
-		FileInputStream fis = null;
-		BufferedReader br = null;
-
-		//read file into a string.
-		fis = new FileInputStream(sqlFile);
-		br = new BufferedReader(new InputStreamReader(fis, "UTF-8"));
-
-		StringBuilder strBuilder = new StringBuilder();
-		String line;
-		while(( line = br.readLine()) != null ) {
-			strBuilder.append(line);
-			strBuilder.append(' ');
-		}
-		
-		//convert string into a preparedStatement
-		PreparedStatement statement = conn.prepareStatement(strBuilder.toString(), PreparedStatement.RETURN_GENERATED_KEYS);
-		br.close();
-		fis.close();
-		return statement;
 	}
 }

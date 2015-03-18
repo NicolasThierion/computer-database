@@ -40,9 +40,9 @@ public class Computer implements Serializable{
 	private void mNewComputer(Long id, String name, Company manufacturer, LocalDateTime releaseDate, LocalDateTime discontinuedDate) {
 		mName = name;
 		mId  = id;
-		mCompany = manufacturer;
-		mReleaseDate = releaseDate;
-		mDiscDate = discontinuedDate;
+		mCompany = (manufacturer != null ? new Company(manufacturer) : null);
+		mReleaseDate = (releaseDate != null ? LocalDateTime.from(releaseDate) : null);
+		mDiscDate = (discontinuedDate != null ? LocalDateTime.from(discontinuedDate) : null);
 	}
 
 	/**
@@ -59,9 +59,18 @@ public class Computer implements Serializable{
 	public Computer(String name) {
 		mNewComputer(DEFAULT_ID, name, null, null, null);
 	}
-
+	
 	/**
-	 * Create a new computer with given name, given computer ID, a Null Company (NullCOmpany) & null dates;
+	 * Copy constructor.
+	 * @param computer
+	 */
+	public Computer(Computer computer) {
+		Computer o = computer;
+		mNewComputer(o.mId, o.mName, o.mCompany, o.mReleaseDate, o.mDiscDate);
+	}
+	
+	/**
+	 * Create a new computer with given name, given computer ID, a Null Company & null dates;
 	 * @param id id of this computer.
 	 * @param name Name of this computer.
 	 * @throws IllegalArgumentException if parameter 'name' is null or empty, or if id provided is invalid.
@@ -119,7 +128,6 @@ public class Computer implements Serializable{
 	}
 
 	/**
-	 * 
 	 * @param name
 	 * @throws IllegalArgumentException if parameter 'name' is null or empty.
 	 */

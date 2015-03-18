@@ -40,11 +40,14 @@ public class Company implements Serializable{
 		mId = id;
 	}
 	
-	
+	public Company(Company manufacturer) {
+		mName = manufacturer.mName;
+		mId = manufacturer.mId;
+	}
 	/* ***
 	 * ACCESSORS
 	 */
-	
+
 	public void setId(Long id) {
 		mId = id;
 	}
