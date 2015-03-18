@@ -10,143 +10,144 @@ import java.util.Properties;
 
 import com.excilys.cdb.dao.DaoException.ErrorType;
 
-
 /**
- * Data access object singleton. Establish connections to BDD.
- * Use required creditentials to connect to computer-database-db through JDBC MySQL.
- * 
- * 
+ * Data access object singleton. Establish connections to BDD. Use required
+ * creditentials to connect to computer-database-db through JDBC MySQL.
+ *
  * @author Nicolas THIERION
- * @version 0.2.0 
+ * @version 0.2.0
  */
-public class ConnectionFactory {
+public final class ConnectionFactory {
 
+    /* ***
+     * DB PARAMETERS
+     */
+    /** Url of JDBC Driver. */
+    private static final String DB_DRIVER_PACKAGE = "com.mysql.jdbc.Driver";
+    /** DB name. */
+    private static final String DB_NAME = "computer-database-db";
+    /** DB host. */
+    private static final String DB_HOST = "localhost";
+    /** DB port. */
+    private static final String DB_PORT = "3306";
+    /** JDBC connection URL. */
+    private static final String DB_URL = "jdbc:mysql://" + DB_HOST + ":"
+            + DB_PORT + "/" + DB_NAME;
 
-	/* ***
-	 * CONNECTION FACTORY PARAMETERS
-	 */
-	public static final int CONNECTION_POOL_SIZE = 32;
+    /** where DB creditentials are stored. */
+    private static final String PROPERTIES_FILENAME = "mysql.properties";
 
-	/* ***
-	 * DB PARAMETERS 
-	 */
+    /* ***
+     * ATTRIBUTES
+     */
 
-	private static final String DB_DRIVER_PACKAGE 	= "com.mysql.jdbc.Driver";
-	private static final String DB_NAME 			= "computer-database-db";
-	private static final String DB_HOST 			= "localhost";
-	private static final String DB_PORT				= "3306";
-	private static final String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME ;
-	
-	/** where DB creditentials are stored */
-	private static final String PROPERTIES_FILENAME = "mysql.properties";
+    /** singleton instance. */
+    private static ConnectionFactory mInstance;
+    /** list of DB connections provided by this factory. */
+    private List<Connection> mConnections;
+    /** DB connection information. */
+    private Properties mProperties;
 
-	/* ***
-	 * ATTRIBUTES
-	 */
+    /* ***
+     * CONSTRUCTORS / DESTRUCTORS
+     */
 
-	/** singleton instance */
-	private static ConnectionFactory mInstance;
+    /**
+     *
+     * @return
+     * @throws DaoException
+     */
+    public static ConnectionFactory getInstance() throws DaoException {
+        synchronized (ConnectionFactory.class) {
+            if (mInstance == null) {
+                mInstance = new ConnectionFactory();
+            }
+        }
+        return mInstance;
+    }
 
-	/** list of DB connections provided by this factory */
-	private List<Connection> mConnections;
+    /**
+     *
+     */
+    private ConnectionFactory() {
+        try {
+            // init sql drivers
+            mConnections = new ArrayList<Connection>();
+            Class.forName(DB_DRIVER_PACKAGE).newInstance();
 
-	private Properties mProperties;
+            // load connection properties
+            mProperties = new Properties();
+            mProperties.load(getClass().getClassLoader().getResourceAsStream(
+                    PROPERTIES_FILENAME));
 
-	/* ***
-	 * CONSTRUCTORS / DESTRUCTORS
-	 */
+        } catch (InstantiationException | IllegalAccessException
+                | ClassNotFoundException e) {
+            throw new DaoException(e.getMessage(), ErrorType.DAO_ERROR);
+        } catch (final IOException e) {
+            throw new DaoException(e.getMessage(), ErrorType.DAO_ERROR);
+        }
+    }
 
-	/**
-	 * 
-	 * @return
-	 * @throws DaoException
-	 */
-	public static ConnectionFactory getInstance() throws DaoException {
-		synchronized(ConnectionFactory.class) {
-			if(mInstance == null) {
-				mInstance = new ConnectionFactory();
-			}
-		}
-		return mInstance;
-	}
+    /**
+     * Close the connection to the DB & free up memory.
+     */
+    public void destroy() {
 
-	/**
-	 * 
-	 */
-	private ConnectionFactory() {
-		try {
-			//init sql drivers
-			mConnections = new ArrayList<Connection>();
-			Class.forName(DB_DRIVER_PACKAGE).newInstance();
-			
-			//load connection properties
-			mProperties = new Properties();
-			mProperties.load(getClass().getClassLoader().getResourceAsStream(PROPERTIES_FILENAME));
-			
-		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-			throw new DaoException(e.getMessage(), ErrorType.DAO_ERROR);
-		} catch (IOException e) {
-			throw new DaoException(e.getMessage(), ErrorType.DAO_ERROR);
-		}
-	}
+        try {
+            for (final Connection conn : mConnections) {
+                conn.close();
+            }
+        } catch (final SQLException e) {
+            throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
+        }
+    }
 
-	/**
-	 * Close the connection to the DB & free up memory.
-	 */
-	public void destroy() {
+    @Override
+    public void finalize() {
+        destroy();
+    }
 
-		try {
-			for(Connection conn : mConnections) {
-				conn.close();
-			}	
-		} catch (SQLException e) {
-			throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
-		}
-	}
+    /* ***
+     * ACCESSORS
+     */
 
-	@Override
-	public void finalize() {
-		destroy();
-	}
+    /**
+     * @link open()
+     * @return the opened connection.
+     * @throws DaoException
+     */
+    public Connection getConnection() throws DaoException {
+        return open();
+    }
 
-	/* ***
-	 * ACCESSORS
-	 */
+    /**
+     * Get a connection to the BD.
+     *
+     * @throws DaoException
+     *             if cannot establish connection to DB.
+     */
+    public Connection open() throws DaoException {
+        try {
+            final Connection conn = DriverManager.getConnection(DB_URL,
+                    mProperties);
+            mConnections.add(conn);
+            return conn;
+        } catch (final SQLException e) {
+            throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
+        }
+    }
 
-	/**
-	 * @link open()
-	 * @return
-	 * @throws DaoException
-	 */
-	public Connection getConnection() throws DaoException {
-		return open();
-	}
-	/**
-	 * Get a connection to the BD.
-	 * @throws DaoException if cannot establish connection to DB.
-	 */
-	public Connection open() throws DaoException {
-		try {
-			Connection conn = DriverManager.getConnection (DB_URL, mProperties);
-			mConnections.add(conn);
-			return conn;
-		}
-		catch (SQLException e) {
-			throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
-		}
-	}
-
-	/**
-	 * 
-	 * @param conn
-	 */
-	public void close(Connection conn) {
-		try {
-			conn.close();
-			mConnections.remove(conn);
-		} catch (SQLException e) {
-			throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
-		}
-	}
+    /**
+     *
+     * @param conn
+     */
+    public void close(Connection conn) {
+        try {
+            conn.close();
+            mConnections.remove(conn);
+        } catch (final SQLException e) {
+            throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
+        }
+    }
 
 }
