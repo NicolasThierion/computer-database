@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class SqlUtils {
 	/** where SQL scripts are stored */
-	private static final File SQL_DIR = new File("res/sql");
+	private static final File SQL_DIR = new File(SqlUtils.class.getClassLoader().getResource("sql").getPath());
 	
 	public static void loadSqlQuery(String sqlFileName, Map<String, String> queriesMap) throws IOException {
 		File sqlFile = new File(SQL_DIR, sqlFileName);

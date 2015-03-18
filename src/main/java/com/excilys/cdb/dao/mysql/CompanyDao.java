@@ -16,7 +16,6 @@ import com.excilys.cdb.dao.ICompanyDao;
 import com.excilys.cdb.dao.DaoException.ErrorType;
 import com.excilys.cdb.model.Company;
 
-
 /**
  * 
  * 

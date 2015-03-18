@@ -1,7 +1,5 @@
 package com.excilys.cdb.dao;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -40,7 +38,7 @@ public class ConnectionFactory {
 	private static final String DB_URL = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME ;
 	
 	/** where DB creditentials are stored */
-	private static final String PROPERTIES_FILENAME = "res/mysql.properties";
+	private static final String PROPERTIES_FILENAME = "mysql.properties";
 
 	/* ***
 	 * ATTRIBUTES
@@ -82,11 +80,8 @@ public class ConnectionFactory {
 			Class.forName(DB_DRIVER_PACKAGE).newInstance();
 			
 			//load connection properties
-			FileInputStream fs = new FileInputStream(new File(PROPERTIES_FILENAME));
-			
 			mProperties = new Properties();
-			mProperties.load(fs);
-			fs.close();
+			mProperties.load(getClass().getClassLoader().getResourceAsStream(PROPERTIES_FILENAME));
 			
 		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
 			throw new DaoException(e.getMessage(), ErrorType.DAO_ERROR);

@@ -288,7 +288,7 @@ public class ComputerDao implements IComputerDao {
 			SqlUtils.loadSqlQuery(REQ_DELETE_COMPUTER_FILEMANE, mQueryStrings);
 
 		} catch (IOException e) {
-			throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
+			throw new DaoException(e.getMessage(), ErrorType.DAO_ERROR);
 		}
 	}
 }
