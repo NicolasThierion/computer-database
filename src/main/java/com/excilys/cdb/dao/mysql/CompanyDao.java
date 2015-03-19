@@ -15,6 +15,7 @@ import com.excilys.cdb.dao.DaoException;
 import com.excilys.cdb.dao.DaoException.ErrorType;
 import com.excilys.cdb.dao.ICompanyDao;
 import com.excilys.cdb.model.Company;
+import com.excilys.cdb.persistence.CompanyMapper;
 
 /**
  *
@@ -29,6 +30,7 @@ public final class CompanyDao implements ICompanyDao {
      */
     /** various sql script user to build preparedStatements. */
     private static final String REQ_SELECT_COMPANIES_FILENAME = "select_companies_paging.sql";
+    private static final String REQ_SELECT_COMPANY_FILENAME   = "select_company.sql";
     private static final String REQ_COUNT_COMPANIES_FILENAME  = "select_company_count.sql";
 
     /* ***
@@ -110,6 +112,34 @@ public final class CompanyDao implements ICompanyDao {
     }
 
     @Override
+    public Company searchById(long id) {
+        final String sqlStr = mQueryStrings.get(REQ_SELECT_COMPANY_FILENAME);
+        ResultSet res = null;
+        Company company = null;
+        try (
+        // get a connection & prepare needed statement
+        Connection dbConn = ConnectionFactory.getInstance().getConnection();
+                PreparedStatement selectCompanyStatement = dbConn.prepareStatement(sqlStr);) {
+
+            // set range parameters
+            selectCompanyStatement.setLong(1, id);
+
+            // exec query
+            res = selectCompanyStatement.executeQuery();
+            if (res.first()) {
+                final CompanyMapper mapper = new CompanyMapper();
+                company = mapper.fromResultSet(res);
+            }
+
+        } catch (final SQLException e) {
+            throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
+        } finally {
+            SqlUtils.safeCloseResult(res);
+        }
+        return company;
+    }
+
+    @Override
     public int getCount() {
 
         int count = 0;
@@ -137,7 +167,9 @@ public final class CompanyDao implements ICompanyDao {
 
         try {
             SqlUtils.loadSqlQuery(REQ_SELECT_COMPANIES_FILENAME, mQueryStrings);
+            SqlUtils.loadSqlQuery(REQ_SELECT_COMPANY_FILENAME, mQueryStrings);
             SqlUtils.loadSqlQuery(REQ_COUNT_COMPANIES_FILENAME, mQueryStrings);
+
 
         } catch (final IOException e) {
             throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);

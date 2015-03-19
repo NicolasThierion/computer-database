@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Map;
 
 public final class SqlUtils {
@@ -38,4 +40,16 @@ public final class SqlUtils {
         br.close();
         fis.close();
     }
+
+    public static void safeCloseResult(ResultSet res) {
+        if (res == null) {
+            return;
+        }
+        try {
+            res.close();
+        } catch (final SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
+

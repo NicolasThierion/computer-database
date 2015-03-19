@@ -40,11 +40,14 @@ public interface ICompanyDao {
      */
     List<Company> listByName(int begin, int nb, String name);
 
+    Company searchById(long id);
+
     /**
      *
      * @return count of companies entries in database
      */
     int getCount();
+
 
 
 }

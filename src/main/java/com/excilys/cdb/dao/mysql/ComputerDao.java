@@ -33,6 +33,7 @@ public final class ComputerDao implements IComputerDao {
 
     /** various sql script user to build preparedStatements. */
     private static final String REQ_SELECT_COMPUTERS_FILENAME = "select_computers_paging.sql";
+    private static final String REQ_SELECT_COMPUTER_FILENAME  = "select_computer.sql";
     private static final String REQ_COUNT_COMPUTERS_FILENAME = "select_computer_count.sql";
     private static final String REQ_UPDATE_COMPUTER_FILEMANE = "update_computer.sql";
     private static final String REQ_INSERT_COMPUTER_FILENAME = "insert_computer.sql";
@@ -82,35 +83,35 @@ public final class ComputerDao implements IComputerDao {
     public List<Computer> listLikeName(int offset, int nb, String name) throws IllegalArgumentException {
 
         final String sqlStr = mQueryStrings.get(REQ_SELECT_COMPUTERS_FILENAME);
+        ResultSet res = null;
+        final List<Computer> resList = new LinkedList<Computer>();
+
+        // check offset parameter
+        if (offset < 0) {
+            throw new IllegalArgumentException("search offset cannot be negative");
+        }
+
+        // check name parameter
+        if (name != null && name.trim().isEmpty()) {
+            throw new IllegalArgumentException("name cannot be empty");
+        }
+        offset = (offset < 0 ? 0 : offset);
+        nb = (nb < 0 ? Integer.MAX_VALUE : nb);
+        name = name.toUpperCase();
 
         try (
                 //get a connection & prepare needed statement
                 Connection dbConn = ConnectionFactory.getInstance().getConnection();
                 PreparedStatement selectComputersStatement = dbConn.prepareStatement(sqlStr);
                 ) {
-
-            //check offset parameter
-            if (offset < 0) {
-                throw new IllegalArgumentException("search offset cannot be negative");
-            }
-
-            //check name parameter
-            if (name != null && name.trim().isEmpty()) {
-                throw new IllegalArgumentException("name cannot be empty");
-            }
-            offset = (offset < 0 ? 0 : offset);
-            nb = (nb < 0 ? Integer.MAX_VALUE : nb);
-
-            name = name.toUpperCase();
             //set range parameters
-            selectComputersStatement.setString(1, name);
-            selectComputersStatement.setInt(2, offset);
-            selectComputersStatement.setInt(3, nb);
-
-            final List<Computer> resList = new LinkedList<Computer>();
+            int colId = 1;
+            selectComputersStatement.setString(colId++, name);
+            selectComputersStatement.setInt(colId++, offset);
+            selectComputersStatement.setInt(colId++, nb);
 
             //exec query
-            final ResultSet res = selectComputersStatement.executeQuery();
+            res = selectComputersStatement.executeQuery();
 
             final HashMap<Long, Company> companiesMap = new HashMap<Long, Company>();
 
@@ -137,37 +138,68 @@ public final class ComputerDao implements IComputerDao {
                 computer.setDiscontDate(h.getDiscDate());
                 resList.add(computer);
             }
-            return resList;
         } catch (final SQLException e) {
             throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
+        } finally {
+            SqlUtils.safeCloseResult(res);
         }
+        return resList;
+    }
+
+
+
+    @Override
+    public Computer searchById(long id) {
+        final String sqlStr = mQueryStrings.get(REQ_SELECT_COMPUTER_FILENAME);
+        ResultSet res = null;
+        Computer computer = null;
+        try (
+        // get a connection & prepare needed statement
+        Connection dbConn = ConnectionFactory.getInstance().getConnection();
+                PreparedStatement selectComputersStatement = dbConn.prepareStatement(sqlStr);) {
+
+            // set range parameters
+            selectComputersStatement.setLong(1, id);
+
+            // exec query
+            res = selectComputersStatement.executeQuery();
+            if (res.first()) {
+                final ComputerMapper mapper = new ComputerMapper();
+                computer = mapper.fromResultSet(res);
+            }
+
+        } catch (final SQLException e) {
+            throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
+        } finally {
+            SqlUtils.safeCloseResult(res);
+        }
+        return computer;
     }
 
     @Override
     public int getCount() {
         int count = 0;
+        ResultSet res = null;
         final String sqlStr = mQueryStrings.get(REQ_COUNT_COMPUTERS_FILENAME);
         try (
                 //get a connection & prepare needed statement
                 Connection dbConn = ConnectionFactory.getInstance().getConnection();
                 PreparedStatement countComputersStatement = dbConn.prepareStatement(sqlStr);
                 ) {
-            final ResultSet res = countComputersStatement.executeQuery();
+            res = countComputersStatement.executeQuery();
             if (res.first()) {
                 count = res.getInt(1);
             }
         } catch (final SQLException e) {
             throw new DaoException(e.getMessage(), DaoException.ErrorType.SQL_ERROR);
+        } finally {
+            SqlUtils.safeCloseResult(res);
         }
         return count;
     }
 
 
-    /**
-     * Calling this method will assign a new "computer id" to the computer.
-     * @throw DaoException when trying to add an invalid computer. An invalid computer is a computer with a non blank field "Computer id".
-     * See "updateComputer()" if you want to update computer information of an existing computer.
-     */
+
     @Override
     public void add(Computer computer) throws DaoException {
         final String sqlStr = mQueryStrings
@@ -190,7 +222,7 @@ public final class ComputerDao implements IComputerDao {
             //get computer properties
 
             final ComputerMapper h = new ComputerMapper();
-            h.fromComputer(computer);
+            h.fromEntity(computer);
 
             int colId = 1;
             insertComputerStatement.setString(colId++, h.getName());
@@ -213,6 +245,7 @@ public final class ComputerDao implements IComputerDao {
                 //& update this computer with new generated id.
                 computer.setId(rs.getLong(1));
             }
+            rs.close();
         } catch (final SQLException e) {
             throw new DaoException("Something went wrong when adding computer " + computer + " : " + e.getMessage(),
                     ErrorType.UNKNOWN_ERROR);
@@ -237,7 +270,7 @@ public final class ComputerDao implements IComputerDao {
                 ) {
             //retrieve computer information
             final ComputerMapper h = new ComputerMapper();
-            h.fromComputer(computer);
+            h.fromEntity(computer);
 
             //build query
             //UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?;
@@ -305,6 +338,7 @@ public final class ComputerDao implements IComputerDao {
 
         try {
             SqlUtils.loadSqlQuery(REQ_SELECT_COMPUTERS_FILENAME, mQueryStrings);
+            SqlUtils.loadSqlQuery(REQ_SELECT_COMPUTER_FILENAME, mQueryStrings);
             SqlUtils.loadSqlQuery(REQ_COUNT_COMPUTERS_FILENAME, mQueryStrings);
             SqlUtils.loadSqlQuery(REQ_INSERT_COMPUTER_FILENAME, mQueryStrings);
             SqlUtils.loadSqlQuery(REQ_UPDATE_COMPUTER_FILEMANE, mQueryStrings);
@@ -314,4 +348,6 @@ public final class ComputerDao implements IComputerDao {
             throw new DaoException(e.getMessage(), ErrorType.DAO_ERROR);
         }
     }
+
+
 }

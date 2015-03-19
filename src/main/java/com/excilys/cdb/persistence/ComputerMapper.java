@@ -8,7 +8,13 @@ import java.time.LocalDateTime;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 
-public class ComputerMapper {
+/**
+ * TODO doc.
+ *
+ * @author Nicolas THIERION.
+ *
+ */
+public class ComputerMapper implements EntityMapper<Computer> {
 
     /** name of this computer. */
     private String        mName;
@@ -28,7 +34,8 @@ public class ComputerMapper {
     private String        mCompanyName;
 
 
-    public void fromComputer(Computer computer) {
+    @Override
+    public void fromEntity(Computer computer) {
         mId = computer.getId();
         mName = computer.getName();
         mReleaseDate = computer.getIntroDate();
@@ -45,7 +52,8 @@ public class ComputerMapper {
         mSqlDiscDate = (mDiscDate != null ? Timestamp.valueOf(mDiscDate) : null);
     }
 
-    public void fromResultSet(ResultSet res) throws SQLException {
+    @Override
+    public Computer fromResultSet(ResultSet res) throws SQLException {
 
         int colId = 1;
         mId = res.getLong(colId++);
@@ -61,6 +69,8 @@ public class ComputerMapper {
         // get company name;
         mCompanyId = res.getLong(colId++);
         mCompanyName = res.getString(colId++);
+
+        return new Computer(mId, mName, new Company(mCompanyId, mCompanyName), mReleaseDate, mDiscDate);
     }
 
     /* ***

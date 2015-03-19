@@ -2,16 +2,13 @@ package com.excilys.cdb.tests;
 
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import com.excilys.cdb.dao.DaoException;
-import com.excilys.cdb.dao.ICompanyDao;
 import com.excilys.cdb.dao.IComputerDao;
-import com.excilys.cdb.dao.mysql.CompanyDao;
 import com.excilys.cdb.dao.mysql.ComputerDao;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
@@ -41,16 +38,16 @@ public class CompanyDaoTest {
     public final void listByName() {
 
         //test list construction of various size
-        for (int count : new int[]{2, mComputerDao.getCount(), 0}) {
-            List<Computer> list = mComputerDao.listByName(0, count);
+        for (final int count : new int[]{2, mComputerDao.getCount(), 0}) {
+            final List<Computer> list = mComputerDao.listByName(0, count);
             Assert.assertTrue(list.size() == count);
         }
 
         //test list construction out of bounds
         mComputerDao.listByName(mComputerDao.getCount(), mComputerDao.getCount());
 
-        int count = mComputerDao.getCount();
-        List<Computer> list = mComputerDao.listByName(0, count + 2);
+        final int count = mComputerDao.getCount();
+        final List<Computer> list = mComputerDao.listByName(0, count + 2);
         Assert.assertTrue(list.size() == count);
     }
 
@@ -63,7 +60,7 @@ public class CompanyDaoTest {
 
         //add one computer
         String name = "Unique computer [" + java.time.Clock.systemUTC().millis() + "]";
-        Computer computer = new Computer(name);
+        final Computer computer = new Computer(name);
         mComputerDao.add(computer);
 
         List<Computer> list = mComputerDao.listLikeName(0, -1, name);
@@ -73,7 +70,7 @@ public class CompanyDaoTest {
 
         name = "I don't exist";
         list = mComputerDao.listLikeName(0, 0, name);
-        Assert.assertTrue(list.size() == 0);		
+        Assert.assertTrue(list.size() == 0);
     }
 
 
@@ -83,13 +80,13 @@ public class CompanyDaoTest {
         mComputerDao.getCount();
     }
 
-   
+
     @Test
     @Ignore("not implemented")
     public final void testAddComputer() {
         //add a computer with NULL fields.
         final String compName = "Surface pro 3";
-        Computer computer = new Computer(compName);
+        final Computer computer = new Computer(compName);
         mComputerDao.add(computer);
     }
 
@@ -98,7 +95,7 @@ public class CompanyDaoTest {
     public final void testAddComputerTwice() {
         //add the same computer twice
         final String compName = "Surface pro 3";
-        Computer computer = new Computer(compName);
+        final Computer computer = new Computer(compName);
         mComputerDao.add(computer);
         mComputerDao.add(computer);
     }
@@ -116,22 +113,22 @@ public class CompanyDaoTest {
         try {
             mComputerDao.add(new Computer(0, compName));
             passed = true;
+        } catch (IllegalArgumentException | DaoException e) {
         }
-        catch (IllegalArgumentException | DaoException e) {}
 
         //try an invalid id
         try {
             mComputerDao.add(new Computer(-1, compName));
             passed = true;
+        } catch (IllegalArgumentException | DaoException e) {
         }
-        catch (IllegalArgumentException | DaoException e) {}
 
         //try an invalid company
         try {
             mComputerDao.add(new Computer(compName, wrongCompany, null, null));
             passed = true;
+        } catch (IllegalArgumentException | DaoException e) {
         }
-        catch (IllegalArgumentException | DaoException e) {}
 
         Assert.assertFalse(passed);
     }
@@ -140,10 +137,10 @@ public class CompanyDaoTest {
     @Test
     @Ignore("not implemented")
     public final void testDeleteComputer() {
-        String computerName = "Surface pro 4";
-        int count = mComputerDao.listLikeName(0, 0, computerName).size();
+        final String computerName = "Surface pro 4";
+        final int count = mComputerDao.listLikeName(0, 0, computerName).size();
 
-        Computer computer = new Computer(computerName);
+        final Computer computer = new Computer(computerName);
         mComputerDao.add(computer);
         mComputerDao.delete(computer);
 
@@ -153,22 +150,22 @@ public class CompanyDaoTest {
         try {
             mComputerDao.delete(computer);
             passed = true;
+        } catch (final DaoException e) {
         }
-        catch (DaoException e) {}
 
-        Assert.assertFalse(passed);		
+        Assert.assertFalse(passed);
     }
 
     @Test
     @Ignore("not implemented")
     public final void testUpdateComputer() {
-        String computerName = "Surface pro 4";
-        String computerName2 = "Unique computer";
+        final String computerName = "Surface pro 4";
+        final String computerName2 = "Unique computer";
         List<Computer> list = mComputerDao.listLikeName(0, -1, computerName);
-        int count = mComputerDao.listLikeName(0, -1, computerName).size();
+        final int count = mComputerDao.listLikeName(0, -1, computerName).size();
 
         //add a new computer
-        Computer computer = new Computer(computerName2);
+        final Computer computer = new Computer(computerName2);
         mComputerDao.add(computer);
 
         //update its name.
@@ -189,17 +186,17 @@ public class CompanyDaoTest {
         try {
             mComputerDao.update(computer);
             passed = true;
+        } catch (final DaoException e) {
         }
-        catch (DaoException e) {}
 
         //try updating invalid computer.
         try {
             mComputerDao.update(new Computer());
             passed = true;
+        } catch (final DaoException e) {
         }
-        catch (DaoException e) {}
 
-        Assert.assertFalse(passed);	
+        Assert.assertFalse(passed);
 
     }
 
