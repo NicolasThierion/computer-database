@@ -16,6 +16,10 @@ import com.excilys.cdb.model.Computer;
  */
 public class ComputerMapper implements EntityMapper<Computer> {
 
+    /* ***
+     * ATTRIBUTES
+     */
+
     /** name of this computer. */
     private String        mName;
     /** manufacturer of this computer. */
@@ -33,6 +37,9 @@ public class ComputerMapper implements EntityMapper<Computer> {
     private Long          mCompanyId;
     private String        mCompanyName;
 
+    /* ***
+     * CONSTRUCTORS
+     */
 
     @Override
     public void fromEntity(Computer computer) {
@@ -55,6 +62,7 @@ public class ComputerMapper implements EntityMapper<Computer> {
     @Override
     public Computer fromResultSet(ResultSet res) throws SQLException {
 
+        // TODO use named columns
         int colId = 1;
         mId = res.getLong(colId++);
         mName = res.getString(colId++);

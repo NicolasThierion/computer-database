@@ -4,7 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * TODO doc
+ * TODO doc.
  *
  * @author Nicolas THIERION.
  *
