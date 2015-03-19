@@ -12,18 +12,18 @@ import java.util.Map;
 
 import com.excilys.cdb.dao.ConnectionFactory;
 import com.excilys.cdb.dao.DaoException;
-import com.excilys.cdb.dao.IComputerDao;
 import com.excilys.cdb.dao.DaoException.ErrorType;
+import com.excilys.cdb.dao.IComputerDao;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.ComputerMapper;
 
 
 /**
- * 
- * 
+ *
+ *
  * @author Nicolas THIERION
- * @version 0.2.0 
+ * @version 0.2.0
  */
 public final class ComputerDao implements IComputerDao {
 
@@ -74,7 +74,7 @@ public final class ComputerDao implements IComputerDao {
 
     @Override
     public List<Computer> listByName(int begin, int nb) throws DaoException, IllegalArgumentException {
-        String name = "%%";
+        final String name = "%%";
         return listLikeName(begin, nb, name);
     }
 
@@ -107,38 +107,38 @@ public final class ComputerDao implements IComputerDao {
             selectComputersStatement.setInt(2, offset);
             selectComputersStatement.setInt(3, nb);
 
-            List<Computer> resList = new LinkedList<Computer>();
+            final List<Computer> resList = new LinkedList<Computer>();
 
             //exec query
-            ResultSet res = selectComputersStatement.executeQuery();
+            final ResultSet res = selectComputersStatement.executeQuery();
 
-            HashMap<Long, Company> companiesMap = new HashMap<Long, Company>();
+            final HashMap<Long, Company> companiesMap = new HashMap<Long, Company>();
 
             //parse resultSet to build the list of computers.
             while (res.next()) {
 
-                ComputerMapper h = new ComputerMapper();
+                final ComputerMapper h = new ComputerMapper();
                 h.fromResultSet(res);
 
                 Company company;
 
                 //store used companies in a map in order to not construct same company twice.
-                if (!companiesMap.containsKey(new Long(h.companyId))) {
-                    company = new Company(h.companyId, h.companyName);
-                    companiesMap.put(new Long(h.companyId), company);
+                if (!companiesMap.containsKey(new Long(h.getCompanyId()))) {
+                    company = new Company(h.getCompanyId(), h.getCompanyName());
+                    companiesMap.put(new Long(h.getCompanyId()), company);
                 } else {
-                    company = companiesMap.get(new Long(h.companyId));
+                    company = companiesMap.get(new Long(h.getCompanyId()));
                 }
 
                 //finally, create the computer & add it to the list
-                Computer computer = new Computer(h.id, h.name);
+                final Computer computer = new Computer(h.getId(), h.getName());
                 computer.setCompany(company);
-                computer.setReleaseDate(h.releaseDate);
-                computer.setDiscontDate(h.discDate);
+                computer.setReleaseDate(h.getReleaseDate());
+                computer.setDiscontDate(h.getDiscDate());
                 resList.add(computer);
             }
             return resList;
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
         }
     }
@@ -152,11 +152,11 @@ public final class ComputerDao implements IComputerDao {
                 Connection dbConn = ConnectionFactory.getInstance().getConnection();
                 PreparedStatement countComputersStatement = dbConn.prepareStatement(sqlStr);
                 ) {
-            ResultSet res = countComputersStatement.executeQuery();
+            final ResultSet res = countComputersStatement.executeQuery();
             if (res.first()) {
                 count = res.getInt(1);
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new DaoException(e.getMessage(), DaoException.ErrorType.SQL_ERROR);
         }
         return count;
@@ -170,46 +170,52 @@ public final class ComputerDao implements IComputerDao {
      */
     @Override
     public void add(Computer computer) throws DaoException {
+        final String sqlStr = mQueryStrings
+                .get(REQ_INSERT_COMPUTER_FILENAME);
         try (
                 //get a connection & prepare needed statement
                 Connection dbConn = ConnectionFactory.getInstance().getConnection();
-                PreparedStatement insertComputerStatement = dbConn.prepareStatement(mQueryStrings.get(REQ_INSERT_COMPUTER_FILENAME));
+                PreparedStatement insertComputerStatement = dbConn.prepareStatement(sqlStr);
                 ) {
             //ensure that we are attempting to add a NEW computer (with id field = null)"
-            Long id = computer.getId();
-            if(id != null ) {
-                throw new DaoException("Trying to add a computer : " + computer + " with non-blank field \"computer id\"", ErrorType.SQL_ERROR);
+            final Long id = computer.getId();
+            if (id != null) {
+                throw new DaoException("Trying to add a computer : " + computer
+                        + " with non-blank field \"computer id\"",
+                        ErrorType.SQL_ERROR);
             }
 
-            //build SQL request : 
+            //build SQL request :
             // INSERT INTO computer (name, introduced, discontinued, company_id)
             //get computer properties
 
-            ComputerMapper h = new ComputerMapper();
+            final ComputerMapper h = new ComputerMapper();
             h.fromComputer(computer);
 
-            insertComputerStatement.setString(1, h.name);
-            insertComputerStatement.setTimestamp(2, h.sqlReleaseDate);
-            insertComputerStatement.setTimestamp(3, h.sqlDiscDate);
+            int colId = 1;
+            insertComputerStatement.setString(colId++, h.getName());
+            insertComputerStatement.setTimestamp(colId++, h.getSqlReleaseDate());
+            insertComputerStatement.setTimestamp(colId++, h.getSqlDiscDate());
 
-            if(h.companyId == null) {
-                insertComputerStatement.setNull(4, java.sql.Types.INTEGER);
+            if (h.getCompanyId() == null) {
+                insertComputerStatement.setNull(colId++, java.sql.Types.INTEGER);
+            } else {
+                insertComputerStatement.setLong(colId++, h.getCompanyId());
             }
-            else {
-                insertComputerStatement.setLong(4, h.companyId);
-            }		 
-            if( insertComputerStatement.executeUpdate() != 1) {
-                throw new DaoException("Something went wrong when adding computer " + computer + ". No changes commited.", ErrorType.SQL_ERROR);
+            if (insertComputerStatement.executeUpdate() != 1) {
+                throw new DaoException("Something went wrong when adding computer " + computer
+                        + ". No changes commited.", ErrorType.SQL_ERROR);
             }
 
             //get generated id...
-            ResultSet rs = insertComputerStatement.getGeneratedKeys();
-            if (rs.next()){
+            final ResultSet rs = insertComputerStatement.getGeneratedKeys();
+            if (rs.next()) {
                 //& update this computer with new generated id.
                 computer.setId(rs.getLong(1));
-            } 
-        } catch (SQLException e) {
-            throw new DaoException("Something went wrong when adding computer " + computer + " : " + e.getMessage(), ErrorType.UNKNOWN_ERROR);
+            }
+        } catch (final SQLException e) {
+            throw new DaoException("Something went wrong when adding computer " + computer + " : " + e.getMessage(),
+                    ErrorType.UNKNOWN_ERROR);
         }
     }
 
@@ -220,38 +226,40 @@ public final class ComputerDao implements IComputerDao {
     @Override
     public Computer update(Computer computer) {
         //Delete computer by id : ensure computer has id != null
-        if(computer.getId() == null)
+        if (computer.getId() == null) {
             throw new DaoException("Computer id is null. Cannot update this computer", ErrorType.DAO_ERROR);
-
+        }
+        final String sqlStr = mQueryStrings.get(REQ_UPDATE_COMPUTER_FILEMANE);
         try (
                 //get a connection & prepare needed statement
                 Connection dbConn = ConnectionFactory.getInstance().getConnection();
-                PreparedStatement updateComputerStatement = dbConn.prepareStatement(mQueryStrings.get(REQ_UPDATE_COMPUTER_FILEMANE));
+                PreparedStatement updateComputerStatement = dbConn.prepareStatement(sqlStr);
                 ) {
             //retrieve computer information
-            ComputerMapper h = new ComputerMapper();
+            final ComputerMapper h = new ComputerMapper();
             h.fromComputer(computer);
 
             //build query
             //UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?;
 
-            updateComputerStatement.setString(1, h.name);
-            updateComputerStatement.setTimestamp(2, h.sqlReleaseDate);
-            updateComputerStatement.setTimestamp(3, h.sqlDiscDate);
+            int colId = 1;
+            updateComputerStatement.setString(colId++, h.getName());
+            updateComputerStatement.setTimestamp(colId++, h.getSqlReleaseDate());
+            updateComputerStatement.setTimestamp(colId++, h.getSqlDiscDate());
 
-            if(h.companyId == null) {
-                updateComputerStatement.setNull(4, java.sql.Types.INTEGER);
+            if (h.getCompanyId() == null) {
+                updateComputerStatement.setNull(colId++, java.sql.Types.INTEGER);
+            } else {
+                updateComputerStatement.setLong(colId++, h.getCompanyId());
             }
-            else {
-                updateComputerStatement.setLong(4, h.companyId);
-            }
-            updateComputerStatement.setLong(5, h.id);
+            updateComputerStatement.setLong(colId++, h.getId());
 
-            if(updateComputerStatement.executeUpdate() != 1) {
-                throw new DaoException("Something went wrong while deleting compuer " + computer + ". Maybe this computer doesn't exist?", 
+            if (updateComputerStatement.executeUpdate() != 1) {
+                throw new DaoException("Something went wrong while deleting compuer " + computer
+                        + ". Maybe this computer doesn't exist?",
                         ErrorType.SQL_ERROR);
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
         }
         return computer;
@@ -262,22 +270,24 @@ public final class ComputerDao implements IComputerDao {
      * @throws DaoException if deletion failed or if provided computer is invalid or doesn't exist.
      */
     @Override
-    public void delete(Computer computer) throws DaoException{
+    public void delete(Computer computer) throws DaoException {
         //Delete computer by id : ensure computer has id != null
-        if(computer.getId() == null)
+        if (computer.getId() == null) {
             throw new DaoException("Computer id is null. Cannot delete this computer", ErrorType.DAO_ERROR);
-
+        }
+        final String sqlStr = mQueryStrings.get(REQ_DELETE_COMPUTER_FILEMANE);
         try (
                 //get a connection & prepare needed statement
                 Connection dbConn = ConnectionFactory.getInstance().getConnection();
-                PreparedStatement deleteComputerStatement = dbConn.prepareStatement(mQueryStrings.get(REQ_DELETE_COMPUTER_FILEMANE));
+                PreparedStatement deleteComputerStatement = dbConn.prepareStatement(sqlStr);
                 ) {
             deleteComputerStatement.setLong(1, computer.getId());
-            if(deleteComputerStatement.executeUpdate() != 1) {
-                throw new DaoException("Something went wrong while deleting compuer " + computer + ". Maybe this computer doesn't exist?", 
+            if (deleteComputerStatement.executeUpdate() != 1) {
+                throw new DaoException("Something went wrong while deleting compuer " + computer
+                        + ". Maybe this computer doesn't exist?",
                         ErrorType.SQL_ERROR);
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
         }
     }
@@ -300,7 +310,7 @@ public final class ComputerDao implements IComputerDao {
             SqlUtils.loadSqlQuery(REQ_UPDATE_COMPUTER_FILEMANE, mQueryStrings);
             SqlUtils.loadSqlQuery(REQ_DELETE_COMPUTER_FILEMANE, mQueryStrings);
 
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new DaoException(e.getMessage(), ErrorType.DAO_ERROR);
         }
     }

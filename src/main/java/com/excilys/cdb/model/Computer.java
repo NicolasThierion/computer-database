@@ -16,8 +16,8 @@ public class Computer implements Serializable {
     private static final long serialVersionUID = 3247508689250542994L;
 
     // TODO : name is mandatory. Remove default name?
-    private static String DEFAULT_NAME = "Ordinateur sans nom";
-    private static Long DEFAULT_ID = null;
+    private static final String DEFAULT_NAME = "Ordinateur sans nom";
+    private static final Long DEFAULT_ID = null;
 
     /* ***
      * ATTRIBUTES
@@ -75,7 +75,7 @@ public class Computer implements Serializable {
     /**
      * Create a new computer with given name, a Null Company, null dates &
      * computer id=null.
-     * 
+     *
      * @param name
      *            Name of this computer.
      */
@@ -85,7 +85,7 @@ public class Computer implements Serializable {
 
     /**
      * Copy constructor.
-     * 
+     *
      * @param computer
      *            Computer object to copy.
      */
@@ -97,7 +97,7 @@ public class Computer implements Serializable {
     /**
      * Create a new computer with given name, given computer ID, a Null Company
      * & null dates.
-     * 
+     *
      * @param id
      *            id of this computer.
      * @param name
@@ -120,7 +120,7 @@ public class Computer implements Serializable {
 
     /**
      * Create a computer with given parameters.
-     * 
+     *
      * @param id
      *            id of this computer.
      * @param name
@@ -139,7 +139,7 @@ public class Computer implements Serializable {
 
     /**
      * Create a new computer with NULL computer id & given parameters.
-     * 
+     *
      * @param name
      *            Name of this computer.
      * @param manufacturer
@@ -161,7 +161,7 @@ public class Computer implements Serializable {
     /**
      * May return null if this is a new computer, that has not yet been added to
      * database.
-     * 
+     *
      * @return
      */
     public Long getId() {

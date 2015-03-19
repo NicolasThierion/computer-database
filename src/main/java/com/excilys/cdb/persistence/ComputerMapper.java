@@ -10,54 +10,96 @@ import com.excilys.cdb.model.Computer;
 
 public class ComputerMapper {
 
-	/** name of this computer */
-	public String name;
-	/** manufacturer of this computer */
-	public Company company;
-	/** release date */
-	public LocalDateTime releaseDate;
-	/** discontinuation date */
-	public LocalDateTime discDate;
-	/** id of this computer. Remember to test if not null!!!! */
-	public Long id;
+    /** name of this computer. */
+    private String        mName;
+    /** manufacturer of this computer. */
+    private Company       mCompany;
+    /** release date. */
+    private LocalDateTime mReleaseDate;
+    /** discontinuation date. */
+    private LocalDateTime mDiscDate;
+    /** id of this computer. Remember to test if not null!!!! */
+    private Long          mId;
 
-	public Timestamp sqlReleaseDate;
-	public Timestamp sqlDiscDate;
-	/** remember to test if not null!!!! */
-	public Long companyId;
-	public String companyName;
+    private Timestamp     mSqlReleaseDate;
+    private Timestamp     mSqlDiscDate;
+    /** remember to test if not null!!!! */
+    private Long          mCompanyId;
+    private String        mCompanyName;
 
 
-	public void fromComputer(Computer computer) {
-		id = computer.getId();
-		name = computer.getName();
-		releaseDate = computer.getIntroDate();
-		discDate = computer.getDiscontDate();
-		company = computer.getCompany();
-		if(company != null) {
-			companyId = computer.getCompany().getId();
-			companyName = company.getName();
-		}
-		
-		
-		//convert java Date to sql Timestamp, ensuring date is not null
-		sqlReleaseDate = (releaseDate!=null ? Timestamp.valueOf(releaseDate) : null);
-		sqlDiscDate = (discDate!=null ? Timestamp.valueOf(discDate) : null);
-	}
+    public void fromComputer(Computer computer) {
+        mId = computer.getId();
+        mName = computer.getName();
+        mReleaseDate = computer.getIntroDate();
+        mDiscDate = computer.getDiscontDate();
+        mCompany = computer.getCompany();
+        if (mCompany != null) {
+            mCompanyId = computer.getCompany().getId();
+            mCompanyName = mCompany.getName();
+        }
 
-	public void fromResultSet(ResultSet res) throws SQLException {
-		id = res.getLong(1);
-		name = res.getString(2);
 
-		sqlReleaseDate = res.getTimestamp(3);
-		sqlDiscDate = res.getTimestamp(4);
+        // convert java Date to sql Timestamp, ensuring date is not null
+        mSqlReleaseDate = (mReleaseDate != null ? Timestamp.valueOf(mReleaseDate) : null);
+        mSqlDiscDate = (mDiscDate != null ? Timestamp.valueOf(mDiscDate) : null);
+    }
 
-		//convert sql.Date to java.util.Date, asserting date is not null.
-		releaseDate = (sqlReleaseDate!=null ? sqlReleaseDate.toLocalDateTime() : null);
-		discDate = (sqlDiscDate!=null ? sqlDiscDate.toLocalDateTime() : null);
+    public void fromResultSet(ResultSet res) throws SQLException {
 
-		//get company name;
-		companyId = res.getLong(5);
-		companyName= res.getString(6);
-	}
+        int colId = 1;
+        mId = res.getLong(colId++);
+        mName = res.getString(colId++);
+
+        mSqlReleaseDate = res.getTimestamp(colId++);
+        mSqlDiscDate = res.getTimestamp(colId++);
+
+        // convert sql.Date to java.util.Date, asserting date is not null.
+        mReleaseDate = (mSqlReleaseDate != null ? mSqlReleaseDate.toLocalDateTime() : null);
+        mDiscDate = (mSqlDiscDate != null ? mSqlDiscDate.toLocalDateTime() : null);
+
+        // get company name;
+        mCompanyId = res.getLong(colId++);
+        mCompanyName = res.getString(colId++);
+    }
+
+    /* ***
+     * ACCESSORS
+     */
+
+    public String getName() {
+        return mName;
+    }
+
+    public Company getCompany() {
+        return mCompany;
+    }
+
+    public LocalDateTime getReleaseDate() {
+        return mReleaseDate;
+    }
+
+    public LocalDateTime getDiscDate() {
+        return mDiscDate;
+    }
+
+    public Long getId() {
+        return mId;
+    }
+
+    public Timestamp getSqlReleaseDate() {
+        return mSqlReleaseDate;
+    }
+
+    public Timestamp getSqlDiscDate() {
+        return mSqlDiscDate;
+    }
+
+    public Long getCompanyId() {
+        return mCompanyId;
+    }
+
+    public String getCompanyName() {
+        return mCompanyName;
+    }
 }
