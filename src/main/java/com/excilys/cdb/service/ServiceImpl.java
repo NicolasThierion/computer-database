@@ -9,47 +9,45 @@ import com.excilys.cdb.model.Computer;
 
 
 /**
- * 
- * @author Nicolas THIERION
+ *
+ * @author Nicolas THIERION.
  * @version 0.1.0
  */
 public class ServiceImpl implements Service {
 
-	/* ***
-	 * ATTRIBUTES
-	 */
-	private IComputerDao mComputerDao;
-	private ICompanyDao mCompanyDao;
-	
-	
-	public ServiceImpl(IComputerDao dao) {
-		mComputerDao = dao;
-	}
-	
-	
-	@Override
-	public List<Computer> listComputersByName(int begin, int count) {
-		return mComputerDao.listByName(begin, count);
-	}
+    /* ***
+     * ATTRIBUTES
+     */
+    private final IComputerDao mComputerDao;
+    private ICompanyDao        mCompanyDao;
 
-	@Override
-	public List<Company> listCompaniesByName(int begin, int nb) {
-		return mCompanyDao.listByName(begin, nb);
-	}
+    public ServiceImpl(IComputerDao dao) {
+        mComputerDao = dao;
+    }
 
-	@Override
-	public void addComputer(Computer computer) {
-		mComputerDao.add(computer);
-	}
+    @Override
+    public List<Computer> listComputersByName(int begin, int count) {
+        return mComputerDao.listByName(begin, count);
+    }
 
-	@Override
-	public void updateComputer(Computer computer) {
-		mComputerDao.update(computer);
-	}
+    @Override
+    public List<Company> listCompaniesByName(int begin, int nb) {
+        return mCompanyDao.listByName(begin, nb);
+    }
 
-	@Override
-	public void deleteComputer(Computer computer) {
-		mComputerDao.delete(computer);
-	}
+    @Override
+    public void addComputer(Computer computer) {
+        mComputerDao.add(computer);
+    }
+
+    @Override
+    public void updateComputer(Computer computer) {
+        mComputerDao.update(computer);
+    }
+
+    @Override
+    public void deleteComputer(Computer computer) {
+        mComputerDao.delete(computer);
+    }
 
 }
