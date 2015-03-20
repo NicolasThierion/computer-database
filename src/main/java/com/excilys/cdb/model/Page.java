@@ -7,7 +7,7 @@ import java.util.List;
  *
  * @author Nicolas THIERION
  *
- *         TODO toString
+ *         TODO JavaDoc.
  * @param <T>
  */
 public class Page<T> {
@@ -166,6 +166,16 @@ public class Page<T> {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+
+        final StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName()).append("@").append(hashCode());
+        sb.append("; PageNum=").append(mPageNum).append("; PageLength=").append(mLength);
+        sb.append("; Offset=").append(mOffset).append("; Query=").append(mQueryString);
+        return sb.toString();
     }
 
 }

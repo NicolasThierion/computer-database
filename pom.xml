@@ -20,7 +20,10 @@
 		<junitVersion>4.12</junitVersion>
 		<mysqlConnectVersion>5.1.6</mysqlConnectVersion>
 		<slf4jVersion>1.6.1</slf4jVersion>
-		<log4jVersion>1.2.16</log4jVersion>
+        <log4jBridgeVersion>1.7.10</log4jBridgeVersion>
+        <log4jVersion>1.2.17</log4jVersion>
+		<mockitoVersion>1.9.5</mockitoVersion>
+		<servletVersion>3.1.0</servletVersion>
 	</properties>
 
 	<dependencies>
@@ -42,14 +45,37 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>${slf4jVersion}</version>
-			<scope>compile</scope>
+            <scope>runtime</scope>
 		</dependency>
-		<!-- SLF4j maps to 'simple' for tests -->
+		<!-- SLF4j maps to 'log4j12' for tests -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>${slf4jVersion}</version>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${log4jBridgeVersion}</version>
+            <scope>runtime</scope>
+		</dependency>
+		
+		<dependency>
+		    <groupId>log4j</groupId>
+		    <artifactId>log4j</artifactId>
+		    <version>${log4jVersion}</version>
+            <scope>runtime</scope>
+		</dependency>
+				
+		
+		<!-- Mockito -->
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>${mockitoVersion}</version>
 			<scope>test</scope>
+		</dependency>
+		<!-- Servlets -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>${servletVersion}</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 

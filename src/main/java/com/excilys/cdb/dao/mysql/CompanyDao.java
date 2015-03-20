@@ -92,7 +92,6 @@ public final class CompanyDao implements ICompanyDao {
 
             // exec query
             final ResultSet res = selectCompaniesStatement.executeQuery();
-
             // parse resultSet to build the list of computers.
             while (res.next()) {
 

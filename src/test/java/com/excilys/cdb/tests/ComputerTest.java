@@ -45,9 +45,16 @@ public class ComputerTest {
         mLogger.info("created object " + nullComputer.toString());
 
         //test computer with parameters
-        final Computer computer = new Computer(name, company, releaseDate, discontinuedDate);
-        copyConputer = new Computer(computer);
-        assertTrue(copyConputer.equals(computer));
+        Computer computer;
+        for (final LocalDateTime rd : new LocalDateTime[] {null, releaseDate}) {
+            for (final LocalDateTime dd : new LocalDateTime[] {null, discontinuedDate}) {
+
+                computer = new Computer(name, company, rd, dd);
+                copyConputer = new Computer(computer);
+                assertTrue(copyConputer.equals(computer));
+            }
+        }
+
     }
 
     /**
