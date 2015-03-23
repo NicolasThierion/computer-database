@@ -7,12 +7,6 @@ import com.excilys.cdb.dao.IComputerDao;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 
-
-/**
- *
- * @author Nicolas THIERION.
- * @version 0.1.0
- */
 public class Service implements IService {
 
     /* ***
@@ -27,7 +21,7 @@ public class Service implements IService {
      * CONSTRUCTORS
      */
     /**
-     * Argument constructor. Creates a nes Service, given the computer DAO &
+     * Argument constructor. Creates a new Service, given the computer DAO &
      * company DAO implementations.
      *
      * @param computerDao
@@ -88,7 +82,6 @@ public class Service implements IService {
      * SERVICE METHODS
      */
 
-
     @Override
     public List<Computer> listComputersByName(int offset, int count) {
         mCheckInit();
@@ -97,28 +90,39 @@ public class Service implements IService {
 
     @Override
     public List<Computer> listComputersLikeName(int offset, int count, String name) {
-        return mComputerDao.listLikeName(offset, count, name);
-    }
-
-    @Override
-    public List<Company> listCompaniesByName(int begin, int nb) {
         mCheckInit();
-        return mCompanyDao.listByName(begin, nb);
+        return mComputerDao.listLikeName(offset, count, name);
+
     }
 
     @Override
     public void addComputer(Computer computer) {
+        mCheckInit();
         mComputerDao.add(computer);
     }
 
     @Override
     public void updateComputer(Computer computer) {
+        mCheckInit();
         mComputerDao.update(computer);
     }
 
     @Override
     public void deleteComputer(Computer computer) {
+        mCheckInit();
         mComputerDao.delete(computer);
+    }
+
+    @Override
+    public int getComputersCount() {
+        mCheckInit();
+        return mComputerDao.getCount();
+    }
+
+    @Override
+    public int getComputersCount(String queryString) {
+        mCheckInit();
+        return mComputerDao.getCount(queryString);
     }
 
     /* ***
@@ -141,10 +145,21 @@ public class Service implements IService {
     }
 
     @Override
-    public int getComputerCount() {
-        return mComputerDao.getCount();
+    public List<Company> listCompaniesByName(int begin, int nb) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
+    @Override
+    public int getCompaniesCount() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 
+    @Override
+    public int getCompaniesCount(String name) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 
 }

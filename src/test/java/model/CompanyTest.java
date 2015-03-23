@@ -1,4 +1,4 @@
-package com.excilys.cdb.tests;
+package model;
 
 import static org.junit.Assert.assertTrue;
 
@@ -31,7 +31,7 @@ public class CompanyTest {
      * Test of Computer constructors.
      */
     @Test
-    public final void newCompany() {
+    public final void testNewCompany() {
         final String name = "Xiaomi";
         final Company nullCompany = new Company();
         Company copyCompany = new Company(nullCompany);
@@ -51,7 +51,7 @@ public class CompanyTest {
     @Ignore("null companies allowed at this moment")
     @SuppressWarnings("unused")
     @Test(expected = IllegalArgumentException.class)
-    public final void newNullCompany() {
+    public final void testNewNullCompany() {
         final String name = null;
         final Company nullCompany = new Company(name);
     }

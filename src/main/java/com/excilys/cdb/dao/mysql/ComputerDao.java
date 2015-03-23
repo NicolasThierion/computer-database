@@ -75,7 +75,7 @@ public final class ComputerDao implements IComputerDao {
 
     @Override
     public List<Computer> listByName(int begin, int nb) throws DaoException, IllegalArgumentException {
-        final String name = "%%";
+        final String name = "";
         return listLikeName(begin, nb, name);
     }
 
@@ -92,8 +92,8 @@ public final class ComputerDao implements IComputerDao {
         }
 
         // check name parameter
-        if (name != null && name.trim().isEmpty()) {
-            throw new IllegalArgumentException("name cannot be empty");
+        if (name == null) {
+            throw new IllegalArgumentException("name cannot be null");
         }
         offset = (offset < 0 ? 0 : offset);
         nb = (nb < 0 ? Integer.MAX_VALUE : nb);
@@ -179,15 +179,27 @@ public final class ComputerDao implements IComputerDao {
 
     @Override
     public int getCount() {
+        return getCount("");
+    }
+
+    @Override
+    public int getCount(String name) {
         int count = 0;
         ResultSet res = null;
         final String sqlStr = mQueryStrings.get(REQ_COUNT_COMPUTERS_FILENAME);
+
+        // check name parameter
+        if (name == null) {
+            throw new IllegalArgumentException("name cannot be null");
+        }
 
         try (
                 //get a connection & prepare needed statement
                 Connection dbConn = ConnectionFactory.getInstance().getConnection();
                 PreparedStatement countComputersStatement = dbConn.prepareStatement(sqlStr);
                 ) {
+            name = "%".concat(name.toUpperCase()).concat("%");
+            countComputersStatement.setString(1, name);
             res = countComputersStatement.executeQuery();
             if (res.first()) {
                 count = res.getInt(1);
@@ -199,8 +211,6 @@ public final class ComputerDao implements IComputerDao {
         }
         return count;
     }
-
-
 
     @Override
     public void add(Computer computer) throws DaoException {
@@ -350,6 +360,5 @@ public final class ComputerDao implements IComputerDao {
             throw new DaoException(e.getMessage(), ErrorType.DAO_ERROR);
         }
     }
-
 
 }

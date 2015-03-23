@@ -87,10 +87,11 @@
                     </c:forEach>
                     <tr>
                         <td class="editMode"><input type="checkbox" name="cb" class="cb" value="0"></td>
-                        <td><a href="editComputer.html" onclick="">PowerBook</a></td>
-                        <td>1991-01-01</td>
-                        <td>2006-01-01</td>
-                        <td>Apple Inc.</td>
+                        <td style="background: silver"><a href="editComputer.html" onclick="">PowerBook (static
+                                example. TO REMOVE)</a></td>
+                        <td style="background: silver">1991-01-01</td>
+                        <td style="background: silver">2006-01-01</td>
+                        <td style="background: silver">Apple Inc.</td>
                     </tr>
                 </tbody>
             </table>

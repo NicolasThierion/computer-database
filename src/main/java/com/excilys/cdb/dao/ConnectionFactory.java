@@ -14,7 +14,7 @@ import com.excilys.cdb.dao.DaoException.ErrorType;
 
 /**
  * Data access object singleton. Establish connections to BDD. Use required
- * creditentials to connect to computer-database-db through JDBC MySQL.
+ * credentials to connect to computer-database-db through JDBC MySQL.
  *
  * @author Nicolas THIERION
  * @version 0.2.0
@@ -24,7 +24,7 @@ public final class ConnectionFactory {
     /* ***
      * DB PARAMETERS
      */
-    /** Url of JDBC Driver. */
+    /** Uri of JDBC Driver. */
     private static final String DB_DRIVER_PACKAGE = "com.mysql.jdbc.Driver";
     /** DB name. */
     private static final String DB_NAME = "computer-database-db";

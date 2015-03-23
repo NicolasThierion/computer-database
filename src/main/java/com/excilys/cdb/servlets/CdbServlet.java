@@ -39,13 +39,10 @@ public class CdbServlet extends HttpServlet {
 
     private static final int    PAGE_LENGTH      = 10;
 
-
     /* ***
      * ATTRIBUTES
      */
-    private final Logger            mLogger;
-
-
+    private final Logger        mLogger;
     private ICompanyDao         mCompanyDao;
     private IComputerDao        mComputerDao;
     private IService            mService;
@@ -92,7 +89,7 @@ public class CdbServlet extends HttpServlet {
             mGotoDashboard(request, response);
             return;
         } else if (action.equals(COMPUTER_SEARCH)) {
-            // handle dashboard search
+            // handle dashboard with search
             mGotoDashboard(request, response);
         }
     }
@@ -109,18 +106,16 @@ public class CdbServlet extends HttpServlet {
 
         List<Computer> computers;
         // presence of a queryString that search for computer name?
-        final String queryName = request.getParameter("search");
+        String queryName = request.getParameter("search");
 
         // select all computer in page range
-        if (queryName != null && !queryName.trim().isEmpty()) {
-            computers = mService.listComputersLikeName(0, PAGE_LENGTH, queryName);
-        } else {
-            computers = mService.listComputersByName(0, PAGE_LENGTH);
+        if (queryName == null) {
+            queryName = "";
         }
-
+        computers = mService.listComputersLikeName(0, PAGE_LENGTH, queryName);
 
         // TODO count results
-        final int totalResults = mService.getComputerCount();
+        final int totalResults = mService.getComputersCount(queryName);
 
         final Page<Computer> page = new Page<Computer>(computers, 1, 0, totalResults);
 
@@ -132,7 +127,7 @@ public class CdbServlet extends HttpServlet {
      * PRIVATE TOOLS
      */
     /**
-     * prints some logs of URL.
+     * prints some logs (IE : requested URL, ...).
      *
      * @param request
      * @param response

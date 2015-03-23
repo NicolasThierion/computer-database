@@ -1,4 +1,4 @@
-package com.excilys.cdb.tests;
+package model;
 
 import static org.junit.Assert.assertTrue;
 
@@ -32,7 +32,7 @@ public class ComputerTest {
      * Test of Computer constructors.
      */
     @Test
-    public final void newComputer() {
+    public final void testNewComputer() {
         final String name = "Surface pro 4";
         final Company company = new Company();
         final LocalDate releaseDate = java.time.LocalDate.of(1999, 1, 1);
@@ -62,7 +62,7 @@ public class ComputerTest {
      */
     @SuppressWarnings("unused")
     @Test(expected = IllegalArgumentException.class)
-    public final void newNullComputer() {
+    public final void testNewNullComputer() {
         final String name = null;
         final Computer computer = new Computer(name);
     }
@@ -72,7 +72,7 @@ public class ComputerTest {
      */
     @SuppressWarnings("unused")
     @Test(expected = IllegalArgumentException.class)
-    public final void newInvalidDatesComputer() {
+    public final void testNewInvalidDatesComputer() {
         final String name = "Surface pro 4";
         final Company company = new Company();
         final LocalDate releaseDate = java.time.LocalDate.of(2010, 1, 1);

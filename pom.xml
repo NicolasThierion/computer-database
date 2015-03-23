@@ -27,6 +27,9 @@
         <servletVersion>3.1.0</servletVersion>
         <taglibVersion>1.1.2</taglibVersion>
         <jstlVersion>1.2</jstlVersion>
+        <seleniumVersion>2.25.0</seleniumVersion>
+        
+        
     </properties>
 
     <dependencies>
@@ -96,6 +99,12 @@
             <version>${jstlVersion}</version>
         </dependency>
 
+        <!-- Selenium -->
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>${seleniumVersion}</version>
+        </dependency>
     </dependencies>
 
     <build>

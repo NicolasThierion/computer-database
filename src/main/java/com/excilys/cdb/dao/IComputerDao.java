@@ -14,8 +14,7 @@ public interface IComputerDao {
 
 
     /**
-     * List computers with name matching given 'name' parameter. Order results
-     * by name.
+     * List computers. Order results by name.
      *
      * @param offset
      *            Search offset.
@@ -58,6 +57,14 @@ public interface IComputerDao {
      */
     int getCount();
 
+    /**
+     * @param name
+     *            Name of computers to search for.
+     * @return count of computer entries in database that matches the given
+     *         name.
+     */
+    int getCount(String name);
+
 
     /**
      * Adds the computer to DB, provided that this computer doesn't exist
@@ -90,5 +97,6 @@ public interface IComputerDao {
      *
      */
     void delete(Computer computer);
+
 
 }

@@ -31,8 +31,9 @@ public class ComputerMapper implements EntityMapper<Computer> {
     private LocalDate mDiscDate;
     /** id of this computer. Remember to test if not null!!!! */
     private Long          mId;
-
+    /** SQL release timestamp to be stored in DB. */
     private Timestamp     mSqlReleaseDate;
+    /** SQL discontinuation timestamp to be stored in DB. */
     private Timestamp     mSqlDiscDate;
     /** remember to test if not null!!!! */
     private Long          mCompanyId;
