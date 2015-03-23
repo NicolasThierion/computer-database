@@ -2,7 +2,7 @@ package com.excilys.cdb.tests;
 
 import static org.junit.Assert.assertTrue;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,8 +35,8 @@ public class ComputerTest {
     public final void newComputer() {
         final String name = "Surface pro 4";
         final Company company = new Company();
-        final LocalDateTime releaseDate = java.time.LocalDateTime.of(1999, 1, 1, 0, 0);
-        final LocalDateTime discontinuedDate = java.time.LocalDateTime.of(2010, 1, 1, 0, 0);
+        final LocalDate releaseDate = java.time.LocalDate.of(1999, 1, 1);
+        final LocalDate discontinuedDate = java.time.LocalDate.of(2010, 1, 1);
 
         //test empty computer
         final Computer nullComputer = new Computer();
@@ -46,8 +46,8 @@ public class ComputerTest {
 
         //test computer with parameters
         Computer computer;
-        for (final LocalDateTime rd : new LocalDateTime[] {null, releaseDate}) {
-            for (final LocalDateTime dd : new LocalDateTime[] {null, discontinuedDate}) {
+        for (final LocalDate rd : new LocalDate[] {null, releaseDate}) {
+            for (final LocalDate dd : new LocalDate[] {null, discontinuedDate}) {
 
                 computer = new Computer(name, company, rd, dd);
                 copyConputer = new Computer(computer);
@@ -75,8 +75,8 @@ public class ComputerTest {
     public final void newInvalidDatesComputer() {
         final String name = "Surface pro 4";
         final Company company = new Company();
-        final LocalDateTime releaseDate = java.time.LocalDateTime.of(2010, 1, 1, 0, 0);
-        final LocalDateTime discontinuedDate = java.time.LocalDateTime.of(1999, 1, 1, 0, 0);
+        final LocalDate releaseDate = java.time.LocalDate.of(2010, 1, 1);
+        final LocalDate discontinuedDate = java.time.LocalDate.of(1999, 1, 1);
 
         final Computer computer = new Computer(name, company, releaseDate, discontinuedDate);
     }

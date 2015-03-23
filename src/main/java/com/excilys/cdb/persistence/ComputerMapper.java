@@ -3,7 +3,8 @@ package com.excilys.cdb.persistence;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
@@ -25,9 +26,9 @@ public class ComputerMapper implements EntityMapper<Computer> {
     /** manufacturer of this computer. */
     private Company       mCompany;
     /** release date. */
-    private LocalDateTime mReleaseDate;
+    private LocalDate mReleaseDate;
     /** discontinuation date. */
-    private LocalDateTime mDiscDate;
+    private LocalDate mDiscDate;
     /** id of this computer. Remember to test if not null!!!! */
     private Long          mId;
 
@@ -45,7 +46,7 @@ public class ComputerMapper implements EntityMapper<Computer> {
     public void fromEntity(Computer computer) {
         mId = computer.getId();
         mName = computer.getName();
-        mReleaseDate = computer.getIntroDate();
+        mReleaseDate = computer.getReleaseDate();
         mDiscDate = computer.getDiscontDate();
         mCompany = computer.getCompany();
         if (mCompany != null) {
@@ -53,10 +54,10 @@ public class ComputerMapper implements EntityMapper<Computer> {
             mCompanyName = mCompany.getName();
         }
 
-
-        // convert java Date to sql Timestamp, ensuring date is not null
-        mSqlReleaseDate = (mReleaseDate != null ? Timestamp.valueOf(mReleaseDate) : null);
-        mSqlDiscDate = (mDiscDate != null ? Timestamp.valueOf(mDiscDate) : null);
+        // convert java LocalDate to java LocalDateTime to sql Timestamp,
+        // ensuring date is not null
+        mSqlReleaseDate = (mReleaseDate != null ? Timestamp.valueOf(mReleaseDate.atTime(LocalTime.of(0, 0))) : null);
+        mSqlDiscDate = (mDiscDate != null ? Timestamp.valueOf(mDiscDate.atTime(LocalTime.of(0, 0))) : null);
     }
 
     @Override
@@ -71,8 +72,8 @@ public class ComputerMapper implements EntityMapper<Computer> {
         mSqlDiscDate = res.getTimestamp(colId++);
 
         // convert sql.Date to java.util.Date, asserting date is not null.
-        mReleaseDate = (mSqlReleaseDate != null ? mSqlReleaseDate.toLocalDateTime() : null);
-        mDiscDate = (mSqlDiscDate != null ? mSqlDiscDate.toLocalDateTime() : null);
+        mReleaseDate = (mSqlReleaseDate != null ? LocalDate.from(mSqlReleaseDate.toLocalDateTime()) : null);
+        mDiscDate = (mSqlDiscDate != null ? LocalDate.from(mSqlDiscDate.toLocalDateTime()) : null);
 
         // get company name;
         mCompanyId = res.getLong(colId++);
@@ -93,11 +94,11 @@ public class ComputerMapper implements EntityMapper<Computer> {
         return mCompany;
     }
 
-    public LocalDateTime getReleaseDate() {
+    public LocalDate getReleaseDate() {
         return mReleaseDate;
     }
 
-    public LocalDateTime getDiscDate() {
+    public LocalDate getDiscDate() {
         return mDiscDate;
     }
 

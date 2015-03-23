@@ -1,5 +1,6 @@
 package com.excilys.cdb.model;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,8 +11,12 @@ import java.util.List;
  *         TODO JavaDoc.
  * @param <T>
  */
-public class Page<T> {
+public class Page<T> implements Serializable {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = -7930434399646098394L;
     /* ***
      * ATTRIBUTES
      */
@@ -36,11 +41,18 @@ public class Page<T> {
     private void newPage(List<T> content, int pageNum, int offset,
             int maxResults, String queryString) {
         mPageNum = pageNum;
-        mContent = new LinkedList<T>(content);
         mOffset = offset;
         mMaxResults = maxResults;
-        mLength = content.size();
         mQueryString = queryString;
+
+        if (content != null) {
+            mContent = new LinkedList<T>(content);
+            mLength = content.size();
+        } else {
+            mContent = null;
+            mLength = -1;
+        }
+
     }
 
     public Page(List<T> content, int pageNum, int offset, int maxResults,
@@ -50,6 +62,10 @@ public class Page<T> {
 
     public Page(List<T> content, int pageNum, int offset, int maxResults) {
         newPage(content, pageNum, offset, maxResults, null);
+    }
+
+    public Page() {
+        newPage(null, -1, -1, -1, null);
     }
 
     /* ***
@@ -88,6 +104,14 @@ public class Page<T> {
         mLength = length;
     }
 
+    public int getCount() {
+        return mLength;
+    }
+
+    public void setCount(int length) {
+        mLength = length;
+    }
+
     public int getPageNum() {
         return mPageNum;
     }
@@ -96,12 +120,12 @@ public class Page<T> {
         mPageNum = pageNum;
     }
 
-    public int getMaxResults() {
+    public int getTotalCount() {
         return mMaxResults;
     }
 
-    public void setMaxResults(int maxResults) {
-        mMaxResults = maxResults;
+    public void setTotalCount(int total) {
+        mMaxResults = total;
     }
 
     /* ***

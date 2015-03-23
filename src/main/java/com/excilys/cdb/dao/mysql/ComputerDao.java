@@ -20,7 +20,7 @@ import com.excilys.cdb.persistence.ComputerMapper;
 
 
 /**
- *
+ * MySQL immplementation of IComputerDao.
  *
  * @author Nicolas THIERION
  * @version 0.2.0
@@ -97,7 +97,7 @@ public final class ComputerDao implements IComputerDao {
         }
         offset = (offset < 0 ? 0 : offset);
         nb = (nb < 0 ? Integer.MAX_VALUE : nb);
-        name = name.toUpperCase();
+        name = "%".concat(name.toUpperCase()).concat("%");
 
         try (
                 //get a connection & prepare needed statement
@@ -151,6 +151,7 @@ public final class ComputerDao implements IComputerDao {
     @Override
     public Computer searchById(long id) {
         final String sqlStr = mQueryStrings.get(REQ_SELECT_COMPUTER_FILENAME);
+
         ResultSet res = null;
         Computer computer = null;
         try (
@@ -181,6 +182,7 @@ public final class ComputerDao implements IComputerDao {
         int count = 0;
         ResultSet res = null;
         final String sqlStr = mQueryStrings.get(REQ_COUNT_COMPUTERS_FILENAME);
+
         try (
                 //get a connection & prepare needed statement
                 Connection dbConn = ConnectionFactory.getInstance().getConnection();

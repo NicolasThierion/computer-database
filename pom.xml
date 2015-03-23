@@ -1,99 +1,118 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<!-- project information -->
-	<groupId>com.excilys.cdb</groupId>
-	<artifactId>computer-database</artifactId>
-	<version>1.0-SNAPSHOT</version>
-	<packaging>jar</packaging>
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <!-- project information -->
+    <groupId>com.excilys.cdb</groupId>
+    <artifactId>computer-database</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
-	<name>computer-database</name>
-	<url>http://maven.apache.org</url>
+    <name>computer-database</name>
+    <url>http://maven.apache.org</url>
 
-	<!-- project properties -->
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jreSource>1.8</jreSource>
-		<jreTarget>1.8</jreTarget>
+    <!-- project properties -->
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jreSource>1.8</jreSource>
+        <jreTarget>1.8</jreTarget>
 
-		<!-- dependencies versions -->
-		<junitVersion>4.12</junitVersion>
-		<mysqlConnectVersion>5.1.6</mysqlConnectVersion>
-		<slf4jVersion>1.6.1</slf4jVersion>
+        <!-- dependencies versions -->
+        <junitVersion>4.12</junitVersion>
+        <mysqlConnectVersion>5.1.6</mysqlConnectVersion>
+        <slf4jVersion>1.7.10</slf4jVersion>
         <log4jBridgeVersion>1.7.10</log4jBridgeVersion>
         <log4jVersion>1.2.17</log4jVersion>
-		<mockitoVersion>1.9.5</mockitoVersion>
-		<servletVersion>3.1.0</servletVersion>
-	</properties>
+        <log4jdbcVersion>1.2</log4jdbcVersion>
+        <mockitoVersion>1.9.5</mockitoVersion>
+        <servletVersion>3.1.0</servletVersion>
+        <taglibVersion>1.1.2</taglibVersion>
+        <jstlVersion>1.2</jstlVersion>
+    </properties>
 
-	<dependencies>
-		<!-- JUnit -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junitVersion}</version>
-			<scope>test</scope>
-		</dependency>
-		<!-- MySQL Connect -->
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>${mysqlConnectVersion}</version>
-		</dependency>
-		<!-- SLF4j api -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4jVersion}</version>
+    <dependencies>
+        <!-- JUnit -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junitVersion}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- MySQL Connect -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysqlConnectVersion}</version>
+        </dependency>
+        <!-- SLF4j api -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4jVersion}</version>
             <scope>runtime</scope>
-		</dependency>
-		<!-- SLF4j maps to 'log4j12' for tests -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>${log4jBridgeVersion}</version>
+        </dependency>
+        <!-- SLF4j maps to 'log4j12' for tests -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${log4jBridgeVersion}</version>
             <scope>runtime</scope>
-		</dependency>
-		
-		<dependency>
-		    <groupId>log4j</groupId>
-		    <artifactId>log4j</artifactId>
-		    <version>${log4jVersion}</version>
-            <scope>runtime</scope>
-		</dependency>
-				
-		
-		<!-- Mockito -->
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>${mockitoVersion}</version>
-			<scope>test</scope>
-		</dependency>
-		<!-- Servlets -->
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>${servletVersion}</version>
-			<scope>provided</scope>
-		</dependency>
-	</dependencies>
+        </dependency>
 
-	<build>
-		<plugins>
-			<plugin>
-				<!-- java compiler -->
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.2</version>
-				<configuration>
-					<!-- or whatever version you use -->
-					<source>${jreSource}</source>
-					<target>${jreTarget}</target>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>${log4jVersion}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- SLF4j maps to 'log4jdbc' -->
+        <dependency>
+            <groupId>com.googlecode.log4jdbc</groupId>
+            <artifactId>log4jdbc</artifactId>
+            <version>${log4jdbcVersion}</version>
+        </dependency>
+        <!-- Mockito -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>${mockitoVersion}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Servlets -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${servletVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- taglib -->
+        <dependency>
+            <groupId>taglibs</groupId>
+            <artifactId>standard</artifactId>
+            <version>${taglibVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>${jstlVersion}</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <!-- java compiler -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.2</version>
+                <configuration>
+                    <!-- or whatever version you use -->
+                    <source>${jreSource}</source>
+                    <target>${jreTarget}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 
 

@@ -3,7 +3,7 @@ package com.excilys.cdb.tests;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.Before;
@@ -178,8 +178,8 @@ public class ComputerDaoTest {
     public final void update() {
         final String computerName = "Surface pro 4";
         final String computerName2 = "Unique computer" + java.time.Clock.systemUTC().millis();
-        final LocalDateTime releaseDate = java.time.LocalDateTime.of(1999, 1, 1, 0, 0);
-        final LocalDateTime discontinuedDate = java.time.LocalDateTime.of(2010, 1, 1, 0, 0);
+        final LocalDate releaseDate = java.time.LocalDate.of(1999, 1, 1);
+        final LocalDate discontinuedDate = java.time.LocalDate.of(2010, 1, 1);
         final Company company = mCompanyDao.searchById(1L);
 
         List<Computer> list = mComputerDao.listLikeName(0, -1, computerName);

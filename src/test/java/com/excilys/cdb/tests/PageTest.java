@@ -1,5 +1,5 @@
 package com.excilys.cdb.tests;
-
+/*
 import static org.mockito.Mockito.when;
 
 import java.util.LinkedList;
@@ -16,14 +16,17 @@ import com.excilys.cdb.model.Company;
 
 /**
  * Unit test for Page methods. TODO implement page tests & mocks.
- *
+ * TODO
  * @author Nicolas THIERION.
  * @version 0.2.0
  *
  */
 public class PageTest {
 
+
     /** Logger used in these tests. */
+
+    /*
     private Logger mLogger;
     private ICompanyDao mMockedCompanyDao;
     private IComputerDao mMockedComputerDao;
@@ -43,7 +46,9 @@ public class PageTest {
         | 37 | ASUS                                        |
         | 43 | Samsung Electronics                         |
          */
-        final Company apple = new Company(1, "Apple Inc.");
+
+    /*
+    final Company apple = new Company(1, "Apple Inc.");
         final Company ibm = new Company(13, "IBM");
         final Company asus = new Company(37, "ASUS");
         final Company samsung = new Company(43, "Samsung Electronics");
@@ -59,6 +64,6 @@ public class PageTest {
         when(mMockedCompanyDao.listByName(0, -1)).thenReturn(companyList);
 
     }
-
+*/
 
 }

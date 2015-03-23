@@ -18,7 +18,7 @@ import com.excilys.cdb.model.Company;
 import com.excilys.cdb.persistence.CompanyMapper;
 
 /**
- *
+ * MySQL immplementation of ICompanyDao.
  *
  * @author Nicolas THIERION
  * @version 0.2.0

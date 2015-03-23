@@ -1,7 +1,7 @@
 package com.excilys.cdb.model;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 /**
  * @author Nicolas THIERION
@@ -24,22 +24,23 @@ public class Computer implements Serializable {
      */
 
     /** name of this computer. */
-    private String mName;
+    private String              mName;
     /** manufacturer of this computer. */
-    private Company mCompany;
+    private Company             mCompany;
     /** release date. */
-    private LocalDateTime mReleaseDate;
+    private LocalDate           mReleaseDate;
     /** discontinuation date. */
-    private LocalDateTime mDiscDate;
+    private LocalDate           mDiscDate;
     /** id of this computer. */
-    private Long mId = DEFAULT_ID;
+    private Long                mId              = DEFAULT_ID;
 
     /* ***
      * CONSTRUCTORS
      */
 
     private void mNewComputer(Long id, final String name, Company manufacturer,
-            LocalDateTime releaseDate, LocalDateTime discontinuedDate) {
+            LocalDate releaseDate,
+            LocalDate discontinuedDate) {
         // check name
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException(
@@ -58,10 +59,9 @@ public class Computer implements Serializable {
         mName = name;
         mId = id;
         mCompany = (manufacturer != null ? new Company(manufacturer) : null);
-        mReleaseDate = (releaseDate != null ? LocalDateTime.from(releaseDate)
+        mReleaseDate = (releaseDate != null ? LocalDate.from(releaseDate)
                 : null);
-        mDiscDate = (discontinuedDate != null ? LocalDateTime
-                .from(discontinuedDate) : null);
+        mDiscDate = (discontinuedDate != null ? LocalDate.from(discontinuedDate) : null);
     }
 
     /**
@@ -132,8 +132,7 @@ public class Computer implements Serializable {
      * @param discontinuedDate
      *            when this computer has been discontinued.
      */
-    public Computer(long id, String name, Company manufacturer,
-            LocalDateTime releaseDate, LocalDateTime discontinuedDate) {
+    public Computer(long id, String name, Company manufacturer, LocalDate releaseDate, LocalDate discontinuedDate) {
         mNewComputer(id, name, manufacturer, releaseDate, discontinuedDate);
     }
 
@@ -149,8 +148,7 @@ public class Computer implements Serializable {
      * @param discontinuedDate
      *            when this computer has been discontinued.
      */
-    public Computer(String name, Company manufacturer,
-            LocalDateTime releaseDate, LocalDateTime discontinuedDate) {
+    public Computer(String name, Company manufacturer, LocalDate releaseDate, LocalDate discontinuedDate) {
         mNewComputer(DEFAULT_ID, name, manufacturer, releaseDate,
                 discontinuedDate);
     }
@@ -189,27 +187,46 @@ public class Computer implements Serializable {
         mName = name;
     }
 
+    /**
+     * Same as {@link #getManufacturer()}.
+     *
+     * @return the manufacturer of this computer.
+     */
     public Company getCompany() {
         return mCompany;
     }
 
+    /**
+     * Same as {@link #setManufacturer(Company)}.
+     *
+     * @param company
+     *            The manufacturer of this computer.
+     */
     public void setCompany(Company company) {
         mCompany = company;
     }
 
-    public LocalDateTime getIntroDate() {
+    public Company getManufacturer() {
+        return mCompany;
+    }
+
+    public void setManufacturer(Company company) {
+        mCompany = company;
+    }
+
+    public LocalDate getReleaseDate() {
         return mReleaseDate;
     }
 
-    public void setReleaseDate(LocalDateTime releaseDate) {
+    public void setReleaseDate(LocalDate releaseDate) {
         mReleaseDate = releaseDate;
     }
 
-    public LocalDateTime getDiscontDate() {
+    public LocalDate getDiscontDate() {
         return mDiscDate;
     }
 
-    public void setDiscontDate(LocalDateTime discontDate) {
+    public void setDiscontDate(LocalDate discontDate) {
         mDiscDate = discontDate;
     }
 

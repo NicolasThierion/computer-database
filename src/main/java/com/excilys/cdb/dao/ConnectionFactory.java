@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import net.sf.log4jdbc.ConnectionSpy;
+
 import com.excilys.cdb.dao.DaoException.ErrorType;
 
 /**
@@ -112,7 +114,9 @@ public final class ConnectionFactory {
      */
 
     /**
-     * @link open()
+     *
+     * Same as {@link #open()}.
+     *
      * @return the opened connection.
      * @throws DaoException
      */
@@ -128,8 +132,9 @@ public final class ConnectionFactory {
      */
     public Connection open() throws DaoException {
         try {
-            final Connection conn = DriverManager.getConnection(DB_URL,
+            Connection conn = DriverManager.getConnection(DB_URL,
                     mProperties);
+            conn = new ConnectionSpy(conn);
             mConnections.add(conn);
             return conn;
         } catch (final SQLException e) {

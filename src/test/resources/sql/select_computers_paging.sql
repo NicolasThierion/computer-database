@@ -2,5 +2,5 @@ SELECT r.id AS 'id', r.name AS 'name', r.introduced AS 'introduced', r.discontin
 y.id AS 'company_id', y.name AS 'compName'
 FROM computer r LEFT OUTER JOIN company y on (r.company_id = y.id)
 WHERE UPPER(r.name) LIKE ?
-ORDER BY 'name'
+ORDER BY name
 LIMIT ?, ?;
