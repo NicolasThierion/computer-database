@@ -11,9 +11,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.excilys.cdb.dao.ICompanyDao;
 import com.excilys.cdb.dao.IComputerDao;
 import com.excilys.cdb.dao.mysql.CompanyDao;
@@ -26,8 +23,8 @@ import com.excilys.cdb.service.Service;
 /**
  * Servlet implementation class HelloServlet.
  */
-@WebServlet("/cdb/*")
-public class CdbServlet extends HttpServlet {
+@WebServlet("/editComputer")
+public class EditDashboardServlet extends HttpServlet {
 
     private static final long serialVersionUID = 8756374436015233990L;
 
@@ -35,18 +32,17 @@ public class CdbServlet extends HttpServlet {
      * CONSTANTS
      */
     /** uri to redirect to when accessing to '/'. */
-    private static final String DASH_URI         = "/dashboard";
-    private static final String SEARCH_COMPUTER_URI  = "/searchComputer";
-    private static final String EDIT_COMPUTER_URI    = "/editComputer";
-    private static final String ROOT_REDIRECT_URI    = DASH_URI;
+    private static final String              DASH_URI            = "/WEB-INF/views/dashboard.jsp";
+    private static final String              SEARCH_COMPUTER_URI = "/searchComputer";
+    private static final String              EDIT_COMPUTER_URI   = "/editComputer";
+    private static final String              ROOT_REDIRECT_URI   = DASH_URI;
 
     private static final String              HEADER_URI          = "/header.jsp";
 
     private static final Map<String, String> JSP_DISPAT          = new HashMap<String, String>();
     {
-        JSP_DISPAT.put(DASH_URI, "/views/dashboard.jsp");
-        JSP_DISPAT.put(SEARCH_COMPUTER_URI, "/views/dashboard.jsp");
-        JSP_DISPAT.put(EDIT_COMPUTER_URI, "/views/editComputer.jsp");
+        JSP_DISPAT.put(SEARCH_COMPUTER_URI, "/WEB-INF/views/dashboard.jsp");
+        JSP_DISPAT.put(EDIT_COMPUTER_URI, "/WEB-INF/views/editComputer.jsp");
     }
 
 
@@ -55,7 +51,6 @@ public class CdbServlet extends HttpServlet {
     /* ***
      * ATTRIBUTES
      */
-    private final Logger        mLogger;
     private ICompanyDao         mCompanyDao;
     private IComputerDao        mComputerDao;
     private IService            mService;
@@ -77,9 +72,8 @@ public class CdbServlet extends HttpServlet {
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public CdbServlet() {
+    public EditDashboardServlet() {
         super();
-        mLogger = LoggerFactory.getLogger(getClass());
     }
 
     /**
@@ -90,7 +84,7 @@ public class CdbServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        mLogRequest(request, response);
+        ServletUtils.logRequest(request, response);
         String action = request.getPathInfo();
 
         if (action == null) {
@@ -108,6 +102,9 @@ public class CdbServlet extends HttpServlet {
             mGotoDashboard(request, response);
         } else if (action.equals(EDIT_COMPUTER_URI)) {
             mGotoEditComputer(request, response);
+        } else {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
@@ -116,7 +113,7 @@ public class CdbServlet extends HttpServlet {
      */
 
     private void mIncludeHeader(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-            IOException {
+    IOException {
         getServletContext().getRequestDispatcher(JSP_DISPAT.get(HEADER_URI)).forward(request, response);
 
     }
@@ -129,7 +126,7 @@ public class CdbServlet extends HttpServlet {
      * @throws IOException
      */
     private void mGotoDashboard(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-            IOException {
+    IOException {
 
         List<Computer> computers;
         // presence of a queryString that search for computer name?
@@ -154,34 +151,11 @@ public class CdbServlet extends HttpServlet {
     }
 
     private void mGotoEditComputer(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-            IOException {
+    IOException {
 
         // set result page & send redirect.
         getServletContext().getRequestDispatcher(JSP_DISPAT.get(EDIT_COMPUTER_URI)).forward(request, response);
 
     }
-
-    /* ***
-     * PRIVATE TOOLS
-     */
-    /**
-     * prints some logs (IE : requested URL, ...).
-     *
-     * @param request
-     * @param response
-     */
-    private void mLogRequest(HttpServletRequest request, HttpServletResponse response) {
-        final String action = request.getPathInfo();
-        final StringBuilder debugSb = new StringBuilder();
-        if (action != null) {
-            debugSb.append(action);
-        }
-
-        if (request.getQueryString() != null) {
-            debugSb.append(request.getQueryString());
-        }
-        mLogger.debug("doGet: URL=" + debugSb.toString());
-    }
-
 
 }

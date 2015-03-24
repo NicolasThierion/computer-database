@@ -95,8 +95,8 @@
             <button type="button" class="btn btn-default">100</button>
         </div>
     </footer>
-    <script src="../js/jquery.min.js"></script>
-    <script src="../js/bootstrap.min.js"></script>
-    <script src="../js/dashboard.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/dashboard.js"></script>
 </body>
 </html>
