@@ -1,8 +1,12 @@
 <%@include file="../includes/header.jsp" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="mylib"%>
 
 <% //set jsp variables %>
 <c:set var="queryName" value="${resultsPageBean.queryString}" />
 <c:set var="resultsCount" value="${resultsPageBean.totalCount}" />
+<c:set var="pageNum" value="${resultsPageBean.num}" />
+<c:set var="pageSize" value="${resultsPageBean.length}" />
+<c:set var="pageNumMax" value="${resultsPageBean.maxNum}" />
 
 <body>
     <!-- header -->
@@ -63,38 +67,15 @@
                             <td>${computerBean.manufacturer.name}</td>
                         </tr>
                     </c:forEach>
-                    <tr>
-                        <td class="editMode"><input type="checkbox" name="cb" class="cb" value="0"></td>
-                        <td style="background: silver"><a href="editComputer" onclick="">PowerBook (static
-                                example. TO REMOVE)</a></td>
-                        <td style="background: silver">1991-01-01</td>
-                        <td style="background: silver">2006-01-01</td>
-                        <td style="background: silver">Apple Inc.</td>
-                    </tr>
                 </tbody>
             </table>
         </div>
     </section>
+
     <footer class="navbar-fixed-bottom">
-        <div class="container text-center">
-            <ul class="pagination">
-                <li><a href="#" aria-label="Previous"> <span aria-hidden="true">&laquo;</span>
-                </a></li>
-                <li><a href="#">1</a></li>
-                <li><a href="#">2</a></li>
-                <li><a href="#">3</a></li>
-                <li><a href="#">4</a></li>
-                <li><a href="#">5</a></li>
-                <li><a href="#" aria-label="Next"> <span aria-hidden="true">&raquo;</span>
-                </a></li>
-            </ul>
-        </div>
-        <div class="btn-group btn-group-sm pull-right" role="group">
-            <button type="button" class="btn btn-default">10</button>
-            <button type="button" class="btn btn-default">50</button>
-            <button type="button" class="btn btn-default">100</button>
-        </div>
+        <mylib:pagination page="${resultsPageBean}"/>
     </footer>
+
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/dashboard.js"></script>

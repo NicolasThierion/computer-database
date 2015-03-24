@@ -16,7 +16,6 @@ import com.excilys.cdb.dao.IComputerDao;
 import com.excilys.cdb.dao.mysql.CompanyDao;
 import com.excilys.cdb.dao.mysql.ComputerDao;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.model.Page;
 import com.excilys.cdb.service.IService;
 import com.excilys.cdb.service.Service;
 
@@ -143,10 +142,8 @@ public class EditDashboardServlet extends HttpServlet {
         // count results & store them in a Page<Computer>
         final int totalResults = mService.getComputersCount(queryName);
         // TODO varying offset
-        final Page<Computer> page = new Page<Computer>(computers, 1, 0, totalResults, queryName);
 
         // set result page & send redirect.
-        request.setAttribute("resultsPageBean", page);
         getServletContext().getRequestDispatcher(JSP_DISPAT.get(DASH_URI)).forward(request, response);
     }
 

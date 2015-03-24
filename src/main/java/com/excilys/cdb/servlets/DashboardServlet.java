@@ -1,6 +1,7 @@
 package com.excilys.cdb.servlets;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -30,8 +31,12 @@ public class DashboardServlet extends HttpServlet {
      * CONSTANTS
      */
 
-    private static final int    PAGE_LENGTH      = 10;
+    private static final int    DEFAULT_PAGE_SIZE      = 10;
     private static final String DASH_URN         = "/WEB-INF/views/dashboard.jsp";
+
+    private static final String SEARCH_VARNAME   = "search";
+    private static final String PAGE_SIZE_VARNAME = "pageSize";
+    private static final String PAGE_OFFSET_VARNAME = "offset";
 
     /* ***
      * ATTRIBUTES
@@ -39,6 +44,8 @@ public class DashboardServlet extends HttpServlet {
     private ICompanyDao         mCompanyDao;
     private IComputerDao        mComputerDao;
     private IService            mService;
+    private int                 mPageSize           = DEFAULT_PAGE_SIZE;
+    private int                 mOffset             = 0;
     @Override
     public void init() {
         mCompanyDao = CompanyDao.getInstance();
@@ -91,22 +98,42 @@ public class DashboardServlet extends HttpServlet {
     private void mGotoDashboard(HttpServletRequest request, HttpServletResponse response) throws ServletException,
     IOException {
 
-        List<Computer> computers;
-        // presence of a queryString that search for computer name?
-        String queryName = request.getParameter("search");
+        List<Computer> computers = new LinkedList<Computer>();
 
+        // presence of search parameter?
+        String queryName = request.getParameter(SEARCH_VARNAME);
         // search empty name if name is null => search for all computers.
         if (queryName == null) {
             queryName = "";
         }
 
-        // select all computer in page range
-        computers = mService.listComputersLikeName(0, PAGE_LENGTH, queryName);
+        // presence of pageSize parameter?
+        final String pageSizeStr = request.getParameter(PAGE_SIZE_VARNAME);
+        if (pageSizeStr != null && !pageSizeStr.trim().isEmpty()) {
+            mPageSize = Integer.parseInt(pageSizeStr.trim());
+        }
+
+        // presence of offset parameter?
+        final String pageOffsetStr = request.getParameter(PAGE_OFFSET_VARNAME);
+        if (pageOffsetStr != null && !pageOffsetStr.trim().isEmpty()) {
+            mOffset = Integer.parseInt(pageOffsetStr.trim());
+        }
 
         // count results & store them in a Page<Computer>
         final int totalResults = mService.getComputersCount(queryName);
+
+        if (totalResults > 0) {
+            // select all computer in page range, & ensure offset is not too far.
+            computers = mService.listComputersLikeName(mOffset, mPageSize, queryName);
+            if (mOffset > totalResults) {
+                mOffset = totalResults;
+            }
+
+        }
+
+
         // TODO varying offset
-        final Page<Computer> page = new Page<Computer>(computers, 1, 0, totalResults, queryName);
+        final Page<Computer> page = new Page<Computer>(computers, mOffset, totalResults, queryName);
 
         // set result page & send redirect.
         request.setAttribute("resultsPageBean", page);

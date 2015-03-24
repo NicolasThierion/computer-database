@@ -38,34 +38,39 @@ public class Page<T> implements Serializable {
     /* ***
      * CONSTRUCTORS
      */
-    private void newPage(List<T> content, int pageNum, int offset,
+    private void newPage(List<T> content, int offset,
             int maxResults, String queryString) {
-        mPageNum = pageNum;
         mOffset = offset;
         mMaxResults = maxResults;
         mQueryString = queryString;
 
-        if (content != null) {
+        if (content != null && !content.isEmpty()) {
             mContent = new LinkedList<T>(content);
             mLength = content.size();
+            mPageNum = (mOffset / mLength) + 1;
         } else {
             mContent = null;
-            mLength = -1;
+            mLength = 0;
+            mPageNum = 0;
         }
 
     }
 
-    public Page(List<T> content, int pageNum, int offset, int maxResults,
+    public Page(List<T> content, int offset, int maxResults,
             String queryString) {
-        newPage(content, pageNum, offset, maxResults, queryString);
+        newPage(content, offset, maxResults, queryString);
     }
 
-    public Page(List<T> content, int pageNum, int offset, int maxResults) {
-        newPage(content, pageNum, offset, maxResults, null);
+    public Page(List<T> content, int offset, int maxResults) {
+        newPage(content, offset, maxResults, null);
     }
 
     public Page() {
-        newPage(null, -1, -1, -1, null);
+        newPage(null, -1, -1, null);
+    }
+
+    public Page(Page<T> p) {
+        newPage(p.mContent, p.mOffset, p.mMaxResults, p.mQueryString);
     }
 
     /* ***
@@ -77,7 +82,8 @@ public class Page<T> implements Serializable {
     }
 
     public void setContent(List<T> content) {
-        mContent = content;
+        newPage(content, mOffset, mMaxResults, mQueryString);
+
     }
 
     public String getQueryString() {
@@ -93,31 +99,26 @@ public class Page<T> implements Serializable {
     }
 
     public void setOffset(int offset) {
-        mOffset = offset;
+        newPage(mContent, offset, mMaxResults, mQueryString);
     }
 
     public int getLength() {
         return mLength;
     }
 
-    public void setLength(int length) {
-        mLength = length;
-    }
 
-    public int getCount() {
+    /**
+     * Same as {@link #getLength()}.
+     *
+     * @return number of elements in this page.
+     */
+    public int getSize() {
         return mLength;
     }
 
-    public void setCount(int length) {
-        mLength = length;
-    }
 
-    public int getPageNum() {
+    public int getNum() {
         return mPageNum;
-    }
-
-    public void setPageNum(int pageNum) {
-        mPageNum = pageNum;
     }
 
     public int getTotalCount() {
@@ -126,6 +127,10 @@ public class Page<T> implements Serializable {
 
     public void setTotalCount(int total) {
         mMaxResults = total;
+    }
+
+    public int getMaxNum() {
+        return (int) Math.ceil((double) (mMaxResults) / ((double) mLength));
     }
 
     /* ***
