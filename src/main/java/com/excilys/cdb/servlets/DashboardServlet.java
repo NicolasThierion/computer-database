@@ -30,12 +30,15 @@ public class DashboardServlet extends HttpServlet {
     /* ***
      * CONSTANTS
      */
-
+    /** Default amount of result to display int he page. */
     private static final int    DEFAULT_PAGE_SIZE      = 10;
+    /** jsp to redirect to. */
     private static final String DASH_URN         = "/WEB-INF/views/dashboard.jsp";
-
+    /** search parameter name. */
     private static final String SEARCH_VARNAME   = "search";
+    /** page size parameter name. */
     private static final String PAGE_SIZE_VARNAME = "pageSize";
+    /** search offset parameter name. */
     private static final String PAGE_OFFSET_VARNAME = "offset";
 
     /* ***
