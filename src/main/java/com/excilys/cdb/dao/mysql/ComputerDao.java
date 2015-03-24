@@ -81,10 +81,11 @@ public final class ComputerDao implements IComputerDao {
 
     @Override
     public List<Computer> listLikeName(int offset, int nb, String name) throws IllegalArgumentException {
-
-        final String sqlStr = mQueryStrings.get(REQ_SELECT_COMPUTERS_FILENAME);
-        ResultSet res = null;
+        Connection dbConn = null;
+        PreparedStatement selectComputersStatement = null;
+        ResultSet result = null;
         final List<Computer> resList = new LinkedList<Computer>();
+        final String sqlStr = mQueryStrings.get(REQ_SELECT_COMPUTERS_FILENAME);
 
         // check offset parameter
         if (offset < 0) {
@@ -95,15 +96,15 @@ public final class ComputerDao implements IComputerDao {
         if (name == null) {
             throw new IllegalArgumentException("name cannot be null");
         }
-        offset = (offset < 0 ? 0 : offset);
+
         nb = (nb < 0 ? Integer.MAX_VALUE : nb);
         name = "%".concat(name.toUpperCase()).concat("%");
 
-        try (
-                //get a connection & prepare needed statement
-                Connection dbConn = ConnectionFactory.getInstance().getConnection();
-                PreparedStatement selectComputersStatement = dbConn.prepareStatement(sqlStr);
-                ) {
+        try {
+            // get a connection & prepare needed statement
+            dbConn = ConnectionFactory.getInstance().getConnection();
+            selectComputersStatement = dbConn.prepareStatement(sqlStr);
+
             //set range parameters
             int colId = 1;
             selectComputersStatement.setString(colId++, name);
@@ -111,15 +112,15 @@ public final class ComputerDao implements IComputerDao {
             selectComputersStatement.setInt(colId++, nb);
 
             //exec query
-            res = selectComputersStatement.executeQuery();
+            result = selectComputersStatement.executeQuery();
 
             final HashMap<Long, Company> companiesMap = new HashMap<Long, Company>();
 
             //parse resultSet to build the list of computers.
-            while (res.next()) {
+            while (result.next()) {
 
                 final ComputerMapper h = new ComputerMapper();
-                h.fromResultSet(res);
+                h.fromResultSet(result);
 
                 Company company;
 
@@ -141,7 +142,7 @@ public final class ComputerDao implements IComputerDao {
         } catch (final SQLException e) {
             throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
         } finally {
-            SqlUtils.safeCloseResult(res);
+            SqlUtils.safeCloseAll(dbConn, selectComputersStatement, result);
         }
         return resList;
     }
@@ -150,29 +151,32 @@ public final class ComputerDao implements IComputerDao {
 
     @Override
     public Computer searchById(long id) {
+
+        Connection dbConn = null;
+        PreparedStatement selectComputersStatement = null;
+        ResultSet result = null;
         final String sqlStr = mQueryStrings.get(REQ_SELECT_COMPUTER_FILENAME);
 
-        ResultSet res = null;
         Computer computer = null;
-        try (
-        // get a connection & prepare needed statement
-        Connection dbConn = ConnectionFactory.getInstance().getConnection();
-                PreparedStatement selectComputersStatement = dbConn.prepareStatement(sqlStr);) {
+        try {
+            // get a connection & prepare needed statement
+            dbConn = ConnectionFactory.getInstance().getConnection();
+            selectComputersStatement = dbConn.prepareStatement(sqlStr);
 
             // set range parameters
             selectComputersStatement.setLong(1, id);
 
             // exec query
-            res = selectComputersStatement.executeQuery();
-            if (res.first()) {
+            result = selectComputersStatement.executeQuery();
+            if (result.first()) {
                 final ComputerMapper mapper = new ComputerMapper();
-                computer = mapper.fromResultSet(res);
+                computer = mapper.fromResultSet(result);
             }
 
         } catch (final SQLException e) {
             throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
         } finally {
-            SqlUtils.safeCloseResult(res);
+            SqlUtils.safeCloseAll(dbConn, selectComputersStatement, result);
         }
         return computer;
     }
@@ -184,8 +188,11 @@ public final class ComputerDao implements IComputerDao {
 
     @Override
     public int getCount(String name) {
+
+        Connection dbConn = null;
+        PreparedStatement countComputersStatement = null;
+        ResultSet result = null;
         int count = 0;
-        ResultSet res = null;
         final String sqlStr = mQueryStrings.get(REQ_COUNT_COMPUTERS_FILENAME);
 
         // check name parameter
@@ -193,34 +200,36 @@ public final class ComputerDao implements IComputerDao {
             throw new IllegalArgumentException("name cannot be null");
         }
 
-        try (
-                //get a connection & prepare needed statement
-                Connection dbConn = ConnectionFactory.getInstance().getConnection();
-                PreparedStatement countComputersStatement = dbConn.prepareStatement(sqlStr);
-                ) {
+        try {
+            // get a connection & prepare needed statement
+            dbConn = ConnectionFactory.getInstance().getConnection();
+            countComputersStatement = dbConn.prepareStatement(sqlStr);
+
             name = "%".concat(name.toUpperCase()).concat("%");
             countComputersStatement.setString(1, name);
-            res = countComputersStatement.executeQuery();
-            if (res.first()) {
-                count = res.getInt(1);
+            result = countComputersStatement.executeQuery();
+            if (result.first()) {
+                count = result.getInt(1);
             }
         } catch (final SQLException e) {
             throw new DaoException(e.getMessage(), DaoException.ErrorType.SQL_ERROR);
         } finally {
-            SqlUtils.safeCloseResult(res);
+            SqlUtils.safeCloseAll(dbConn, countComputersStatement, result);
         }
         return count;
     }
 
     @Override
     public void add(Computer computer) throws DaoException {
-        final String sqlStr = mQueryStrings
-                .get(REQ_INSERT_COMPUTER_FILENAME);
-        try (
-                //get a connection & prepare needed statement
-                Connection dbConn = ConnectionFactory.getInstance().getConnection();
-                PreparedStatement insertComputerStatement = dbConn.prepareStatement(sqlStr);
-                ) {
+        Connection dbConn = null;
+        PreparedStatement insertComputerStatement = null;
+        ResultSet result = null;
+        final String sqlStr = mQueryStrings.get(REQ_INSERT_COMPUTER_FILENAME);
+        try {
+            // get a connection & prepare needed statement
+            dbConn = ConnectionFactory.getInstance().getConnection();
+            insertComputerStatement = dbConn.prepareStatement(sqlStr);
+
             //ensure that we are attempting to add a NEW computer (with id field = null)"
             final Long id = computer.getId();
             if (id != null) {
@@ -252,15 +261,17 @@ public final class ComputerDao implements IComputerDao {
             }
 
             //get generated id...
-            final ResultSet rs = insertComputerStatement.getGeneratedKeys();
-            if (rs.next()) {
+            result = insertComputerStatement.getGeneratedKeys();
+            if (result.next()) {
                 //& update this computer with new generated id.
-                computer.setId(rs.getLong(1));
+                computer.setId(result.getLong(1));
             }
-            rs.close();
+            result.close();
         } catch (final SQLException e) {
             throw new DaoException("Something went wrong when adding computer " + computer + " : " + e.getMessage(),
                     ErrorType.UNKNOWN_ERROR);
+        } finally {
+            SqlUtils.safeCloseAll(dbConn, insertComputerStatement, result);
         }
     }
 
@@ -270,16 +281,18 @@ public final class ComputerDao implements IComputerDao {
      */
     @Override
     public Computer update(Computer computer) {
-        //Delete computer by id : ensure computer has id != null
+        Connection dbConn = null;
+        PreparedStatement updateComputerStatement = null;
+        // Update computer by id : ensure computer has id != null
         if (computer.getId() == null) {
             throw new DaoException("Computer id is null. Cannot update this computer", ErrorType.DAO_ERROR);
         }
         final String sqlStr = mQueryStrings.get(REQ_UPDATE_COMPUTER_FILEMANE);
-        try (
-                //get a connection & prepare needed statement
-                Connection dbConn = ConnectionFactory.getInstance().getConnection();
-                PreparedStatement updateComputerStatement = dbConn.prepareStatement(sqlStr);
-                ) {
+        try {
+            // get a connection & prepare needed statement
+            dbConn = ConnectionFactory.getInstance().getConnection();
+            updateComputerStatement = dbConn.prepareStatement(sqlStr);
+
             //retrieve computer information
             final ComputerMapper h = new ComputerMapper();
             h.fromEntity(computer);
@@ -306,6 +319,8 @@ public final class ComputerDao implements IComputerDao {
             }
         } catch (final SQLException e) {
             throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
+        } finally {
+            SqlUtils.safeCloseAll(dbConn, updateComputerStatement, null);
         }
         return computer;
     }
@@ -316,16 +331,18 @@ public final class ComputerDao implements IComputerDao {
      */
     @Override
     public void delete(Computer computer) throws DaoException {
+        Connection dbConn = null;
+        PreparedStatement deleteComputerStatement = null;
         //Delete computer by id : ensure computer has id != null
         if (computer.getId() == null) {
             throw new DaoException("Computer id is null. Cannot delete this computer", ErrorType.DAO_ERROR);
         }
         final String sqlStr = mQueryStrings.get(REQ_DELETE_COMPUTER_FILEMANE);
-        try (
-                //get a connection & prepare needed statement
-                Connection dbConn = ConnectionFactory.getInstance().getConnection();
-                PreparedStatement deleteComputerStatement = dbConn.prepareStatement(sqlStr);
-                ) {
+        try {
+            // get a connection & prepare needed statement
+            dbConn = ConnectionFactory.getInstance().getConnection();
+            deleteComputerStatement = dbConn.prepareStatement(sqlStr);
+
             deleteComputerStatement.setLong(1, computer.getId());
             if (deleteComputerStatement.executeUpdate() != 1) {
                 throw new DaoException("Something went wrong while deleting compuer " + computer
@@ -334,6 +351,8 @@ public final class ComputerDao implements IComputerDao {
             }
         } catch (final SQLException e) {
             throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
+        } finally {
+            SqlUtils.safeCloseAll(dbConn, deleteComputerStatement, null);
         }
     }
 

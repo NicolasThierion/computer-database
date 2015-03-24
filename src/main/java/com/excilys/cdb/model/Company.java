@@ -90,6 +90,10 @@ public class Company implements Serializable {
         return mName;
     }
 
+    public boolean isValid() {
+        return (mId != null && mId > 0 && mName != null && !mName.trim().isEmpty());
+    }
+
     /* ***
      * OBJECT OVERRIDES
      */
@@ -140,4 +144,6 @@ public class Company implements Serializable {
         }
         return true;
     }
+
+
 }

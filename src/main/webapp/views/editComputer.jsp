@@ -1,17 +1,12 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Computer Database</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- Bootstrap -->
-<link href="../css/bootstrap.min.css" rel="stylesheet" media="screen">
-<link href="../css/font-awesome.css" rel="stylesheet" media="screen">
-<link href="../css/main.css" rel="stylesheet" media="screen">
-</head>
+<%@include file="../includes/header.jsp" %>
+
+
+<%@page import="com.excilys.cdb.model.Computer"%>
+
 <body>
     <header class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="dashboard.html"> Application - Computer Database </a>
+            <a class="navbar-brand" href="dashboard"> Application - Computer Database </a>
         </div>
     </header>
     <section id="main">
@@ -43,7 +38,7 @@
                                 <select class="form-control" id="companyId" >
                                     <option value="0">--</option>
                                 </select>
-                            </div>            
+                            </div>
                         </fieldset>
                         <div class="actions pull-right">
                             <input type="submit" value="Edit" class="btn btn-primary">

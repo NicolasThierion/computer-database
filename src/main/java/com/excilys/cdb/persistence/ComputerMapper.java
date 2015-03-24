@@ -22,7 +22,7 @@ public class ComputerMapper implements EntityMapper<Computer> {
      */
 
     /** name of this computer. */
-    private String        mName;
+    private String    mName;
     /** manufacturer of this computer. */
     private Company       mCompany;
     /** release date. */

@@ -5,8 +5,7 @@ import java.time.LocalDate;
 
 /**
  * @author Nicolas THIERION
- * @version 0.2.0 TODO : The class is Serializable according to JavaBean
- *          standard, for eventual future needs.
+ * @version 0.2.0
  */
 public class Computer implements Serializable {
 
@@ -218,7 +217,16 @@ public class Computer implements Serializable {
         return mReleaseDate;
     }
 
-    public void setReleaseDate(LocalDate releaseDate) {
+    /**
+     *
+     * @param releaseDate
+     * @throws IllegalArgumentException
+     *             if date provided is posterior to discontinuation date.
+     */
+    public void setReleaseDate(LocalDate releaseDate) throws IllegalArgumentException {
+        if (mDiscDate != null && releaseDate != null && releaseDate.compareTo(mDiscDate) > 0) {
+            throw new IllegalArgumentException("release date must be prior to release date");
+        }
         mReleaseDate = releaseDate;
     }
 
@@ -226,8 +234,33 @@ public class Computer implements Serializable {
         return mDiscDate;
     }
 
-    public void setDiscontDate(LocalDate discontDate) {
+    /**
+     *
+     * @param discontDate
+     * @throws IllegalArgumentException
+     *             if date provided is prior to release date.
+     */
+    public void setDiscontDate(LocalDate discontDate) throws IllegalArgumentException {
+
+        if (mReleaseDate != null && discontDate != null && discontDate.compareTo(mReleaseDate) < 0) {
+            throw new IllegalArgumentException("Discontinuation date must be posterior to release date");
+        }
         mDiscDate = discontDate;
+    }
+
+    public boolean isValid() {
+        boolean res = (mId != null && mId > 0);
+        if (res && mName != null) {
+            res = res && !mName.trim().isEmpty();
+        }
+        if (res && mReleaseDate != null && mDiscDate != null) {
+            res = res && mReleaseDate.compareTo(mDiscDate) < 0;
+        }
+        if (res && mCompany != null) {
+            res = res && mCompany.isValid();
+        }
+
+        return res;
     }
 
     /* ***

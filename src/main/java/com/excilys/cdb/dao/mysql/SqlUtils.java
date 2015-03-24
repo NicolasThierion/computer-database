@@ -5,9 +5,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Map;
+
 
 public final class SqlUtils {
     /** where SQL scripts are stored. */
@@ -41,15 +43,33 @@ public final class SqlUtils {
         fis.close();
     }
 
-    public static void safeCloseResult(ResultSet res) {
-        if (res == null) {
+    private static void safeCloseClosable(AutoCloseable closable) {
+        if (closable == null) {
             return;
         }
         try {
-            res.close();
-        } catch (final SQLException e) {
+            closable.close();
+        } catch (final Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void safeCloseResult(ResultSet result) {
+        safeCloseClosable(result);
+    }
+
+    public static void safeCloseConnection(Connection conn) {
+        safeCloseClosable(conn);
+    }
+
+    public static void safeCloseStatement(Statement statement) {
+        safeCloseClosable(statement);
+    }
+
+    public static void safeCloseAll(Connection conn, Statement statement, ResultSet result) {
+        safeCloseResult(result);
+        safeCloseStatement(statement);
+        safeCloseConnection(conn);
     }
 }
 

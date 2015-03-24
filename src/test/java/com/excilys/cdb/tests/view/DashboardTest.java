@@ -78,9 +78,8 @@ public class DashboardTest extends CdbViewTest {
             searchBox.sendKeys(searchWords);
             searchBox.submit();
 
+            // ensure title displays the right count of results.
             final String searchTitle = mWebDriver.findElement(By.id(SEARCH_TITLE_ID)).getText();
-
-
             assertTrue(searchTitle.startsWith("" + mService.getComputersCount(searchWords)));
         }
     }

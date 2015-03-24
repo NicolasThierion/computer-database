@@ -1,7 +1,9 @@
 package com.excilys.cdb.servlets;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -33,9 +35,20 @@ public class CdbServlet extends HttpServlet {
      * CONSTANTS
      */
     /** uri to redirect to when accessing to '/'. */
-    private static final String DASH_URL         = "/dashboard";
-    private static final String COMPUTER_SEARCH  = "/searchComputer";
-    private static final String ROOT_REDIRECT    = DASH_URL;
+    private static final String DASH_URI         = "/dashboard";
+    private static final String SEARCH_COMPUTER_URI  = "/searchComputer";
+    private static final String EDIT_COMPUTER_URI    = "/editComputer";
+    private static final String ROOT_REDIRECT_URI    = DASH_URI;
+
+    private static final String              HEADER_URI          = "/header.jsp";
+
+    private static final Map<String, String> JSP_DISPAT          = new HashMap<String, String>();
+    {
+        JSP_DISPAT.put(DASH_URI, "/views/dashboard.jsp");
+        JSP_DISPAT.put(SEARCH_COMPUTER_URI, "/views/dashboard.jsp");
+        JSP_DISPAT.put(EDIT_COMPUTER_URI, "/views/editComputer.jsp");
+    }
+
 
     private static final int    PAGE_LENGTH      = 10;
 
@@ -81,17 +94,31 @@ public class CdbServlet extends HttpServlet {
         String action = request.getPathInfo();
 
         if (action == null) {
-            action = ROOT_REDIRECT;
+            action = ROOT_REDIRECT_URI;
         }
 
-        if (action.equals(DASH_URL)) {
+        if (action.equals(HEADER_URI)) {
+            mIncludeHeader(request, response);
+        } else if (action.equals(DASH_URI)) {
             // handle dashboard
             mGotoDashboard(request, response);
             return;
-        } else if (action.equals(COMPUTER_SEARCH)) {
+        } else if (action.equals(SEARCH_COMPUTER_URI)) {
             // handle dashboard with search
             mGotoDashboard(request, response);
+        } else if (action.equals(EDIT_COMPUTER_URI)) {
+            mGotoEditComputer(request, response);
         }
+    }
+
+    /* ***
+     * PRIVATE METHODS
+     */
+
+    private void mIncludeHeader(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+            IOException {
+        getServletContext().getRequestDispatcher(JSP_DISPAT.get(HEADER_URI)).forward(request, response);
+
     }
 
     /**
@@ -108,19 +135,30 @@ public class CdbServlet extends HttpServlet {
         // presence of a queryString that search for computer name?
         String queryName = request.getParameter("search");
 
-        // select all computer in page range
+        // search empty name if name is null => search for all computers.
         if (queryName == null) {
             queryName = "";
         }
+
+        // select all computer in page range
         computers = mService.listComputersLikeName(0, PAGE_LENGTH, queryName);
 
-        // TODO count results
+        // count results & store them in a Page<Computer>
         final int totalResults = mService.getComputersCount(queryName);
+        // TODO varying offset
+        final Page<Computer> page = new Page<Computer>(computers, 1, 0, totalResults, queryName);
 
-        final Page<Computer> page = new Page<Computer>(computers, 1, 0, totalResults);
+        // set result page & send redirect.
+        request.setAttribute("resultsPageBean", page);
+        getServletContext().getRequestDispatcher(JSP_DISPAT.get(DASH_URI)).forward(request, response);
+    }
 
-        request.setAttribute("resultsPage", page);
-        getServletContext().getRequestDispatcher("/views/dashboard.jsp").forward(request, response);
+    private void mGotoEditComputer(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+            IOException {
+
+        // set result page & send redirect.
+        getServletContext().getRequestDispatcher(JSP_DISPAT.get(EDIT_COMPUTER_URI)).forward(request, response);
+
     }
 
     /* ***

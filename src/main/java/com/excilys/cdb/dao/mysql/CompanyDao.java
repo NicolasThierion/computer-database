@@ -74,66 +74,74 @@ public final class CompanyDao implements ICompanyDao {
     @Override
     public List<Company> listByName(int begin, int nb, String name) {
 
-        try (
-        // get a connection & prepare needed statement
-        Connection dbConn = ConnectionFactory.getInstance().getConnection();
-                PreparedStatement selectCompaniesStatement = dbConn.prepareStatement(mQueryStrings
-                        .get(REQ_SELECT_COMPANIES_FILENAME));) {
-            begin = (begin < 0 ? 0 : begin);
-            nb = (nb < 0 ? Integer.MAX_VALUE : nb);
+        Connection dbConn = null;
+        PreparedStatement selectCompaniesStatement = null;
+        ResultSet result = null;
+        final List<Company> resList = new LinkedList<Company>();
 
-            name = name.toUpperCase();
+        // check parameters
+        begin = (begin < 0 ? 0 : begin);
+        nb = (nb < 0 ? Integer.MAX_VALUE : nb);
+        name = name.toUpperCase();
+
+        try {
+            // get a connection & prepare needed statement
+            dbConn = ConnectionFactory.getInstance().getConnection();
+            selectCompaniesStatement = dbConn.prepareStatement(mQueryStrings.get(REQ_SELECT_COMPANIES_FILENAME));
+
             // set range parameters
             selectCompaniesStatement.setString(1, name);
             selectCompaniesStatement.setInt(2, begin);
             selectCompaniesStatement.setInt(3, nb);
 
-            final List<Company> resList = new LinkedList<Company>();
-
             // exec query
-            final ResultSet res = selectCompaniesStatement.executeQuery();
+            result = selectCompaniesStatement.executeQuery();
             // parse resultSet to build the list of computers.
-            while (res.next()) {
+            while (result.next()) {
 
                 // get company name;
-                final int compId = res.getInt("id");
-                final String compName = res.getString("name");
+                final int compId = result.getInt("id");
+                final String compName = result.getString("name");
                 final Company company = new Company(compId, compName);
                 resList.add(company);
             }
-
-            return resList;
-
-
         } catch (final SQLException e) {
             throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
+        } finally {
+            SqlUtils.safeCloseAll(dbConn, selectCompaniesStatement, result);
         }
+        return resList;
     }
 
     @Override
     public Company searchById(long id) {
-        final String sqlStr = mQueryStrings.get(REQ_SELECT_COMPANY_FILENAME);
-        ResultSet res = null;
+        Connection dbConn = null;
+        PreparedStatement selectCompanyStatement = null;
+        ResultSet result = null;
         Company company = null;
-        try (
-        // get a connection & prepare needed statement
-        Connection dbConn = ConnectionFactory.getInstance().getConnection();
-                PreparedStatement selectCompanyStatement = dbConn.prepareStatement(sqlStr);) {
+
+
+        final String sqlStr = mQueryStrings.get(REQ_SELECT_COMPANY_FILENAME);
+        try {
+
+            // get a connection & prepare needed statement
+            dbConn = ConnectionFactory.getInstance().getConnection();
+            selectCompanyStatement = dbConn.prepareStatement(sqlStr);
 
             // set range parameters
             selectCompanyStatement.setLong(1, id);
 
             // exec query
-            res = selectCompanyStatement.executeQuery();
-            if (res.first()) {
+            result = selectCompanyStatement.executeQuery();
+            if (result.first()) {
                 final CompanyMapper mapper = new CompanyMapper();
-                company = mapper.fromResultSet(res);
+                company = mapper.fromResultSet(result);
             }
 
         } catch (final SQLException e) {
             throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
         } finally {
-            SqlUtils.safeCloseResult(res);
+            SqlUtils.safeCloseAll(dbConn, selectCompanyStatement, result);
         }
         return company;
     }
@@ -141,18 +149,24 @@ public final class CompanyDao implements ICompanyDao {
     @Override
     public int getCount() {
 
+        Connection dbConn = null;
+        PreparedStatement countCompaniesStatement = null;
+        ResultSet result = null;
+
         int count = 0;
-        try (
-        // get a connection & prepare needed statement
-        Connection dbConn = ConnectionFactory.getInstance().getConnection();
-                PreparedStatement countCompaniesStatement = dbConn.prepareStatement(mQueryStrings
-                        .get(REQ_COUNT_COMPANIES_FILENAME));) {
-            final ResultSet res = countCompaniesStatement.executeQuery();
-            while (res.next()) {
-                count = res.getInt(1);
+        try {
+            // get a connection & prepare needed statement
+            dbConn = ConnectionFactory.getInstance().getConnection();
+            countCompaniesStatement = dbConn.prepareStatement(mQueryStrings
+                    .get(REQ_COUNT_COMPANIES_FILENAME));
+            result = countCompaniesStatement.executeQuery();
+            while (result.next()) {
+                count = result.getInt(1);
             }
         } catch (final SQLException e) {
             throw new DaoException(e.getMessage(), DaoException.ErrorType.SQL_ERROR);
+        } finally {
+            SqlUtils.safeCloseAll(dbConn, countCompaniesStatement, result);
         }
         return count;
     }

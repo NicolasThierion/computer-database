@@ -26,16 +26,8 @@ public final class ConnectionFactory {
      */
     /** Uri of JDBC Driver. */
     private static final String DB_DRIVER_PACKAGE = "com.mysql.jdbc.Driver";
-    /** DB name. */
-    private static final String DB_NAME = "computer-database-db";
-    /** DB host. */
-    private static final String DB_HOST = "localhost";
-    /** DB port. */
-    private static final String DB_PORT = "3306";
     /** JDBC connection URL. */
-    private static final String DB_URL = "jdbc:mysql://" + DB_HOST + ":"
-            + DB_PORT + "/" + DB_NAME;
-
+    private static final String      DB_URL              = "jdbc:mysql://%s:%s/%s";
     /** where DB creditentials are stored. */
     private static final String PROPERTIES_FILENAME = "mysql.properties";
 
@@ -49,6 +41,7 @@ public final class ConnectionFactory {
     private List<Connection> mConnections;
     /** DB connection information. */
     private Properties mProperties;
+
 
     /* ***
      * CONSTRUCTORS / DESTRUCTORS
@@ -132,7 +125,11 @@ public final class ConnectionFactory {
      */
     public Connection open() throws DaoException {
         try {
-            Connection conn = DriverManager.getConnection(DB_URL,
+            final String dbName = mProperties.getProperty("db");
+            final String host = mProperties.getProperty("host");
+            final String port = mProperties.getProperty("port");
+            final String dbUrl = String.format(DB_URL, host, port, dbName);
+            Connection conn = DriverManager.getConnection(dbUrl,
                     mProperties);
             conn = new ConnectionSpy(conn);
             mConnections.add(conn);

@@ -1,31 +1,9 @@
-<%@page import="com.excilys.cdb.model.Computer"%>
-<%
-    //jsp directives
-%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1" session="false"%>
-<%
-    //jsp imports
-%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%
-    //java imports
-%>
-<%@ page import="com.excilys.cdb.model.Page"%>
-<%
-    //get arguments
-%>
-<jsp:useBean id="resultsPage" scope="request" class="com.excilys.cdb.model.Page" />
-<!DOCTYPE html>
-<html>
-<head>
-<title>Computer Database</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta charset="utf-8">
-<!-- Bootstrap -->
-<link href="../css/bootstrap.min.css" rel="stylesheet" media="screen">
-<link href="../css/font-awesome.css" rel="stylesheet" media="screen">
-<link href="../css/main.css" rel="stylesheet" media="screen">
-</head>
+<%@include file="../includes/header.jsp" %>
+
+<% //set jsp variables %>
+<c:set var="queryName" value="${resultsPageBean.queryString}" />
+<c:set var="resultsCount" value="${resultsPageBean.totalCount}" />
+
 <body>
     <!-- header -->
     <header class="navbar navbar-inverse navbar-fixed-top">
@@ -37,16 +15,16 @@
     <section id="main">
         <div class="container">
             <!-- main title : count search results. -->
-            <h1 id="homeTitle">${resultsPage.totalCount} Computers found</h1>
+            <h1 id="homeTitle">${resultsCount} Computers found</h1>
             <div id="actions" class="form-horizontal">
                 <div class="pull-left">
                     <form id="searchForm" action="searchComputer" method="GET" class="form-inline">
-                        <input type="search" id="searchbox" name="search" class="form-control" placeholder="Search name" />
+                        <input type="search" id="searchbox" name="search" class="form-control" placeholder="Search name" value="${queryName}" />
                         <input type="submit" id="searchsubmit" value="Filter by name" class="btn btn-primary" />
                     </form>
                 </div>
                 <div class="pull-right">
-                    <a class="btn btn-success" id="addComputer" href="addComputer.html">Add Computer</a> <a
+                    <a class="btn btn-success" id="addComputer" href="addComputer">Add Computer</a> <a
                         class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();">Edit</a>
                 </div>
             </div>
@@ -76,18 +54,18 @@
                 </thead>
                 <!-- Browse attribute computers -->
                 <tbody id="results">
-                    <c:forEach var="computer" items="${resultsPage.content}">
+                    <c:forEach var="computerBean" items="${resultsPageBean.content}">
                         <tr>
                             <td class="editMode"><input type="checkbox" name="cb" class="cb" value="0"></td>
-                            <td><a href="editComputer.html" onclick="">${computer.name}</a></td>
-                            <td>${computer.releaseDate}</td>
-                            <td>${computer.discontDate}</td>
-                            <td>${computer.manufacturer.name}</td>
+                            <td><a href="editComputer" onclick="">${computerBean.name}</a></td>
+                            <td>${computerBean.releaseDate}</td>
+                            <td>${computerBean.discontDate}</td>
+                            <td>${computerBean.manufacturer.name}</td>
                         </tr>
                     </c:forEach>
                     <tr>
                         <td class="editMode"><input type="checkbox" name="cb" class="cb" value="0"></td>
-                        <td style="background: silver"><a href="editComputer.html" onclick="">PowerBook (static
+                        <td style="background: silver"><a href="editComputer" onclick="">PowerBook (static
                                 example. TO REMOVE)</a></td>
                         <td style="background: silver">1991-01-01</td>
                         <td style="background: silver">2006-01-01</td>

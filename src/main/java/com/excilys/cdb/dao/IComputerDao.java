@@ -37,7 +37,7 @@ public interface IComputerDao {
      *            search.
      * @param name
      *            Computer name to search for, non case sensitive.
-     * @throw IllegalArgumentException if name is invalid (ie : empty) or if
+     * @throw IllegalArgumentException if name is invalid (ie : null) or if
      *        search offset is negative
      * @return the list of results.
      */
