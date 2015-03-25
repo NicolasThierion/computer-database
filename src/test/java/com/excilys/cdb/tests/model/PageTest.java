@@ -1,4 +1,4 @@
-package model;
+package com.excilys.cdb.tests.model;
 /*
 import static org.mockito.Mockito.when;
 

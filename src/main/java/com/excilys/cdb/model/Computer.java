@@ -192,7 +192,7 @@ public class Computer implements Serializable {
      * @return the manufacturer of this computer.
      */
     public Company getCompany() {
-        return mCompany;
+        return new Company(mCompany);
     }
 
     /**
@@ -202,19 +202,19 @@ public class Computer implements Serializable {
      *            The manufacturer of this computer.
      */
     public void setCompany(Company company) {
-        mCompany = company;
+        mCompany = new Company(company);
     }
 
     public Company getManufacturer() {
-        return mCompany;
+        return getCompany();
     }
 
     public void setManufacturer(Company company) {
-        mCompany = company;
+        setCompany(company);
     }
 
     public LocalDate getReleaseDate() {
-        return mReleaseDate;
+        return LocalDate.from(mReleaseDate);
     }
 
     /**
@@ -227,11 +227,11 @@ public class Computer implements Serializable {
         if (mDiscDate != null && releaseDate != null && releaseDate.compareTo(mDiscDate) > 0) {
             throw new IllegalArgumentException("release date must be prior to release date");
         }
-        mReleaseDate = releaseDate;
+        mReleaseDate = LocalDate.from(releaseDate);
     }
 
     public LocalDate getDiscontDate() {
-        return mDiscDate;
+        return LocalDate.from(mDiscDate);
     }
 
     /**
@@ -245,7 +245,7 @@ public class Computer implements Serializable {
         if (mReleaseDate != null && discontDate != null && discontDate.compareTo(mReleaseDate) < 0) {
             throw new IllegalArgumentException("Discontinuation date must be posterior to release date");
         }
-        mDiscDate = discontDate;
+        mDiscDate = LocalDate.from(discontDate);
     }
 
     public boolean isValid() {

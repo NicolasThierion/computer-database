@@ -3,4 +3,4 @@
  * @author Nicolas THIERION.
  *
  */
-package dao;
+package com.excilys.cdb.tests.dao;

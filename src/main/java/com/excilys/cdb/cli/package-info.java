@@ -1,6 +1,5 @@
 /**
- * TODO javadoc.
  * @author Nicolas THIERION.
  *
  */
-package model;
+package com.excilys.cdb.cli;
