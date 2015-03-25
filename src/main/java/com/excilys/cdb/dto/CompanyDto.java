@@ -43,6 +43,13 @@ public class CompanyDto implements Serializable {
         mName = name;
     }
 
+    /**
+     * Create a new Company DTO corresponding to the given Company Object.
+     *
+     * @param company
+     *            company to build the DTO.
+     * @return
+     */
     public static CompanyDto fromCompany(Company company) {
         final CompanyDto dto = new CompanyDto();
         final Long id = company.getId();
@@ -51,6 +58,12 @@ public class CompanyDto implements Serializable {
         return dto;
     }
 
+    /**
+     * Copy constructor.
+     *
+     * @param companyDto
+     *            CompanyDto Object to copy.
+     */
     public CompanyDto(CompanyDto companyDto) {
         mNewCompanyDto(companyDto.mId, companyDto.mName);
     }

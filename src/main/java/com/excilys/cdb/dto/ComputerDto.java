@@ -1,6 +1,9 @@
 package com.excilys.cdb.dto;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.LinkedList;
+import java.util.List;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
@@ -62,8 +65,7 @@ public class ComputerDto implements Serializable {
     }
 
     /**
-     * Construtor with arguments. Create a new Computer DTO corresponding to the
-     * given Computer Object.
+     * Create a new Computer DTO corresponding to the given Computer Object.
      *
      * @param computer
      *            Computer to build the DTO.
@@ -83,6 +85,22 @@ public class ComputerDto implements Serializable {
     }
 
     /**
+     * Create a list of Computer DTOs corresponding to the given Computer
+     * Objects.
+     *
+     * @param computers
+     *            Computers to create the DTOs.
+     * @return List of computer DTOs.
+     */
+    public static List<ComputerDto> fromComputers(List<Computer> computers) {
+        final List<ComputerDto> res = new LinkedList<ComputerDto>();
+        for (final Computer computer : computers) {
+            res.add(ComputerDto.fromComputer(computer));
+        }
+        return res;
+    }
+
+    /**
      * Copy constructor.
      *
      * @param computerDto
@@ -91,6 +109,23 @@ public class ComputerDto implements Serializable {
     public ComputerDto(ComputerDto computerDto) {
         mNewComputerDto(computerDto.mId, computerDto.mName, computerDto.mReleaseDate, computerDto.mDiscDate,
                 computerDto.mCompanyDto);
+    }
+
+    /* ***
+     * PUBLIC METHODS
+     */
+    public Computer toComputer() {
+
+        final Computer computer = new Computer();
+        final Company company = new Company();
+
+        computer.setId(mId);
+        computer.setReleaseDate(LocalDate.parse(mReleaseDate));
+        computer.setDiscontDate(LocalDate.parse(mDiscDate));
+        company.setId(mCompanyDto.getId());
+        company.setName(mCompanyDto.getName());
+        computer.setCompany(company);
+        return computer;
     }
 
     /* ***
@@ -125,6 +160,9 @@ public class ComputerDto implements Serializable {
         return new CompanyDto(mCompanyDto);
     }
 
+    public boolean isValid() {
+        return toComputer().isValid();
+    }
     /* ***
      * Object OVERRIDES
      */

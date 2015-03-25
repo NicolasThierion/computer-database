@@ -192,7 +192,7 @@ public class Computer implements Serializable {
      * @return the manufacturer of this computer.
      */
     public Company getCompany() {
-        return new Company(mCompany);
+        return mCompany;
     }
 
     /**
@@ -202,7 +202,7 @@ public class Computer implements Serializable {
      *            The manufacturer of this computer.
      */
     public void setCompany(Company company) {
-        mCompany = new Company(company);
+        mCompany = company;
     }
 
     public Company getManufacturer() {
