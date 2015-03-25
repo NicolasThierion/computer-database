@@ -214,7 +214,7 @@ public class Computer implements Serializable {
     }
 
     public LocalDate getReleaseDate() {
-        return LocalDate.from(mReleaseDate);
+        return mReleaseDate;
     }
 
     /**
@@ -227,11 +227,11 @@ public class Computer implements Serializable {
         if (mDiscDate != null && releaseDate != null && releaseDate.compareTo(mDiscDate) > 0) {
             throw new IllegalArgumentException("release date must be prior to release date");
         }
-        mReleaseDate = LocalDate.from(releaseDate);
+        mReleaseDate = releaseDate;
     }
 
     public LocalDate getDiscontDate() {
-        return LocalDate.from(mDiscDate);
+        return mDiscDate;
     }
 
     /**
@@ -245,7 +245,7 @@ public class Computer implements Serializable {
         if (mReleaseDate != null && discontDate != null && discontDate.compareTo(mReleaseDate) < 0) {
             throw new IllegalArgumentException("Discontinuation date must be posterior to release date");
         }
-        mDiscDate = LocalDate.from(discontDate);
+        mDiscDate = discontDate;
     }
 
     public boolean isValid() {

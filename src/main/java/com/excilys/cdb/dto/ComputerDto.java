@@ -57,11 +57,11 @@ public class ComputerDto implements Serializable {
      * @param company
      */
     private void mNewComputerDto(Long id, String name, String releaseDate, String discontDate, CompanyDto company) {
-        mId = new Long(id);
+        mId = (id != null ? new Long(id) : null);
         mName = name;
         mReleaseDate = releaseDate;
         mDiscDate = discontDate;
-        mCompanyDto = new CompanyDto(company);
+        mCompanyDto = (company != null ? new CompanyDto(company) : null);
     }
 
     /**
@@ -78,7 +78,7 @@ public class ComputerDto implements Serializable {
         final String name = computer.getName();
         final String releaseDate = (computer.getReleaseDate() != null ? computer.getReleaseDate().toString() : "");
         final String discontDate = (computer.getDiscontDate() != null ? computer.getDiscontDate().toString() : "");
-        final CompanyDto companyDto = CompanyDto.fromCompany(company);
+        final CompanyDto companyDto = (company != null ? CompanyDto.fromCompany(company) : null);
 
         dto.mNewComputerDto(id, name, releaseDate, discontDate, companyDto);
         return dto;
@@ -120,11 +120,20 @@ public class ComputerDto implements Serializable {
         final Company company = new Company();
 
         computer.setId(mId);
-        computer.setReleaseDate(LocalDate.parse(mReleaseDate));
-        computer.setDiscontDate(LocalDate.parse(mDiscDate));
-        company.setId(mCompanyDto.getId());
-        company.setName(mCompanyDto.getName());
-        computer.setCompany(company);
+        if (mName != null) {
+            computer.setName(mName);
+        }
+        if (mReleaseDate != null && !mReleaseDate.trim().isEmpty()) {
+            computer.setReleaseDate(LocalDate.parse(mReleaseDate));
+        }
+        if (mDiscDate != null && !mDiscDate.trim().isEmpty()) {
+            computer.setDiscontDate(LocalDate.parse(mDiscDate));
+        }
+        if (mCompanyDto != null) {
+            company.setId(mCompanyDto.getId());
+            company.setName(mCompanyDto.getName());
+            computer.setCompany(company);
+        }
         return computer;
     }
 

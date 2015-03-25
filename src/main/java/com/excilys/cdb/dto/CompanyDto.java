@@ -39,7 +39,7 @@ public class CompanyDto implements Serializable {
     }
 
     private void mNewCompanyDto(Long id, String name) {
-        mId = new Long(id);
+        mId = (id != null ? new Long(id) : null);
         mName = name;
     }
 
