@@ -10,10 +10,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
-import com.excilys.cdb.dao.mysql.CompanyDao;
 import com.excilys.cdb.dao.mysql.ComputerDao;
-import com.excilys.cdb.service.IService;
-import com.excilys.cdb.service.Service;
+import com.excilys.cdb.service.ComputerService;
+import com.excilys.cdb.service.IComputerService;
 
 public class DashboardTest extends CdbViewTest {
 
@@ -25,12 +24,12 @@ public class DashboardTest extends CdbViewTest {
     /* ***
      * ATTRIBUTES
      */
-    private IService            mService;
+    private IComputerService    mService;
 
     /* ***
      * FIELDS TO TEST
      */
-    private static final String PAGE_TITLE    = "Computer Database";
+    private static final String PAGE_TITLE      = "Computer Database";
 
     private static final String SEARCH_INPUT_ID = "searchbox";
 
@@ -48,7 +47,7 @@ public class DashboardTest extends CdbViewTest {
         mWebDriver = new HtmlUnitDriver();
         super.setUrn(DASHBOARD_URN);
         mUri = super.getUri();
-        mService = new Service(ComputerDao.getInstance(), CompanyDao.getInstance());
+        mService = new ComputerService(ComputerDao.getInstance());
     }
 
     /**
@@ -71,8 +70,9 @@ public class DashboardTest extends CdbViewTest {
      */
     @Test
     public void testSearch() {
-        mWebDriver.get(mUri);
         for (final String searchWords : new String[] {"bOoK", "", "a", "Nothing"}) {
+            mWebDriver.get(mUri);
+
             // find "search computer" input.
             final WebElement searchBox = mWebDriver.findElement(By.id(SEARCH_INPUT_ID));
             searchBox.sendKeys(searchWords);
@@ -80,7 +80,7 @@ public class DashboardTest extends CdbViewTest {
 
             // ensure title displays the right count of results.
             final String searchTitle = mWebDriver.findElement(By.id(SEARCH_TITLE_ID)).getText();
-            assertTrue(searchTitle.startsWith("" + mService.getComputersCount(searchWords)));
+            assertTrue(searchTitle.startsWith("" + mService.getCount(searchWords)));
         }
     }
 }

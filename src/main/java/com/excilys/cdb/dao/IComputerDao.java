@@ -49,8 +49,10 @@ public interface IComputerDao {
      * @param id
      *            Id of the requested computer.
      * @return the first computer that matches, or null if no computer found.
+     * @throws IllegalArgumentException
+     *             if the given id is invalid. Valid id must be positive.
      */
-    Computer searchById(long id);
+    Computer searchById(long id) throws IllegalArgumentException;
 
     /**
      * @return count of computer entries in database.
@@ -62,8 +64,10 @@ public interface IComputerDao {
      *            Name of computers to search for.
      * @return count of computer entries in database that matches the given
      *         name.
+     * @throws if
+     *             name is null.
      */
-    int getCount(String name);
+    int getCount(String name) throws IllegalArgumentException;
 
 
     /**
@@ -76,9 +80,9 @@ public interface IComputerDao {
      * @throw DaoException when trying to add an invalid computer. An invalid
      *        computer is a computer with a non blank field "Computer id". See
      *        "updateComputer()" if you want to update computer information of
-     *        an existing computer. * @param computer Computer to add to DB.
+     *        an existing computer.
      */
-    void add(Computer computer);
+    void add(Computer computer) throws DaoException;
 
     /**
      * Update the given computer.
@@ -86,17 +90,24 @@ public interface IComputerDao {
      * @param computer
      *            Computer to update.
      * @return the updated computer.
+     * @throws DaoException
+     *             if update failed or computer doesn't exist.
+     * @throws IllegalArgumentException
+     *             if provided computer is invalid.
      */
-    Computer update(Computer computer);
+    Computer update(Computer computer) throws DaoException, IllegalArgumentException;
 
     /**
      * Delete the given compute from DB.
      *
      * @param computer
      *            The computer to delete.
-     *
+     * @throws DaoException
+     *             if deletion failed or computer doesn't exist.
+     * @throws IllegalArgumentException
+     *             if provided computer is invalid.
      */
-    void delete(Computer computer);
+    void delete(Computer computer) throws DaoException, IllegalArgumentException;
 
 
 }

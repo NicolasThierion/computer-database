@@ -48,6 +48,13 @@ public interface ICompanyDao {
      */
     int getCount();
 
+    /**
+     * @param name
+     *            Name of the company to count.
+     * @return count of companies entries in database that matches the given
+     *         name.
+     */
+    int getCount(String name);
 
 
 }

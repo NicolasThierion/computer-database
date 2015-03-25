@@ -6,7 +6,7 @@ public abstract class CdbViewTest {
     public static final String PROTOCOL = "http";
     public static final String HOST = "localhost";
     public static final int PORT = 8080;
-    public static final String ROOT_URL = "computer-database/cdb";
+    public static final String ROOT_URL = "computer-database";
     public static final String PAGE = "";
     /** Url of webPage to test. */
     private String             mUrl;

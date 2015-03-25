@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -214,14 +215,14 @@ public class ComputerDaoTest {
         try {
             mComputerDao.update(computer);
             passed = true;
-        } catch (final DaoException e) {
+        } catch (final NoSuchElementException | DaoException e) {
         }
 
         // try updating invalid computer.
         try {
             mComputerDao.update(new Computer());
             passed = true;
-        } catch (final DaoException e) {
+        } catch (final IllegalArgumentException e) {
         }
 
         assertFalse(passed);

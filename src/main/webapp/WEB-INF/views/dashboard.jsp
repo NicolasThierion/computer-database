@@ -1,5 +1,18 @@
-<%@include file="../includes/header.jsp" %>
+
+<%
+    //jsp directives
+%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1" session="false"%>
+<%
+    //jsp imports
+%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="mylib"%>
+<%
+    //java imports
+%>
+<%@ page import="com.excilys.cdb.model.Page"%>
+
 
 <% //set jsp variables %>
 <c:set var="queryName" value="${resultsPageBean.queryString}" />
@@ -8,13 +21,19 @@
 <c:set var="pageSize" value="${resultsPageBean.length}" />
 <c:set var="pageNumMax" value="${resultsPageBean.maxNum}" />
 
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Computer Database</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Bootstrap -->
+<%@include file="/WEB-INF/includes/bootstrap.jsp" %>
+</head>
+
 <body>
     <!-- header -->
-    <header class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="dashboard"> Application - Computer Database </a>
-        </div>
-    </header>
+    <%@include file="/WEB-INF/includes/header.jsp" %>
     <!-- main -->
     <section id="main">
         <div class="container">
@@ -61,7 +80,7 @@
                     <c:forEach var="computerBean" items="${resultsPageBean.content}">
                         <tr>
                             <td class="editMode"><input type="checkbox" name="cb" class="cb" value="0"></td>
-                            <td><a href="editComputer" onclick="">${computerBean.name}</a></td>
+                            <td><a href="editComputer?computerId=${computerBean.id}" onclick="">${computerBean.name}</a></td>
                             <td>${computerBean.releaseDate}</td>
                             <td>${computerBean.discontDate}</td>
                             <td>${computerBean.manufacturer.name}</td>
@@ -75,9 +94,7 @@
     <footer class="navbar-fixed-bottom">
         <mylib:pagination page="${resultsPageBean}"/>
     </footer>
-
-    <script src="js/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
     <script src="js/dashboard.js"></script>
+
 </body>
 </html>

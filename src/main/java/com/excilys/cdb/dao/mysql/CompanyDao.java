@@ -115,6 +115,10 @@ public final class CompanyDao implements ICompanyDao {
 
     @Override
     public Company searchById(long id) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("company ID must be positive.");
+        }
+
         Connection dbConn = null;
         PreparedStatement selectCompanyStatement = null;
         ResultSet result = null;
@@ -148,10 +152,19 @@ public final class CompanyDao implements ICompanyDao {
 
     @Override
     public int getCount() {
+        return getCount("");
+    }
 
+    @Override
+    public int getCount(String name) throws IllegalArgumentException {
         Connection dbConn = null;
         PreparedStatement countCompaniesStatement = null;
         ResultSet result = null;
+
+        // check name parameter
+        if (name == null) {
+            throw new IllegalArgumentException("Company name cannot be null");
+        }
 
         int count = 0;
         try {
@@ -159,6 +172,7 @@ public final class CompanyDao implements ICompanyDao {
             dbConn = ConnectionFactory.getInstance().getConnection();
             countCompaniesStatement = dbConn.prepareStatement(mQueryStrings
                     .get(REQ_COUNT_COMPANIES_FILENAME));
+            countCompaniesStatement.setString(1, name);
             result = countCompaniesStatement.executeQuery();
             while (result.next()) {
                 count = result.getInt(1);
@@ -188,4 +202,5 @@ public final class CompanyDao implements ICompanyDao {
             throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
         }
     }
+
 }

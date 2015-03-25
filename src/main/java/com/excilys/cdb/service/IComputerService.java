@@ -1,8 +1,8 @@
 package com.excilys.cdb.service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
-import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 
 /**
@@ -11,7 +11,7 @@ import com.excilys.cdb.model.Computer;
  * @version 0.2.0
  *
  */
-public interface IService {
+public interface IComputerService {
 
     /* ***
      * COMPUTER METHODS
@@ -27,7 +27,7 @@ public interface IService {
      * @throw IllegalArgumentException if search offset is negative.
      * @return the list of computers.
      */
-    List<Computer> listComputersByName(int offset, int count);
+    List<Computer> listByName(int offset, int count);
 
     /**
      * List computers with name matching given 'name' parameter. Order results
@@ -44,7 +44,7 @@ public interface IService {
      *        search offset is negative
      * @return the list of results.
      */
-    List<Computer> listComputersLikeName(int offset, int count, String name);
+    List<Computer> listLikeName(int offset, int count, String name);
 
     /**
      * Adds the computer to DB, provided that this computer doesn't exist
@@ -53,12 +53,37 @@ public interface IService {
      *
      * @param computer
      *            Computer to add.
-     * @throw DaoException when trying to add an invalid computer. An invalid
-     *        computer is a computer with a non blank field "Computer id". See
-     *        "updateComputer()" if you want to update computer information of
-     *        an existing computer. * @param computer Computer to add to DB.
+     * @throw IllegalArgumentException when trying to add an invalid computer.
+     *        An invalid computer is a computer with a non blank field
+     *        "Computer id". See "updateComputer()" if you want to update
+     *        computer information of an existing computer.
      */
-    void addComputer(Computer computer);
+    void add(Computer computer) throws IllegalArgumentException;
+
+    /**
+     * Attempt to retrieve a computer given its id. Throws an exception if not
+     * found.
+     *
+     * @param computerId
+     *            Id of the computer to retrieve.
+     * @return The computer.
+     * @throws NoSuchElementException
+     *             if no computer with this id can be found.
+     * @throws IllegalArgumentException
+     *             if the given id is invalid. Valid id must be positive.
+     */
+    Computer retrieve(long computerId) throws NoSuchElementException, IllegalArgumentException;
+
+    /**
+     * Attempt to retrieve a computer given its id. Return null if not found.
+     *
+     * @param computerId
+     *            Id of the computer to retrieve.
+     * @return The computer.
+     * @throws IllegalArgumentException
+     *             if the given id is invalid. Valid id must be positive.
+     */
+    Computer search(long computerId) throws IllegalArgumentException;
 
     /**
      * Update the given computer.
@@ -66,40 +91,33 @@ public interface IService {
      * @param computer
      *            Computer to update.
      * @return the updated computer.
+     * @throws NoSuchElementException
+     *             if no computer with this id can be found.
      */
-    void updateComputer(Computer computer);
+    void update(Computer computer) throws NoSuchElementException;
 
     /**
      * Delete the given compute from DB.
      *
      * @param computer
      *            The computer to delete.
-     *
+     * @throws NoSuchElementException
+     *             if no computer with this id can be found.
      */
-    void deleteComputer(Computer computer);
+    void delete(Computer computer) throws NoSuchElementException;
 
     /**
      * @return count of computer entries in database.
      */
-    int getComputersCount();
+    int getCount();
 
 
-        /**
+    /**
      * @param name
      *            Name of computers to search for.
      * @return count of computer entries in database that matches the given
      *         name.
      */
-    int getComputersCount(String name);
-
-    /* ***
-     * COMPANIES METHODS
-     */
-
-    List<Company> listCompaniesByName(int begin, int nb);
-
-    int getCompaniesCount();
-
-    int getCompaniesCount(String name);
+    int getCount(String name);
 
 }

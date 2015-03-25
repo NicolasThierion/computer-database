@@ -150,7 +150,10 @@ public final class ComputerDao implements IComputerDao {
 
 
     @Override
-    public Computer searchById(long id) {
+    public Computer searchById(long id) throws IllegalArgumentException {
+        if (id <= 0) {
+            throw new IllegalArgumentException("computer ID must be positive.");
+        }
 
         Connection dbConn = null;
         PreparedStatement selectComputersStatement = null;
@@ -187,7 +190,7 @@ public final class ComputerDao implements IComputerDao {
     }
 
     @Override
-    public int getCount(String name) {
+    public int getCount(String name) throws IllegalArgumentException, DaoException {
 
         Connection dbConn = null;
         PreparedStatement countComputersStatement = null;
@@ -277,15 +280,18 @@ public final class ComputerDao implements IComputerDao {
 
     /**
      * Update the given computer from DB.
-     * @throws DaoException if deletion failed or if provided computer is invalid or doesn't exist.
+     *
+     * @throws DaoException
+     *             if update failed or if provided computer is invalid or
+     *             doesn't exist.
      */
     @Override
-    public Computer update(Computer computer) {
+    public Computer update(Computer computer) throws DaoException, IllegalArgumentException {
         Connection dbConn = null;
         PreparedStatement updateComputerStatement = null;
         // Update computer by id : ensure computer has id != null
         if (computer.getId() == null) {
-            throw new DaoException("Computer id is null. Cannot update this computer", ErrorType.DAO_ERROR);
+            throw new IllegalArgumentException("Computer id is null. Cannot update this computer");
         }
         final String sqlStr = mQueryStrings.get(REQ_UPDATE_COMPUTER_FILEMANE);
         try {
@@ -330,12 +336,12 @@ public final class ComputerDao implements IComputerDao {
      * @throws DaoException if deletion failed or if provided computer is invalid or doesn't exist.
      */
     @Override
-    public void delete(Computer computer) throws DaoException {
+    public void delete(Computer computer) throws DaoException, IllegalArgumentException {
         Connection dbConn = null;
         PreparedStatement deleteComputerStatement = null;
         //Delete computer by id : ensure computer has id != null
         if (computer.getId() == null) {
-            throw new DaoException("Computer id is null. Cannot delete this computer", ErrorType.DAO_ERROR);
+            throw new IllegalArgumentException("Computer id is null. Cannot delete this computer");
         }
         final String sqlStr = mQueryStrings.get(REQ_DELETE_COMPUTER_FILEMANE);
         try {

@@ -50,7 +50,7 @@
 
 
     <!-- log SQL (pre-execution) plus exceptions caused by SQL -->
-    <!-- <logger name="jdbc.sqlonly" additivity="false"> <level value="debug" 
+    <!-- <logger name="jdbc.sqlonly" additivity="false"> <level value="debug"
         /> <appender-ref ref="sql-appender" /> </logger> -->
 
     <!-- log SQL with timing information, post execution -->
@@ -59,23 +59,23 @@
         <appender-ref ref="sql-timing-appender" />
     </logger>
 
-    <!-- only use the two logs below to trace ALL JDBC information, NOTE: 
+    <!-- only use the two logs below to trace ALL JDBC information, NOTE:
         This can be very voluminous! -->
 
     <!-- log all jdbc calls except ResultSet calls -->
-    <!-- <logger name="jdbc.audit" additivity="false"> <level value="fatal" 
+    <!-- <logger name="jdbc.audit" additivity="false"> <level value="fatal"
         /> <appender-ref ref="jdbc-appender" /> </logger> -->
     <!-- log the jdbc ResultSet calls -->
-    <!-- <logger name="jdbc.resultset" additivity="false"> <level value="fatal" 
+    <!-- <logger name="jdbc.resultset" additivity="false"> <level value="fatal"
         /> <appender-ref ref="jdbc-appender" /> </logger> -->
-    <!-- log connection open/close events and dump of all open connection 
+    <!-- log connection open/close events and dump of all open connection
         numbers -->
-    <!-- <logger name="jdbc.connection" additivity="false"> <level value="fatal" 
+    <!-- <logger name="jdbc.connection" additivity="false"> <level value="fatal"
         /> <appender-ref ref="connection-appender" /> </logger> -->
 
 
 
-    <!-- by default, log everything to the console with a level of DEBUG 
+    <!-- by default, log everything to the console with a level of DEBUG
         or higher -->
     <root>
         <level value="debug" />

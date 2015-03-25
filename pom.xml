@@ -1,6 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    
     <!-- project information -->
     <groupId>com.excilys.cdb</groupId>
     <artifactId>computer-database</artifactId>
@@ -28,8 +29,8 @@
         <taglibVersion>1.1.2</taglibVersion>
         <jstlVersion>1.2</jstlVersion>
         <seleniumVersion>2.25.0</seleniumVersion>
-        
-        
+
+
     </properties>
 
     <dependencies>
@@ -40,19 +41,21 @@
             <version>${junitVersion}</version>
             <scope>test</scope>
         </dependency>
+        
         <!-- MySQL Connect -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysqlConnectVersion}</version>
         </dependency>
+        
         <!-- SLF4j api -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4jVersion}</version>
-            <scope>runtime</scope>
         </dependency>
+        
         <!-- SLF4j maps to 'log4j12' for tests -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -60,19 +63,20 @@
             <version>${log4jBridgeVersion}</version>
             <scope>runtime</scope>
         </dependency>
-
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>${log4jVersion}</version>
             <scope>runtime</scope>
         </dependency>
+        
         <!-- SLF4j maps to 'log4jdbc' -->
         <dependency>
             <groupId>com.googlecode.log4jdbc</groupId>
             <artifactId>log4jdbc</artifactId>
             <version>${log4jdbcVersion}</version>
         </dependency>
+        
         <!-- Mockito -->
         <dependency>
             <groupId>org.mockito</groupId>
@@ -80,6 +84,7 @@
             <version>${mockitoVersion}</version>
             <scope>test</scope>
         </dependency>
+        
         <!-- Servlets -->
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -87,12 +92,15 @@
             <version>${servletVersion}</version>
             <scope>provided</scope>
         </dependency>
+        
         <!-- taglib -->
         <dependency>
             <groupId>taglibs</groupId>
             <artifactId>standard</artifactId>
             <version>${taglibVersion}</version>
         </dependency>
+        
+        <!-- jstl -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
