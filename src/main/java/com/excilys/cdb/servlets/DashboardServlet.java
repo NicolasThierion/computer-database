@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.excilys.cdb.dao.mysql.ComputerDao;
+import com.excilys.cdb.dto.ComputerDto;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Page;
 import com.excilys.cdb.service.ComputerService;
@@ -142,7 +143,9 @@ public class DashboardServlet extends HttpServlet {
             }
 
         }
-        final Page<Computer> page = new Page<Computer>(computers, mOffset, totalResults, queryName);
+
+        final List<ComputerDto> dtos = ComputerDto.fromComputers(computers);
+        final Page<ComputerDto> page = new Page<ComputerDto>(dtos, mOffset, totalResults, queryName);
 
         // set result page & send redirect.
         request.setAttribute(ResParam.PAGE_BEAN, page);

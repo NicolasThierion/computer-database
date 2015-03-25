@@ -56,6 +56,10 @@ public class Page<T> implements Serializable {
 
     }
 
+    public Page() {
+        newPage(null, 0, -1, null);
+    }
+
     public Page(List<T> content, int offset, int maxResults,
             String queryString) {
         newPage(content, offset, maxResults, queryString);
@@ -65,12 +69,12 @@ public class Page<T> implements Serializable {
         newPage(content, offset, maxResults, null);
     }
 
-    public Page() {
-        newPage(null, -1, -1, null);
-    }
-
     public Page(Page<T> p) {
         newPage(p.mContent, p.mOffset, p.mMaxResults, p.mQueryString);
+    }
+
+    public Page(List<T> companies) {
+        newPage(companies, 0, companies.size(), null);
     }
 
     /* ***

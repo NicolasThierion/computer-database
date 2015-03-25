@@ -14,12 +14,12 @@ import com.excilys.cdb.dao.mysql.ComputerDao;
 import com.excilys.cdb.service.ComputerService;
 import com.excilys.cdb.service.IComputerService;
 
-public class DashboardTest extends CdbViewTest {
+public final class DashboardTest extends CdbViewTest {
 
     /* ***
      * TEST CONSTANTS & PARAMETERS
      */
-    private static final String DASHBOARD_URN = "dashboard";
+    private static final String TEST_URI = "dashboard";
 
     /* ***
      * ATTRIBUTES
@@ -37,16 +37,16 @@ public class DashboardTest extends CdbViewTest {
     /** WebDriver implementation used for this test cases. */
     private WebDriver mWebDriver;
 
-    private String              mUri;
+    private String              mUrl;
 
     /**
      * Init webDriver, DAOs & Service.
      */
     @Before
-    public final void init() {
+    public void init() {
         mWebDriver = new HtmlUnitDriver();
-        super.setUrn(DASHBOARD_URN);
-        mUri = super.getUri();
+        super.setUri(TEST_URI);
+        mUrl = super.getUrl();
         mService = new ComputerService(ComputerDao.getInstance());
     }
 
@@ -54,13 +54,13 @@ public class DashboardTest extends CdbViewTest {
      * Destroy webDriver.
      */
     @After
-    public final void destroy() {
+    public void destroy() {
         mWebDriver.quit();
     }
 
     @Test
     public void testDashboard() {
-        mWebDriver.get(mUri);
+        mWebDriver.get(mUrl);
         assertTrue(!mWebDriver.getCurrentUrl().equals("about:blank"));
         assertTrue(mWebDriver.getTitle().equals(PAGE_TITLE));
     }
@@ -71,7 +71,7 @@ public class DashboardTest extends CdbViewTest {
     @Test
     public void testSearch() {
         for (final String searchWords : new String[] {"bOoK", "", "a", "Nothing"}) {
-            mWebDriver.get(mUri);
+            mWebDriver.get(mUrl);
 
             // find "search computer" input.
             final WebElement searchBox = mWebDriver.findElement(By.id(SEARCH_INPUT_ID));

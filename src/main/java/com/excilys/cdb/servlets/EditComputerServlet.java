@@ -2,6 +2,7 @@ package com.excilys.cdb.servlets;
 
 import java.io.IOException;
 import java.security.InvalidParameterException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -9,9 +10,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.excilys.cdb.dao.mysql.CompanyDao;
 import com.excilys.cdb.dao.mysql.ComputerDao;
-import com.excilys.cdb.model.Computer;
+import com.excilys.cdb.dto.ComputerDto;
+import com.excilys.cdb.model.Company;
+import com.excilys.cdb.model.Page;
+import com.excilys.cdb.service.CompanyService;
 import com.excilys.cdb.service.ComputerService;
+import com.excilys.cdb.service.ICompanyService;
 import com.excilys.cdb.service.IComputerService;
 
 /**
@@ -39,21 +45,29 @@ public class EditComputerServlet extends HttpServlet {
     private static class ResParam {
         /** Computer attribute to be sent to JSP. */
         private static final String COMPUTER_BEAN = "computerBean";
+        /** List of companies to be sent to JSP. */
+        private static final String COMPANIES_PAGE_BEAN = "companiesPageBean";
+
     }
 
     /* ***
      * ATTRIBUTES
      */
     private IComputerService mComputerService;
+    private ICompanyService  mComanyService;
+
     private int              mComputerId = -1;
+
     @Override
     public void init() {
         mComputerService = new ComputerService(ComputerDao.getInstance());
+        mComanyService = new CompanyService(CompanyDao.getInstance());
     }
 
     @Override
     public void destroy() {
         mComputerService = null;
+        mComanyService = null;
     }
 
 
@@ -100,8 +114,15 @@ public class EditComputerServlet extends HttpServlet {
         mCheckParameters(request, response);
 
         // create a new computer from computerId.
-        final Computer computer = mComputerService.retrieve(mComputerId);
+        final ComputerDto computer = ComputerDto.fromComputer(mComputerService.retrieve(mComputerId));
+
+        // fetch company list for <select>
+        final List<Company> companies = mComanyService.listByName();
+        final Page<Company> companiesPage = new Page<Company>(companies);
+
+        // set attributes & redirect to jsp.
         request.setAttribute(ResParam.COMPUTER_BEAN, computer);
+        request.setAttribute(ResParam.COMPANIES_PAGE_BEAN, companiesPage);
         getServletContext().getRequestDispatcher(EDIT_COMPUTER_URI).forward(request, response);
     }
 

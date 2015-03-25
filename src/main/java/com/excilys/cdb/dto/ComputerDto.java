@@ -157,7 +157,7 @@ public class ComputerDto implements Serializable {
         return mReleaseDate;
     }
 
-    public String getDiscDate() {
+    public String getDiscontDate() {
         return mDiscDate;
     }
 
@@ -165,13 +165,24 @@ public class ComputerDto implements Serializable {
         return mId;
     }
 
-    public CompanyDto getCompanyDto() {
+    public CompanyDto getCompany() {
+        return new CompanyDto(mCompanyDto);
+    }
+
+    /**
+     * same as {@link #getCompany()}.
+     *
+     * @return
+     */
+    public CompanyDto getManufacturer() {
         return new CompanyDto(mCompanyDto);
     }
 
     public boolean isValid() {
         return toComputer().isValid();
     }
+
+
     /* ***
      * Object OVERRIDES
      */

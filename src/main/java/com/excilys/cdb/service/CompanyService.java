@@ -55,6 +55,10 @@ public class CompanyService implements ICompanyService {
      * SERVICE METHODS
      */
 
+    @Override
+    public List<Company> listByName() {
+        return listByName(0, Integer.MAX_VALUE);
+    }
 
     @Override
     public List<Company> listByName(int begin, int nb) {
@@ -84,5 +88,6 @@ public class CompanyService implements ICompanyService {
     public Company search(long companyId) {
         return mCompanyDao.searchById(companyId);
     }
+
 
 }

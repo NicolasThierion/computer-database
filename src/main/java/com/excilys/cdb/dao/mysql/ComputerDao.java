@@ -72,6 +72,11 @@ public final class ComputerDao implements IComputerDao {
     /* ***
      * DAO SERVICES
      */
+    @Override
+
+    public List<Computer> listByName() {
+        return listByName(0, Integer.MAX_VALUE);
+    }
 
     @Override
     public List<Computer> listByName(int begin, int nb) throws DaoException, IllegalArgumentException {
@@ -385,5 +390,4 @@ public final class ComputerDao implements IComputerDao {
             throw new DaoException(e.getMessage(), ErrorType.DAO_ERROR);
         }
     }
-
 }

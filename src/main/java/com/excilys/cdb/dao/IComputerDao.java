@@ -12,9 +12,18 @@ import com.excilys.cdb.model.Computer;
  */
 public interface IComputerDao {
 
-
     /**
-     * List computers. Order results by name.
+     * List computers. Order results by name. Search is unbounded, return all
+     * existing computers.
+     *
+     * @return the list of results.
+     */
+    List<Computer> listByName();
+
+
+        /**
+     * List computers. Order results by name. Search is bounded by offset & nb
+     * params.
      *
      * @param offset
      *            Search offset.

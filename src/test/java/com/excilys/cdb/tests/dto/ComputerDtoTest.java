@@ -3,12 +3,15 @@ package com.excilys.cdb.tests.dto;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
+import java.util.Iterator;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.excilys.cdb.dao.mysql.ComputerDao;
 import com.excilys.cdb.dto.ComputerDto;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
@@ -79,6 +82,19 @@ public class ComputerDtoTest {
                     }
                 }
             }
+        }
+    }
+
+    @Test
+    public final void testDtoFromList() {
+        final List<Computer> computers = ComputerDao.getInstance().listByName();
+        final List<ComputerDto> dtos = ComputerDto.fromComputers(computers);
+        assertTrue(computers.size() == dtos.size());
+        final Iterator<ComputerDto> dtoIt = dtos.iterator();
+        final Iterator<Computer> computerIt = computers.iterator();
+
+        while (dtoIt.hasNext()) {
+            assertTrue(dtoIt.next().toComputer().equals(computerIt.next()));
         }
     }
 }

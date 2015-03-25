@@ -248,6 +248,13 @@ public class Computer implements Serializable {
         mDiscDate = discontDate;
     }
 
+    /**
+     * Says if the computer is valid. A valid computer must have a positive id,
+     * a non-null & non-empty name, optional release & discontinuation dates
+     * must be temporally coherent.
+     *
+     * @return true if the computer is valide.
+     */
     public boolean isValid() {
         boolean res = (mId != null && mId > 0);
         if (res && mName != null) {

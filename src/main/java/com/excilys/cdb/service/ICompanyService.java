@@ -25,4 +25,6 @@ public interface ICompanyService {
 
     Company search(long companyId);
 
+    List<Company> listByName();
+
 }

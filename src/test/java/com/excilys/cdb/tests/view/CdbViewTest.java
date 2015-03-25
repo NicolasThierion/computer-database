@@ -11,7 +11,7 @@ public abstract class CdbViewTest {
     /** Url of webPage to test. */
     private String             mUrl;
 
-    public void setUrn(String pageUrn) {
+    public void setUri(String pageUrn) {
         final StringBuilder sb = new StringBuilder();
         sb.append(PROTOCOL).append("://").append(HOST).append(":").append(PORT);
         sb.append("/").append(ROOT_URL);
@@ -22,7 +22,7 @@ public abstract class CdbViewTest {
         mUrl = sb.toString();
     }
 
-    public String getUri() {
+    public String getUrl() {
         return mUrl;
     }
 
