@@ -1,3 +1,4 @@
+
 <%
     //jsp directives
 %>
@@ -38,15 +39,18 @@
                             <div class="form-group">
                                 <label for="computerName">Computer name</label> <input type="text" class="form-control"
                                     id="computerName" placeholder="Computer name" value="${computerBean.name}">
+                                <span id="computerNameError" class="collapse error">Name is mandatory</span>
                             </div>
                             <div class="form-group">
                                 <label for="introduced">Introduced date</label> <input type="date" class="form-control"
                                     id="introduced" placeholder="Introduced date" value="${computerBean.releaseDate}">
+                                <span id="introducedError" class="collapse error">Invalid date.</span>
                             </div>
                             <div class="form-group">
                                 <label for="discontinued">Discontinued date</label> <input type="date"
                                     class="form-control" id="discontinued" placeholder="Discontinued date"
-                                    value="${computerBean.discontDate}">
+                                    value="${computerBean.discontDate}"> <span id="discontinuedError"
+                                    class="collapse error">Invalid date.</span>
                             </div>
                             <div class="form-group">
                                 <label for="companyId">Company</label> <select class="form-control" id="companyId">
@@ -73,5 +77,7 @@
             </div>
         </div>
     </section>
+    <script src="${APP_ROOT}/js/form.editComputer.validate.js"></script>
+    
 </body>
 </html>

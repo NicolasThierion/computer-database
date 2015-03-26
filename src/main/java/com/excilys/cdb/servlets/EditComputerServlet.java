@@ -140,7 +140,7 @@ public class EditComputerServlet extends HttpServlet {
             mComputerId = Integer.parseInt(computerIdStr);
             return;
         }
-        throw new InvalidParameterException("missing computerId parameter. Cannot edit.");
+        throw new InvalidParameterException("missing " + ReqParam.COMPUTER_ID + " parameter. Cannot edit.");
 
     }
 }

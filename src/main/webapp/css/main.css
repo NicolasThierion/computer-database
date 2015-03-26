@@ -27,3 +27,11 @@ input[type='checkbox'] {
     border-radius: 5px;
     white-space: nowrap;
 }
+
+.error {
+    color : #FF8888;
+    display : block;
+}
+input.error {
+    border : 2px solid red;
+}

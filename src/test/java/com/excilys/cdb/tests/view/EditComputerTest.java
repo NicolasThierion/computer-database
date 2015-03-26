@@ -22,7 +22,7 @@ import com.excilys.cdb.service.ComputerService;
 import com.excilys.cdb.service.IComputerService;
 
 /**
- * Test if homepage is reachable from any page of the website.
+ * Test if editComputer Page loads correctly. Test from pre-filling.
  *
  * @author Nicolas THIERION.
  *
@@ -49,7 +49,7 @@ public final class EditComputerTest extends CdbViewTest {
     private WebDriver mWebDriver;
     /** current page's url. */
     private String              mUrl;
-
+    /** Computer service used for fetching computers in this test suite. */
     private IComputerService    mComputerService;
 
     /**
@@ -70,6 +70,9 @@ public final class EditComputerTest extends CdbViewTest {
         mComputerService = null;
     }
 
+    /**
+     * test if a wrong url (ie : wrong computerId) leads to error page.
+     */
     @Test
     public void testWrongUrl() {
         for (final Long currentId : new Long[] {-1L, Long.MAX_VALUE, 0L}) {
@@ -78,7 +81,7 @@ public final class EditComputerTest extends CdbViewTest {
             mUrl = super.getUrl();
             mWebDriver.get(mUrl);
             try {
-                // DIRTY CHECKING.... no matter :)
+                // DIRTY CHECKING, I know this is bad.... no matter :P
                 final String mainTitle = mWebDriver.findElements(By.tagName("h1")).get(0).getText();
                 assertTrue(!mainTitle.equals(EDIT_MAIN_TITLE));
             } catch (final Exception e) {
@@ -86,6 +89,9 @@ public final class EditComputerTest extends CdbViewTest {
         }
     }
 
+    /**
+     * Test if form is well filled with computers information.
+     */
     @Test
     public void testFormPreFill() {
 

@@ -31,7 +31,7 @@ public class DashboardServlet extends HttpServlet {
     /** Default amount of result to display int he page. */
     private static final int    DEFAULT_PAGE_SIZE = 10;
     /** jsp to redirect to. */
-    private static final String DASH_URN          = "/WEB-INF/views/dashboard.jsp";
+    private static final String DASHBOARD_URI          = "/WEB-INF/views/dashboard.jsp";
 
     /** input parameters. */
     private static class ReqParam {
@@ -149,7 +149,7 @@ public class DashboardServlet extends HttpServlet {
 
         // set result page & send redirect.
         request.setAttribute(ResParam.PAGE_BEAN, page);
-        getServletContext().getRequestDispatcher(DASH_URN).forward(request, response);
+        getServletContext().getRequestDispatcher(DASHBOARD_URI).forward(request, response);
     }
 
     private void mCheckParameters(HttpServletRequest request, HttpServletResponse response) {
