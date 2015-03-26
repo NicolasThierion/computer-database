@@ -33,27 +33,31 @@
                 <div class="col-xs-8 col-xs-offset-2 box">
                     <div class="label label-default pull-right">id: ${computerBean.id}</div>
                     <h1>Edit Computer</h1>
-                    <form action="editComputer" method="POST">
-                        <input type="hidden" value="0" />
+                    <form action="editComputer" method="GET">
+                        <input type="hidden" name="computerId" value="${computerBean.id}" /> <input type="hidden"
+                            name="update" value="true" />
                         <fieldset>
                             <div class="form-group">
                                 <label for="computerName">Computer name</label> <input type="text" class="form-control"
-                                    id="computerName" placeholder="Computer name" value="${computerBean.name}">
-                                <span id="computerNameError" class="collapse error">Name is mandatory</span>
+                                    id="computerName" placeholder="Computer name" name="computerName"
+                                    value="${computerBean.name}"> <span id="computerNameError"
+                                    class="collapse error">Valid name is mandatory</span>
                             </div>
                             <div class="form-group">
                                 <label for="introduced">Introduced date</label> <input type="date" class="form-control"
-                                    id="introduced" placeholder="Introduced date" value="${computerBean.releaseDate}">
-                                <span id="introducedError" class="collapse error">Invalid date.</span>
+                                    id="introduced" placeholder="Introduced date" name="introduced"
+                                    value="${computerBean.releaseDate}"> <span id="introducedError"
+                                    class="collapse error">Invalid date.</span>
                             </div>
                             <div class="form-group">
                                 <label for="discontinued">Discontinued date</label> <input type="date"
                                     class="form-control" id="discontinued" placeholder="Discontinued date"
-                                    value="${computerBean.discontDate}"> <span id="discontinuedError"
-                                    class="collapse error">Invalid date.</span>
+                                    name="discontinued" value="${computerBean.discontDate}"> <span
+                                    id="discontinuedError" class="collapse error">Invalid date.</span>
                             </div>
                             <div class="form-group">
-                                <label for="companyId">Company</label> <select class="form-control" id="companyId">
+                                <label for="companyId">Company</label> <select class="form-control" id="companyId"
+                                    name="companyId">
                                     <option value="0">--</option>
                                     <c:set var="selected" value=""></c:set>
                                     <c:set var="found" value="false"></c:set>
@@ -78,6 +82,5 @@
         </div>
     </section>
     <script src="${APP_ROOT}/js/form.editComputer.validate.js"></script>
-    
 </body>
 </html>

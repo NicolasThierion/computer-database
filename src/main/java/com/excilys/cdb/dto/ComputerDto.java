@@ -64,6 +64,20 @@ public class ComputerDto implements Serializable {
         mCompanyDto = (company != null ? new CompanyDto(company) : null);
     }
 
+    public ComputerDto(Long id, String name, String releaseDate, String discontDate, CompanyDto company) {
+        mNewComputerDto(id, name, releaseDate, discontDate, company);
+    }
+
+    public ComputerDto(Long id, String name, String releaseDate, String discontDate, Long companyId) {
+        CompanyDto companyDto = null;
+        if (companyId != null) {
+            final Company company = new Company();
+            company.setId(companyId);
+            companyDto = CompanyDto.fromCompany(company);
+        }
+        mNewComputerDto(id, name, releaseDate, discontDate, companyDto);
+    }
+
     /**
      * Create a new Computer DTO corresponding to the given Computer Object.
      *

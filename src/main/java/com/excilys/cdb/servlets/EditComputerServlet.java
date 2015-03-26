@@ -14,6 +14,7 @@ import com.excilys.cdb.dao.mysql.CompanyDao;
 import com.excilys.cdb.dao.mysql.ComputerDao;
 import com.excilys.cdb.dto.ComputerDto;
 import com.excilys.cdb.model.Company;
+import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Page;
 import com.excilys.cdb.service.CompanyService;
 import com.excilys.cdb.service.ComputerService;
@@ -34,10 +35,20 @@ public class EditComputerServlet extends HttpServlet {
     /** jsp to redirect to. */
     private static final String EDIT_COMPUTER_URI = "/WEB-INF/views/editComputer.jsp";
 
-    /** input parameters. */
+    /** input parameters. sent by JSP. */
     private static class ReqParam {
         /** Id of computer to edit. */
-        private static final String COMPUTER_ID = "computerId";
+        private static final String COMPUTER_ID      = "computerId";
+        /** if should update computer. */
+        private static final String IS_UPDATE        = "update";
+        /** name of computer to update. */
+        private static final String COMPUTER_NAME    = "computerName";
+        /** release date of computer to update. */
+        private static final String COMPUTER_RELEASE = "introduced";
+        /** discontinuation date of computer to update. */
+        private static final String COMPUTER_DISCONT = "discontinued";
+        /** company id of computer to update. */
+        private static final String COMPANY_ID       = "companyId";
 
     }
 
@@ -56,7 +67,12 @@ public class EditComputerServlet extends HttpServlet {
     private IComputerService mComputerService;
     private ICompanyService  mComanyService;
 
-    private int              mComputerId = -1;
+    private Long             mComputerId   = -1L;
+    private boolean          mShouldUpdate = false;
+    private String           mComputerName;
+    private String           mComputerRelease;
+    private String           mComputerDiscont;
+    private Long             mCompanyId    = null;
 
     @Override
     public void init() {
@@ -102,16 +118,26 @@ public class EditComputerServlet extends HttpServlet {
     private void mDoGetOrPost(HttpServletRequest request, HttpServletResponse response) throws IOException,
             ServletException {
         ServletUtils.logRequest(request, response);
+        mCheckParameters(request, response);
+
+        if (mShouldUpdate) {
+            mDoUpdate(request, response);
+        }
         mGotoEdit(request, response);
     }
+
 
     /* ***
      * PRIVATE METHODS
      */
+    private void mDoUpdate(HttpServletRequest request, HttpServletResponse response) {
+        // TODO Auto-generated method stub
+
+    }
+
     private void mGotoEdit(HttpServletRequest request, HttpServletResponse response) throws ServletException,
             IOException {
 
-        mCheckParameters(request, response);
 
         // create a new computer from computerId.
         final ComputerDto computer = ComputerDto.fromComputer(mComputerService.retrieve(mComputerId));
@@ -127,7 +153,7 @@ public class EditComputerServlet extends HttpServlet {
     }
 
     /**
-     * fetch computer id parameter.
+     * fetch requested fields or parameters for editComputer JSP.
      *
      * @param request
      * @param response
@@ -136,11 +162,28 @@ public class EditComputerServlet extends HttpServlet {
         // ensure computer id is present
         final String computerIdStr = request.getParameter(ReqParam.COMPUTER_ID);
 
-        if (computerIdStr != null && !computerIdStr.trim().isEmpty()) {
-            mComputerId = Integer.parseInt(computerIdStr);
-            return;
+        if (computerIdStr == null || computerIdStr.trim().isEmpty()) {
+            throw new InvalidParameterException("missing " + ReqParam.COMPUTER_ID + " parameter. Cannot edit.");
         }
-        throw new InvalidParameterException("missing " + ReqParam.COMPUTER_ID + " parameter. Cannot edit.");
+
+        mComputerId = Long.parseLong(computerIdStr);
+
+
+        final String isUpdateStr = request.getParameter(ReqParam.IS_UPDATE);
+        mShouldUpdate = (isUpdateStr != null ? new Boolean(isUpdateStr) : false);
+
+        // if we came here back from editComputer => update flag is true.
+        if (mShouldUpdate) {
+            mComputerName = request.getParameter(ReqParam.COMPUTER_NAME);
+            mComputerRelease = request.getParameter(ReqParam.COMPUTER_RELEASE);
+            mComputerDiscont = request.getParameter(ReqParam.COMPUTER_DISCONT);
+            final String companyIdStr = request.getParameter(ReqParam.COMPANY_ID);
+            mCompanyId = (companyIdStr != null ? Long.parseLong(companyIdStr) : null);
+            mCompanyId = (mCompanyId == 0 ? null : mCompanyId);
+            final Computer computer = new ComputerDto(mComputerId, mComputerName, mComputerRelease, mComputerDiscont,
+                    mCompanyId).toComputer();
+            mComputerService.update(computer);
+        }
 
     }
 }

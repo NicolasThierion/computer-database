@@ -134,6 +134,17 @@ public final class EditComputerTest extends CdbViewTest {
             if (computer.getCompanyName() != null && !computer.getCompanyName().trim().isEmpty()) {
                 assertTrue(companyInput.getText().equals(computer.getCompanyName()));
             }
+
+            // find error tips elements
+            final WebElement nameError = form.findElement(By.id("computerNameError"));
+            final WebElement releaseError = form.findElement(By.id("introducedError"));
+            final WebElement discontinuedError = form.findElement(By.id("discontinuedError"));
+
+            // check fields validity
+            for (final WebElement elt : new WebElement[] {nameError, releaseError, discontinuedError}) {
+                final String classStr = elt.getAttribute("class");
+                assertTrue(!classStr.contains("error") || classStr.contains("collapse"));
+            }
         }
     }
 }
