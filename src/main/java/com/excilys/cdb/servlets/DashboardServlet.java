@@ -31,7 +31,7 @@ public class DashboardServlet extends HttpServlet {
     /** Default amount of result to display int he page. */
     private static final int    DEFAULT_PAGE_SIZE = 10;
     /** jsp to redirect to. */
-    private static final String DASHBOARD_URI          = "/WEB-INF/views/dashboard.jsp";
+    private static final String JSP_URI          = "/WEB-INF/views/dashboard.jsp";
 
     /** input parameters. */
     private static class ReqParam {
@@ -52,9 +52,12 @@ public class DashboardServlet extends HttpServlet {
     /* ***
      * ATTRIBUTES
      */
-    private IComputerService    mComputerService;
-    private int                 mPageSize           = DEFAULT_PAGE_SIZE;
-    private int                 mOffset             = 0;
+    private IComputerService mComputerService;
+    private int              mPageSize = DEFAULT_PAGE_SIZE;
+    private int              mOffset   = 0;
+    private String           mQueryName;
+    private String           mPageOffsetStr;
+
     @Override
     public void init() {
         mComputerService = new ComputerService(ComputerDao.getInstance());
@@ -72,6 +75,8 @@ public class DashboardServlet extends HttpServlet {
     public DashboardServlet() {
         super();
     }
+
+
 
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
@@ -112,11 +117,35 @@ public class DashboardServlet extends HttpServlet {
         List<Computer> computers = new LinkedList<Computer>();
 
         mCheckParameters(request, response);
+
+        // count results & store them in a Page<Computer>
+        final int totalResults = mComputerService.getCount(mQueryName);
+
+        if (totalResults > 0) {
+            // select all computer in page range, & ensure offset is not too
+            // far.
+            computers = mComputerService.listLikeName(mOffset, mPageSize, mQueryName);
+            if (mOffset > totalResults) {
+                mOffset = totalResults;
+            }
+
+        }
+
+        final List<ComputerDto> dtos = ComputerDto.fromComputers(computers);
+        final Page<ComputerDto> page = new Page<ComputerDto>(dtos, mOffset, totalResults, mQueryName);
+
+        // set result page & send redirect.
+        request.setAttribute(ResParam.PAGE_BEAN, page);
+        getServletContext().getRequestDispatcher(JSP_URI).forward(request, response);
+    }
+
+
+    private void mCheckParameters(HttpServletRequest request, HttpServletResponse response) {
         // presence of search parameter?
-        String queryName = request.getParameter(ReqParam.SEARCH);
+        mQueryName = request.getParameter(ReqParam.SEARCH);
         // search empty name if name is null => search for all computers.
-        if (queryName == null) {
-            queryName = "";
+        if (mQueryName == null) {
+            mQueryName = "";
         }
 
         // presence of pageSize parameter?
@@ -126,35 +155,9 @@ public class DashboardServlet extends HttpServlet {
         }
 
         // presence of offset parameter?
-        final String pageOffsetStr = request.getParameter(ReqParam.PAGE_OFFSET);
-        if (pageOffsetStr != null && !pageOffsetStr.trim().isEmpty()) {
-            mOffset = Integer.parseInt(pageOffsetStr.trim());
+        mPageOffsetStr = request.getParameter(ReqParam.PAGE_OFFSET);
+        if (mPageOffsetStr != null && !mPageOffsetStr.trim().isEmpty()) {
+            mOffset = Integer.parseInt(mPageOffsetStr.trim());
         }
-
-        // count results & store them in a Page<Computer>
-        final int totalResults = mComputerService.getCount(queryName);
-
-        if (totalResults > 0) {
-            // select all computer in page range, & ensure offset is not too
-            // far.
-            computers = mComputerService.listLikeName(mOffset, mPageSize, queryName);
-            if (mOffset > totalResults) {
-                mOffset = totalResults;
-            }
-
-        }
-
-        final List<ComputerDto> dtos = ComputerDto.fromComputers(computers);
-        final Page<ComputerDto> page = new Page<ComputerDto>(dtos, mOffset, totalResults, queryName);
-
-        // set result page & send redirect.
-        request.setAttribute(ResParam.PAGE_BEAN, page);
-        getServletContext().getRequestDispatcher(DASHBOARD_URI).forward(request, response);
     }
-
-    private void mCheckParameters(HttpServletRequest request, HttpServletResponse response) {
-        // TODO Auto-generated method stub
-
-    }
-
 }

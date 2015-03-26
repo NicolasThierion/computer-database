@@ -1,7 +1,6 @@
 package com.excilys.cdb.servlets;
 
 import java.io.IOException;
-import java.security.InvalidParameterException;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -24,16 +23,16 @@ import com.excilys.cdb.service.IComputerService;
 /**
  * Servlet implementation to handle 'edit computer' page.
  */
-@WebServlet("/editComputer")
-public class EditComputerServlet extends HttpServlet {
+@WebServlet("/addComputer")
+public class AddComputerServlet extends HttpServlet {
 
-    private static final long serialVersionUID = 8756374436015233990L;
+    private static final long   serialVersionUID = 8756374436015233990L;
 
     /* ***
      * CONSTANTS
      */
     /** jsp to redirect to. */
-    private static final String JSP_URI = "/WEB-INF/views/editComputer.jsp";
+    private static final String JSP_URI          = "/WEB-INF/views/addComputer.jsp";
 
     /** input parameters. sent by JSP. */
     private static class ReqParam {
@@ -53,8 +52,6 @@ public class EditComputerServlet extends HttpServlet {
 
     /** output parameters. */
     private static class ResParam {
-        /** Computer attribute to be sent to JSP. */
-        private static final String COMPUTER_BEAN = "computerBean";
         /** List of companies to be sent to JSP. */
         private static final String COMPANIES_PAGE_BEAN = "companiesPageBean";
     }
@@ -65,12 +62,13 @@ public class EditComputerServlet extends HttpServlet {
     private IComputerService mComputerService;
     private ICompanyService  mComanyService;
 
-    private Long             mComputerId   = -1L;
+    private final Long             mComputerId   = -1L;
     private boolean          mShouldUpdate = false;
     private String           mComputerName;
     private String           mComputerRelease;
     private String           mComputerDiscont;
     private Long             mCompanyId    = null;
+
 
     @Override
     public void init() {
@@ -84,22 +82,13 @@ public class EditComputerServlet extends HttpServlet {
         mComanyService = null;
     }
 
-
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public EditComputerServlet() {
-        super();
-    }
-
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
      *      response)
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+            IOException {
         mDoGetOrPost(request, response);
     }
 
@@ -121,9 +110,8 @@ public class EditComputerServlet extends HttpServlet {
         if (mShouldUpdate) {
             mDoUpdate(request, response);
         }
-        mGotoEdit(request, response);
+        mGotoAdd(request, response);
     }
-
 
     /* ***
      * PRIVATE METHODS
@@ -134,18 +122,14 @@ public class EditComputerServlet extends HttpServlet {
         mComputerService.update(computer);
     }
 
-    private void mGotoEdit(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+    private void mGotoAdd(HttpServletRequest request, HttpServletResponse response) throws ServletException,
             IOException {
-
-        // create a new computer from computerId.
-        final ComputerDto computer = ComputerDto.fromComputer(mComputerService.retrieve(mComputerId));
 
         // fetch company list for <select>
         final List<Company> companies = mComanyService.listByName();
         final Page<Company> companiesPage = new Page<Company>(companies);
 
         // set attributes & redirect to jsp.
-        request.setAttribute(ResParam.COMPUTER_BEAN, computer);
         request.setAttribute(ResParam.COMPANIES_PAGE_BEAN, companiesPage);
         getServletContext().getRequestDispatcher(JSP_URI).forward(request, response);
     }
@@ -157,15 +141,6 @@ public class EditComputerServlet extends HttpServlet {
      * @param response
      */
     private void mCheckParameters(HttpServletRequest request, HttpServletResponse response) {
-        // ensure computer id is present
-        final String computerIdStr = request.getParameter(ReqParam.COMPUTER_ID);
-
-        if (computerIdStr == null || computerIdStr.trim().isEmpty()) {
-            throw new InvalidParameterException("missing " + ReqParam.COMPUTER_ID + " parameter. Cannot edit.");
-        }
-
-        mComputerId = Long.parseLong(computerIdStr);
-
 
         final String isUpdateStr = request.getParameter(ReqParam.IS_UPDATE);
         mShouldUpdate = (isUpdateStr != null ? new Boolean(isUpdateStr) : false);

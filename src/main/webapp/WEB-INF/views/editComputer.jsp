@@ -33,7 +33,7 @@
                 <div class="col-xs-8 col-xs-offset-2 box">
                     <div class="label label-default pull-right">id: ${computerBean.id}</div>
                     <h1>Edit Computer</h1>
-                    <form action="editComputer" method="GET">
+                    <form action="editComputer" method="POST" onsubmit="return validate()">
                         <input type="hidden" name="computerId" value="${computerBean.id}" /> <input type="hidden"
                             name="update" value="true" />
                         <fieldset>
@@ -81,6 +81,6 @@
             </div>
         </div>
     </section>
-    <script src="${APP_ROOT}/js/form.editComputer.validate.js"></script>
+    <script src="${APP_ROOT}/js/form.computer.validate.js"></script>
 </body>
 </html>
