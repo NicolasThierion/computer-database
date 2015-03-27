@@ -16,7 +16,7 @@ import com.excilys.cdb.persistence.dao.mysql.ComputerDao;
  * computer equipments.
  *
  * @author Nicolas THIERION
- * @version 0.1.0
+ * @version 0.2.0
  *
  */
 public final class Cli {

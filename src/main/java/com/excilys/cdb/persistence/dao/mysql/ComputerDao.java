@@ -228,7 +228,7 @@ public final class ComputerDao implements IComputerDao {
     }
 
     @Override
-    public void add(Computer computer) throws DaoException {
+    public Computer add(Computer computer) throws DaoException {
         Connection dbConn = null;
         PreparedStatement insertComputerStatement = null;
         ResultSet result = null;
@@ -275,6 +275,7 @@ public final class ComputerDao implements IComputerDao {
                 computer.setId(result.getLong(1));
             }
             result.close();
+            return computer;
         } catch (final SQLException e) {
             throw new DaoException("Something went wrong when adding computer " + computer + " : " + e.getMessage(),
                     ErrorType.UNKNOWN_ERROR);
@@ -337,15 +338,18 @@ public final class ComputerDao implements IComputerDao {
     }
 
     /**
-     * Delete the given computer from DB.
-     * @throws DaoException if deletion failed or if provided computer is invalid or doesn't exist.
+     * Delete the computer with given id from DB.
+     *
+     * @throws DaoException
+     *             if deletion failed or if provided computer is invalid or
+     *             doesn't exist.
      */
     @Override
-    public void delete(Computer computer) throws DaoException, IllegalArgumentException {
+    public void delete(Long id) throws DaoException, IllegalArgumentException {
         Connection dbConn = null;
         PreparedStatement deleteComputerStatement = null;
         //Delete computer by id : ensure computer has id != null
-        if (computer.getId() == null) {
+        if (id == null) {
             throw new IllegalArgumentException("Computer id is null. Cannot delete this computer");
         }
         final String sqlStr = mQueryStrings.get(REQ_DELETE_COMPUTER_FILEMANE);
@@ -354,9 +358,9 @@ public final class ComputerDao implements IComputerDao {
             dbConn = ConnectionFactory.getInstance().getConnection();
             deleteComputerStatement = dbConn.prepareStatement(sqlStr);
 
-            deleteComputerStatement.setLong(1, computer.getId());
+            deleteComputerStatement.setLong(1, id);
             if (deleteComputerStatement.executeUpdate() != 1) {
-                throw new DaoException("Something went wrong while deleting computer " + computer
+                throw new DaoException("Something went wrong while deleting computer no " + id
                         + ". Maybe this computer doesn't exist?",
                         ErrorType.SQL_ERROR);
             }

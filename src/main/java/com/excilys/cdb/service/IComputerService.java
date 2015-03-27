@@ -58,16 +58,17 @@ public interface IComputerService {
     /**
      * Adds the computer to DB, provided that this computer doesn't exist
      * already. Calling this method will assign a new "computer id" to the
-     * computer.
+     * computer. Computer will receive a new Id if adding succeed.
      *
      * @param computer
      *            Computer to add.
+     * @return the added computer.
      * @throw IllegalArgumentException when trying to add an invalid computer.
      *        An invalid computer is a computer with a non blank field
      *        "Computer id". See "updateComputer()" if you want to update
      *        computer information of an existing computer.
      */
-    void add(Computer computer) throws IllegalArgumentException;
+    Computer add(Computer computer) throws IllegalArgumentException;
 
     /**
      * Attempt to retrieve a computer given its id. Throws an exception if not
@@ -113,12 +114,26 @@ public interface IComputerService {
      * @throws NoSuchElementException
      *             if no computer with this id can be found.
      */
-    void delete(Computer computer) throws NoSuchElementException;
+    default void delete(Computer computer) throws NoSuchElementException {
+        delete(computer.getId());
+    }
+
+    /**
+     * Delete the given compute from DB.
+     *
+     * @param id
+     *            The id of computer to delete.
+     * @throws NoSuchElementException
+     *             if no computer with this id can be found.
+     */
+    void delete(Long id) throws NoSuchElementException;
 
     /**
      * @return count of computer entries in database.
      */
-    int getCount();
+    default int getCount() {
+        return getCount("");
+    }
 
 
     /**

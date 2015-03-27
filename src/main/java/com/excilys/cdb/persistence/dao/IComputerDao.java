@@ -86,12 +86,14 @@ public interface IComputerDao {
      *
      * @param computer
      *            Computer to add.
+     * @return the added computer.
      * @throw DaoException when trying to add an invalid computer. An invalid
      *        computer is a computer with a non blank field "Computer id". See
      *        "updateComputer()" if you want to update computer information of
-     *        an existing computer.
+     *        an existing computer. Computer will receive a new Id if adding
+     *        succeed.
      */
-    void add(Computer computer) throws DaoException;
+    Computer add(Computer computer) throws DaoException;
 
     /**
      * Update the given computer.
@@ -116,7 +118,21 @@ public interface IComputerDao {
      * @throws IllegalArgumentException
      *             if provided computer is invalid.
      */
-    void delete(Computer computer) throws DaoException, IllegalArgumentException;
+    default void delete(Computer computer) throws DaoException, IllegalArgumentException {
+        delete(computer.getId());
+    }
+
+    /**
+     * Delete the given compute from DB.
+     *
+     * @param id
+     *            The id of the computer to delete.
+     * @throws DaoException
+     *             if deletion failed or computer doesn't exist.
+     * @throws IllegalArgumentException
+     *             if provided computer is invalid.
+     */
+    void delete(Long id) throws DaoException, IllegalArgumentException;
 
 
 }

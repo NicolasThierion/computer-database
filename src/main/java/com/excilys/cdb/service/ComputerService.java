@@ -70,9 +70,9 @@ public class ComputerService implements IComputerService {
     }
 
     @Override
-    public void add(Computer computer) throws IllegalArgumentException {
+    public Computer add(Computer computer) throws IllegalArgumentException {
         try {
-            mComputerDao.add(computer);
+            return mComputerDao.add(computer);
         } catch (final DaoException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
@@ -88,9 +88,9 @@ public class ComputerService implements IComputerService {
     }
 
     @Override
-    public void delete(Computer computer) throws NoSuchElementException {
+    public void delete(Long id) throws NoSuchElementException {
         try {
-            mComputerDao.delete(computer);
+            mComputerDao.delete(id);
         } catch (final DaoException e) {
             throw new NoSuchElementException(e.getMessage());
         }
