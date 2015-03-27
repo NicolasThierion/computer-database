@@ -38,7 +38,7 @@ public class DashboardServlet extends HttpServlet {
         /** search parameter name. */
         private static final String SEARCH      = "search";
         /** page size parameter name. */
-        private static final String PAGE_SIZE   = "pageSize";
+        private static final String PAGE_SIZE   = "size";
         /** search offset parameter name. */
         private static final String PAGE_OFFSET = "offset";
     }
@@ -49,14 +49,17 @@ public class DashboardServlet extends HttpServlet {
         private static final String PAGE_BEAN = "resultsPageBean";
     }
 
+    /** parameters of this context. */
+    private class ServletContext {
+        public int    pageSize = DEFAULT_PAGE_SIZE;
+        public int    offset   = 0;
+        public String queryName;
+    }
+
     /* ***
      * ATTRIBUTES
      */
     private IComputerService mComputerService;
-    private int              mPageSize = DEFAULT_PAGE_SIZE;
-    private int              mOffset   = 0;
-    private String           mQueryName;
-    private String           mPageOffsetStr;
 
     @Override
     public void init() {
@@ -113,47 +116,51 @@ public class DashboardServlet extends HttpServlet {
 
         List<Computer> computers = new LinkedList<Computer>();
 
-        mCheckParameters(request, response);
+        // get page variables
+        final ServletContext context = mCheckParameters(request, response);
 
         // count results & store them in a Page<Computer>
-        final int totalResults = mComputerService.getCount(mQueryName);
+        final int totalResults = mComputerService.getCount(context.queryName);
 
         if (totalResults > 0) {
             // select all computer in page range, & ensure offset is not too
             // far.
-            computers = mComputerService.listLikeName(mOffset, mPageSize, mQueryName);
-            if (mOffset > totalResults) {
-                mOffset = totalResults;
+            computers = mComputerService.listLikeName(context.offset, context.pageSize, context.queryName);
+            if (context.offset > totalResults) {
+                context.offset = totalResults;
             }
-
         }
 
         final List<ComputerDto> dtos = ComputerDto.fromComputers(computers);
-        final Page<ComputerDto> page = new Page<ComputerDto>(dtos, mOffset, totalResults, mQueryName);
+        final Page<ComputerDto> page = new Page<ComputerDto>(dtos, context.offset, totalResults, context.queryName);
 
         // set result page & send redirect.
         request.setAttribute(ResParam.PAGE_BEAN, page);
         getServletContext().getRequestDispatcher(JSP_URI).forward(request, response);
     }
 
-    private void mCheckParameters(HttpServletRequest request, HttpServletResponse response) {
+    private ServletContext mCheckParameters(HttpServletRequest request, HttpServletResponse response) {
+
+        final ServletContext context = new ServletContext();
+
         // presence of search parameter?
-        mQueryName = request.getParameter(ReqParam.SEARCH);
+        context.queryName = request.getParameter(ReqParam.SEARCH);
         // search empty name if name is null => search for all computers.
-        if (mQueryName == null) {
-            mQueryName = "";
+        if (context.queryName == null) {
+            context.queryName = "";
         }
 
         // presence of pageSize parameter?
         final String pageSizeStr = request.getParameter(ReqParam.PAGE_SIZE);
         if (pageSizeStr != null && !pageSizeStr.trim().isEmpty()) {
-            mPageSize = Integer.parseInt(pageSizeStr.trim());
+            context.pageSize = Integer.parseInt(pageSizeStr.trim());
         }
 
         // presence of offset parameter?
-        mPageOffsetStr = request.getParameter(ReqParam.PAGE_OFFSET);
-        if (mPageOffsetStr != null && !mPageOffsetStr.trim().isEmpty()) {
-            mOffset = Integer.parseInt(mPageOffsetStr.trim());
+        final String offsetStr = request.getParameter(ReqParam.PAGE_OFFSET);
+        if (offsetStr != null && !offsetStr.trim().isEmpty()) {
+            context.offset = Integer.parseInt(offsetStr.trim());
         }
+        return context;
     }
 }

@@ -13,113 +13,172 @@ import java.util.List;
  */
 public class Page<T> implements Serializable {
 
+    public enum SortOrder {
+        DESC("desc"), ASC("asc"), UNSORTED("none");
+        private String mLabel;
+
+        private SortOrder(String label) {
+            mLabel = label;
+        }
+
+        @Override
+        public String toString() {
+            return mLabel;
+        }
+    }
+
     /**
      *
      */
     private static final long serialVersionUID = -7930434399646098394L;
+
+    public static final SortOrder DEFAULT_SORT_ORDER = SortOrder.UNSORTED;
     /* ***
      * ATTRIBUTES
      */
     /** entities contained by this page. */
-    private List<T> mContent;
+    private List<T>           mContent;
     /** optional query string. */
-    private String mQueryString;
+    private String            mSearch;
     /** start element. */
-    private int mOffset;
+    private int               mOffset;
     /** page length. */
-    private int mLength;
+    private int               mSize;
     /** page number. */
-    private int mPageNum;
+    private int               mPageNum;
     /** maximum results. */
-    private int mMaxResults;
-
-    // TODO host "sort by"?
+    private int               mMaxResults;
+    /** sort criteria. */
+    private String            mSortBy;
+    /** sort order. */
+    private SortOrder         mSortOrder;
 
     /* ***
      * CONSTRUCTORS
      */
-    private void newPage(List<T> content, int offset,
-            int maxResults, String queryString) {
+    private void mNewPage(List<T> content, int offset,
+ int maxResults, String queryString, String sortBy, SortOrder order) {
+        if (content != null && maxResults < content.size()) {
+            throw new IllegalArgumentException("Content has more element than the provided \"maxResults\" parameter");
+        }
+
         mOffset = offset;
         mMaxResults = maxResults;
-        mQueryString = queryString;
-
+        mSearch = queryString;
+        mSortBy = sortBy;
+        mSortOrder = order;
         if (content != null && !content.isEmpty()) {
             mContent = new LinkedList<T>(content);
-            mLength = content.size();
-            mPageNum = (mOffset / mLength) + 1;
+            mSize = content.size();
+            mPageNum = (mOffset / mSize) + 1;
         } else {
             mContent = null;
-            mLength = 0;
+            mSize = 0;
             mPageNum = 0;
         }
 
     }
 
+    /**
+     * Default constructor. Create a new empty page, with null content, null
+     * query.
+     */
     public Page() {
-        newPage(null, 0, -1, null);
+        mNewPage(null, 0, 0, null, null, DEFAULT_SORT_ORDER);
     }
 
+    /**
+     * Constructor with arguments.
+     * Create a new page with given content, starting at the given offset.
+     *
+     * @param content
+     *            content of the page.
+     * @param offset
+     *            search offset
+     * @param maxResults
+     *            count of total results.
+     * @param queryString
+     *            query string that generated this content.
+     */
     public Page(List<T> content, int offset, int maxResults,
             String queryString) {
-        newPage(content, offset, maxResults, queryString);
+        mNewPage(content, offset, maxResults, queryString, null, DEFAULT_SORT_ORDER);
     }
 
+    /**
+     * Constructor with arguments. Create a new page with given content,
+     * starting at the given offset, & a null queryString.
+     *
+     * @param content
+     *            content of the page.
+     * @param offset
+     *            search offset
+     * @param maxResults
+     *            count of total results.
+     */
     public Page(List<T> content, int offset, int maxResults) {
-        newPage(content, offset, maxResults, null);
+        mNewPage(content, offset, maxResults, null, null, DEFAULT_SORT_ORDER);
     }
 
-    public Page(Page<T> p) {
-        newPage(p.mContent, p.mOffset, p.mMaxResults, p.mQueryString);
+    /**
+     * Copy constructor.
+     *
+     * @param page
+     *            Page to copy.
+     */
+    public Page(Page<T> page) {
+        final Page<T> p = page;
+        mNewPage(p.mContent, p.mOffset, p.mMaxResults, p.mSearch, p.mSortBy, p.mSortOrder);
     }
 
+    /**
+     * Constructor with arguments. Create a new page with given content,
+     * starting at offset 0, with & a null queryString.
+     *
+     * @param content
+     *            content of the page.
+     */
     public Page(List<T> companies) {
-        newPage(companies, 0, companies.size(), null);
+        mNewPage(companies, 0, companies.size(), null, null, DEFAULT_SORT_ORDER);
     }
 
     /* ***
-     * ACCESSORS
+     * PUBLIC METHODS
      */
+    public String toUrlArgs() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("offset=").append(mOffset).append("&maxResults=").append(mMaxResults);
+        sb.append("&search=").append(mSearch).append("&sortBy=").append(mSortBy);
+        sb.append("&order=").append(mSortOrder).append("&size=").append(mSize);
+        return sb.toString();
+    }
 
+    /* ***
+     * GETTERS
+     */
     public List<T> getContent() {
         return mContent;
     }
 
-    public void setContent(List<T> content) {
-        newPage(content, mOffset, mMaxResults, mQueryString);
-
-    }
-
-    public String getQueryString() {
-        return mQueryString;
-    }
-
-    public void setQueryString(String queryString) {
-        mQueryString = queryString;
+    public String getSearch() {
+        return mSearch;
     }
 
     public int getOffset() {
         return mOffset;
     }
 
-    public void setOffset(int offset) {
-        newPage(mContent, offset, mMaxResults, mQueryString);
-    }
-
-    public int getLength() {
-        return mLength;
-    }
-
-
-    /**
-     * Same as {@link #getLength()}.
-     *
-     * @return number of elements in this page.
-     */
     public int getSize() {
-        return mLength;
+        return mSize;
     }
 
+    public String getSortBy() {
+        return mSortBy;
+    }
+
+    public SortOrder getSortOrder() {
+        return mSortOrder;
+    }
 
     public int getNum() {
         return mPageNum;
@@ -129,13 +188,59 @@ public class Page<T> implements Serializable {
         return mMaxResults;
     }
 
+
+    public int getMaxNum() {
+        return (int) Math.ceil((double) (mMaxResults) / ((double) mSize));
+    }
+
+    /* ***
+     * SETTERS
+     */
+
+    public void setContent(List<T> content) {
+        mNewPage(content, mOffset, mMaxResults, mSearch, mSortBy, mSortOrder);
+    }
+
+    public void setSearch(String queryString) {
+        mSearch = queryString;
+    }
+
+    public void setOffset(int offset) {
+        mNewPage(mContent, offset, mMaxResults, mSearch, mSortBy, mSortOrder);
+    }
+
+    /**
+     * Same as {@link #setSort(String, SortOrder)} with
+     * {@link #setSortOrder(SortOrder)}.
+     *
+     * @param sortBy
+     * @param order
+     */
+    public void setSort(String sortBy, SortOrder order) {
+        mSortBy = sortBy;
+        mSortOrder = order;
+    }
+
+    public void setSortBy(String sortBy) {
+        mSortBy = sortBy;
+    }
+
+    public void setSortOrder(SortOrder order) {
+        mSortOrder = order;
+    }
+
     public void setTotalCount(int total) {
         mMaxResults = total;
     }
 
-    public int getMaxNum() {
-        return (int) Math.ceil((double) (mMaxResults) / ((double) mLength));
+    public void setNum(int num) {
+        mPageNum = num;
     }
+
+    public void setSize(int size) {
+        mSize = size;
+    }
+
 
     /* ***
      * Object OVERRIDES
@@ -147,12 +252,12 @@ public class Page<T> implements Serializable {
         int result = 1;
         result = prime * result
                 + ((mContent == null) ? 0 : mContent.hashCode());
-        result = prime * result + mLength;
+        result = prime * result + mSize;
         result = prime * result + mMaxResults;
         result = prime * result + mOffset;
         result = prime * result + mPageNum;
         result = prime * result
-                + ((mQueryString == null) ? 0 : mQueryString.hashCode());
+                + ((mSearch == null) ? 0 : mSearch.hashCode());
         return result;
     }
 
@@ -179,7 +284,7 @@ public class Page<T> implements Serializable {
         } else if (!mContent.equals(other.mContent)) {
             return false;
         }
-        if (mLength != other.mLength) {
+        if (mSize != other.mSize) {
             return false;
         }
         if (mMaxResults != other.mMaxResults) {
@@ -191,11 +296,11 @@ public class Page<T> implements Serializable {
         if (mPageNum != other.mPageNum) {
             return false;
         }
-        if (mQueryString == null) {
-            if (other.mQueryString != null) {
+        if (mSearch == null) {
+            if (other.mSearch != null) {
                 return false;
             }
-        } else if (!mQueryString.equals(other.mQueryString)) {
+        } else if (!mSearch.equals(other.mSearch)) {
             return false;
         }
         return true;
@@ -206,8 +311,8 @@ public class Page<T> implements Serializable {
 
         final StringBuilder sb = new StringBuilder();
         sb.append(getClass().getSimpleName()).append("@").append(hashCode());
-        sb.append("; PageNum=").append(mPageNum).append("; PageLength=").append(mLength);
-        sb.append("; Offset=").append(mOffset).append("; Query=").append(mQueryString);
+        sb.append("; PageNum=").append(mPageNum).append("; PageLength=").append(mSize);
+        sb.append("; Offset=").append(mOffset).append("; Query=").append(mSearch);
         return sb.toString();
     }
 

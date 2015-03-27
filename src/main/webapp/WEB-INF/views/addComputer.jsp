@@ -38,7 +38,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="companyId">Company</label>
-                                <mylib:form.select entities="${companiesPageBean}"
+                                <mylib:page.toSelect entities="${companiesPageBean}"
                                     selectedId="${computerBean.company.id}" selectTagId="companyId" />
                             </div>
                         </fieldset>

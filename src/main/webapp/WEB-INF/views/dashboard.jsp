@@ -15,10 +15,10 @@
 
 
 <% //set jsp variables %>
-<c:set var="queryName" value="${resultsPageBean.queryString}" />
+<c:set var="search" value="${resultsPageBean.search}" />
 <c:set var="resultsCount" value="${resultsPageBean.totalCount}" />
 <c:set var="pageNum" value="${resultsPageBean.num}" />
-<c:set var="pageSize" value="${resultsPageBean.length}" />
+<c:set var="pageSize" value="${resultsPageBean.size}" />
 <c:set var="pageNumMax" value="${resultsPageBean.maxNum}" />
 
 
@@ -42,7 +42,7 @@
             <div id="actions" class="form-horizontal">
                 <div class="pull-left">
                     <form id="searchForm" action="searchComputer" method="GET" class="form-inline">
-                        <input type="search" id="searchbox" name="search" class="form-control" placeholder="Search name" value="${queryName}" />
+                        <input type="search" id="searchbox" name="search" class="form-control" placeholder="Search name" value="${search}" />
                         <input type="submit" id="searchsubmit" value="Filter by name" class="btn btn-primary" />
                     </form>
                 </div>
@@ -92,7 +92,7 @@
     </section>
 
     <footer class="navbar-fixed-bottom">
-        <mylib:pagination page="${resultsPageBean}"/>
+        <mylib:page.paginator page="${resultsPageBean}"/>
     </footer>
     <script src="js/dashboard.js"></script>
 
