@@ -1,4 +1,4 @@
-package com.excilys.cdb.dao.mysql;
+package com.excilys.cdb.persistence.dao.mysql;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -10,12 +10,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.excilys.cdb.dao.ConnectionFactory;
-import com.excilys.cdb.dao.DaoException;
-import com.excilys.cdb.dao.DaoException.ErrorType;
-import com.excilys.cdb.dao.ICompanyDao;
 import com.excilys.cdb.model.Company;
-import com.excilys.cdb.persistence.CompanyMapper;
+import com.excilys.cdb.persistence.ConnectionFactory;
+import com.excilys.cdb.persistence.dao.DaoException;
+import com.excilys.cdb.persistence.dao.ICompanyDao;
+import com.excilys.cdb.persistence.dao.DaoException.ErrorType;
+import com.excilys.cdb.persistence.mapper.CompanyMapper;
 
 /**
  * MySQL immplementation of ICompanyDao.
@@ -165,7 +165,7 @@ public final class CompanyDao implements ICompanyDao {
         if (name == null) {
             throw new IllegalArgumentException("Company name cannot be null");
         }
-
+        name = "%" + name + "%";
         int count = 0;
         try {
             // get a connection & prepare needed statement

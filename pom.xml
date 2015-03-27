@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    
+
     <!-- project information -->
     <groupId>com.excilys.cdb</groupId>
     <artifactId>computer-database</artifactId>
@@ -18,19 +18,18 @@
         <jreTarget>1.8</jreTarget>
 
         <!-- dependencies versions -->
-        <junitVersion>4.12</junitVersion>
-        <mysqlConnectVersion>5.1.6</mysqlConnectVersion>
-        <slf4jVersion>1.7.10</slf4jVersion>
-        <log4jBridgeVersion>1.7.10</log4jBridgeVersion>
-        <log4jVersion>1.2.17</log4jVersion>
-        <log4jdbcVersion>1.2</log4jdbcVersion>
-        <mockitoVersion>1.9.5</mockitoVersion>
-        <servletVersion>3.1.0</servletVersion>
-        <taglibVersion>1.1.2</taglibVersion>
-        <jstlVersion>1.2</jstlVersion>
-        <seleniumVersion>2.25.0</seleniumVersion>
-
-
+        <junit.version>4.12</junit.version>
+        <mysql.connector.version>5.1.34</mysql.connector.version>
+        <slf4j.version>1.7.10</slf4j.version>
+        <slf4j.log4j-bridge.version>1.7.10</slf4j.log4j-bridge.version>
+        <log4j.version>1.2.17</log4j.version>
+        <log4jdbc.version>1.2</log4jdbc.version>
+        <mockito.version>1.9.5</mockito.version>
+        <servlet.version>3.1.0</servlet.version>
+        <taglib.version>1.1.2</taglib.version>
+        <jstl.version>1.2</jstl.version>
+        <selenium.version>2.25.0</selenium.version>
+        <bonecp.version>0.8.0.RELEASE</bonecp.version>
     </properties>
 
     <dependencies>
@@ -38,81 +37,89 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>${junitVersion}</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-        
+
         <!-- MySQL Connect -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>${mysqlConnectVersion}</version>
+            <version>${mysql.connector.version}</version>
         </dependency>
-        
+
         <!-- SLF4j api -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>${slf4jVersion}</version>
+            <version>${slf4j.version}</version>
         </dependency>
-        
+
         <!-- SLF4j maps to 'log4j12' for tests -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>${log4jBridgeVersion}</version>
+            <version>${slf4j.log4j-bridge.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-            <version>${log4jVersion}</version>
+            <version>${log4j.version}</version>
             <scope>runtime</scope>
         </dependency>
-        
+
         <!-- SLF4j maps to 'log4jdbc' -->
         <dependency>
             <groupId>com.googlecode.log4jdbc</groupId>
             <artifactId>log4jdbc</artifactId>
-            <version>${log4jdbcVersion}</version>
+            <version>${log4jdbc.version}</version>
         </dependency>
-        
+
         <!-- Mockito -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
-            <version>${mockitoVersion}</version>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
-        
+
         <!-- Servlets -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>${servletVersion}</version>
+            <version>${servlet.version}</version>
             <scope>provided</scope>
         </dependency>
-        
+
         <!-- taglib -->
         <dependency>
             <groupId>taglibs</groupId>
             <artifactId>standard</artifactId>
-            <version>${taglibVersion}</version>
+            <version>${taglib.version}</version>
         </dependency>
-        
+
         <!-- jstl -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
-            <version>${jstlVersion}</version>
+            <version>${jstl.version}</version>
         </dependency>
 
         <!-- Selenium -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>${seleniumVersion}</version>
+            <version>${selenium.version}</version>
         </dependency>
+
+        <!-- BoneCP -->
+        <dependency>
+            <groupId>com.jolbox</groupId>
+            <artifactId>bonecp</artifactId>
+            <version>${bonecp.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>

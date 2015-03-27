@@ -15,10 +15,13 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.support.ui.Select;
 
-import com.excilys.cdb.dao.mysql.ComputerDao;
 import com.excilys.cdb.dto.ComputerDto;
 import com.excilys.cdb.model.Computer;
+import com.excilys.cdb.persistence.dao.mysql.CompanyDao;
+import com.excilys.cdb.persistence.dao.mysql.ComputerDao;
+import com.excilys.cdb.service.CompanyService;
 import com.excilys.cdb.service.ComputerService;
+import com.excilys.cdb.service.ICompanyService;
 import com.excilys.cdb.service.IComputerService;
 
 /**
@@ -49,8 +52,12 @@ public final class EditComputerTest extends CdbViewTest {
     private WebDriver mWebDriver;
     /** current page's url. */
     private String              mUrl;
-    /** Computer service used for fetching computers in this test suite. */
+    /**
+     * Computer & Company service used for fetching entities in this test suite.
+     */
     private IComputerService    mComputerService;
+    private ICompanyService     mCompanyService;
+
 
     /**
      * Init webDriver, DAOs & Service.
@@ -59,6 +66,7 @@ public final class EditComputerTest extends CdbViewTest {
     public void init() {
         mWebDriver = new HtmlUnitDriver();
         mComputerService = new ComputerService(ComputerDao.getInstance());
+        mCompanyService = new CompanyService(CompanyDao.getInstance());
     }
 
     /**
@@ -68,6 +76,7 @@ public final class EditComputerTest extends CdbViewTest {
     public void destroy() {
         mWebDriver.quit();
         mComputerService = null;
+        mCompanyService = null;
     }
 
     /**
@@ -87,6 +96,22 @@ public final class EditComputerTest extends CdbViewTest {
             } catch (final Exception e) {
             }
         }
+    }
+
+    @Test
+    public void testCompanyListFilled() {
+        final String uri = String.format(TEST_URI, 1L);
+        super.setUri(uri);
+        mUrl = super.getUrl();
+        mWebDriver.get(mUrl);
+
+        // find form elements
+        final WebElement form = mWebDriver.findElement(By.tagName("form"));
+        final Select companySelect = new Select(form.findElement(By.id("companyId")));
+
+        // list must be filled by as many companies as it exists, + 1 null
+        // choice.
+        assertTrue(companySelect.getOptions().size() == mCompanyService.getCount() + 1);
     }
 
     /**

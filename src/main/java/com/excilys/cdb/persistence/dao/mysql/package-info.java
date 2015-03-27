@@ -3,4 +3,4 @@
  * @author excilys
  *
  */
-package com.excilys.cdb.dao.mysql;
+package com.excilys.cdb.persistence.dao.mysql;

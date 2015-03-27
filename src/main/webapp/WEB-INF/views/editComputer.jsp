@@ -56,20 +56,8 @@
                                     id="discontinuedError" class="collapse error">Invalid date.</span>
                             </div>
                             <div class="form-group">
-                                <label for="companyId">Company</label> <select class="form-control" id="companyId"
-                                    name="companyId">
-                                    <option value="0">--</option>
-                                    <c:set var="selected" value=""></c:set>
-                                    <c:set var="found" value="false"></c:set>
-                                    <c:forEach var="companyBean" items="${companiesPageBean.content}">
-                                        <c:if test="${companyBean.id eq computerBean.company.id && found eq false }">
-                                            <c:set var="selected" value="selected=\"selected\""></c:set>
-                                            <c:set var="found" value="true"></c:set>
-                                        </c:if>
-                                        <option value="${companyBean.id}" ${selected}>${companyBean.name}</option>
-                                        <c:set var="selected" value=""></c:set>
-                                    </c:forEach>
-                                </select>
+                                <label for="companyId">Company</label>
+                                    <mylib:form.select entities="${companiesPageBean}" selectedId="${computerBean.company.id}" selectTagId="companyId"/>
                             </div>
                         </fieldset>
                         <div class="actions pull-right">

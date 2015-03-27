@@ -3,8 +3,8 @@ package com.excilys.cdb.service;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import com.excilys.cdb.dao.ICompanyDao;
 import com.excilys.cdb.model.Company;
+import com.excilys.cdb.persistence.dao.ICompanyDao;
 
 public class CompanyService implements ICompanyService {
 

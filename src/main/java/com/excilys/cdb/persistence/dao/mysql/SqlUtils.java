@@ -1,4 +1,4 @@
-package com.excilys.cdb.dao.mysql;
+package com.excilys.cdb.persistence.dao.mysql;
 
 import java.io.BufferedReader;
 import java.io.File;

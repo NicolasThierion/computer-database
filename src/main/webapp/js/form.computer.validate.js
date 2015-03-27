@@ -49,7 +49,7 @@ var error = false;
 var focusedField = null;
 
 
-var checkNameField = function(name) {
+var checkNameField = function() {
 	if (checkName($("#computerName").val())) {
 		$("#computerName").removeClass("error");
 		$("#computerNameError").addClass("collapse");
@@ -66,7 +66,7 @@ var checkNameField = function(name) {
 	}
 }
 
-var checkIntroDateField = function(date) {
+var checkIntroDateField = function() {
 	if (checkDate($("#introduced").val())) {
 		$("#introduced").removeClass("error");
 		$("#introducedError").addClass("collapse");
@@ -74,10 +74,10 @@ var checkIntroDateField = function(date) {
 		$("#introduced").addClass("error");
 		$("#introducedError").addClass("error");
 		$("#introducedError").removeClass("collapse");
-	}
-	if(!error) {
-		error = true;
-		focusedField = $("#introduced");
+		if(!error) {
+			error = true;
+			focusedField = $("#introduced");
+		}
 	}
 }
 
@@ -89,10 +89,10 @@ var checkDiscontDateField = function() {
 		$("#discontinued").addClass("error");
 		$("#discontinuedError").addClass("error");
 		$("#discontinuedError").removeClass("collapse");
-	}
-	if(!error) {
-		error = true;
-		focusedField = $("#discontinued");
+		if(!error) {
+			error = true;
+			focusedField = $("#discontinued");
+		}
 	}
 }
 
@@ -104,6 +104,7 @@ $("#introduced").keyup(function() {checkIntroDateField()});
 $("#discontinued").keyup(function() {checkDiscontDateField()});
 
 var validate = function() {
+	error = false;
 	checkNameField();
 	checkIntroDateField();
 	checkDiscontDateField();

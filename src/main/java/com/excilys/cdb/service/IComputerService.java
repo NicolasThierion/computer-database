@@ -29,6 +29,11 @@ public interface IComputerService {
      */
     List<Computer> listByName(int offset, int count);
 
+    // TODO doc
+    default List<Computer> listByName() {
+        return listByName(0, Integer.MAX_VALUE);
+    }
+
     /**
      * List computers with name matching given 'name' parameter. Order results
      * by name.
@@ -45,6 +50,10 @@ public interface IComputerService {
      * @return the list of results.
      */
     List<Computer> listLikeName(int offset, int count, String name);
+
+    default List<Computer> listLikeName(String name) {
+        return listLikeName(0, Integer.MAX_VALUE, name);
+    }
 
     /**
      * Adds the computer to DB, provided that this computer doesn't exist
@@ -119,5 +128,6 @@ public interface IComputerService {
      *         name.
      */
     int getCount(String name);
+
 
 }

@@ -1,4 +1,4 @@
-package com.excilys.cdb.dao.mysql;
+package com.excilys.cdb.persistence.dao.mysql;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -10,13 +10,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.excilys.cdb.dao.ConnectionFactory;
-import com.excilys.cdb.dao.DaoException;
-import com.excilys.cdb.dao.DaoException.ErrorType;
-import com.excilys.cdb.dao.IComputerDao;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.persistence.ComputerMapper;
+import com.excilys.cdb.persistence.ConnectionFactory;
+import com.excilys.cdb.persistence.dao.DaoException;
+import com.excilys.cdb.persistence.dao.DaoException.ErrorType;
+import com.excilys.cdb.persistence.dao.IComputerDao;
+import com.excilys.cdb.persistence.mapper.ComputerMapper;
 
 
 /**
@@ -236,7 +236,7 @@ public final class ComputerDao implements IComputerDao {
         try {
             // get a connection & prepare needed statement
             dbConn = ConnectionFactory.getInstance().getConnection();
-            insertComputerStatement = dbConn.prepareStatement(sqlStr);
+            insertComputerStatement = dbConn.prepareStatement(sqlStr, PreparedStatement.RETURN_GENERATED_KEYS);
 
             //ensure that we are attempting to add a NEW computer (with id field = null)"
             final Long id = computer.getId();
@@ -324,7 +324,7 @@ public final class ComputerDao implements IComputerDao {
             updateComputerStatement.setLong(colId++, h.getId());
 
             if (updateComputerStatement.executeUpdate() != 1) {
-                throw new DaoException("Something went wrong while deleting compuer " + computer
+                throw new DaoException("Something went wrong while updating computer " + computer
                         + ". Maybe this computer doesn't exist?",
                         ErrorType.SQL_ERROR);
             }
@@ -356,7 +356,7 @@ public final class ComputerDao implements IComputerDao {
 
             deleteComputerStatement.setLong(1, computer.getId());
             if (deleteComputerStatement.executeUpdate() != 1) {
-                throw new DaoException("Something went wrong while deleting compuer " + computer
+                throw new DaoException("Something went wrong while deleting computer " + computer
                         + ". Maybe this computer doesn't exist?",
                         ErrorType.SQL_ERROR);
             }

@@ -7,11 +7,11 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.excilys.cdb.dao.DaoException;
-import com.excilys.cdb.dao.IComputerDao;
-import com.excilys.cdb.dao.mysql.ComputerDao;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
+import com.excilys.cdb.persistence.dao.DaoException;
+import com.excilys.cdb.persistence.dao.IComputerDao;
+import com.excilys.cdb.persistence.dao.mysql.ComputerDao;
 
 /**
  * Test methods from ComputerDao.

@@ -9,19 +9,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.excilys.cdb.dao.mysql.CompanyDao;
-import com.excilys.cdb.dao.mysql.ComputerDao;
 import com.excilys.cdb.dto.ComputerDto;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Page;
+import com.excilys.cdb.persistence.dao.mysql.CompanyDao;
+import com.excilys.cdb.persistence.dao.mysql.ComputerDao;
 import com.excilys.cdb.service.CompanyService;
 import com.excilys.cdb.service.ComputerService;
 import com.excilys.cdb.service.ICompanyService;
 import com.excilys.cdb.service.IComputerService;
 
 /**
- * Servlet implementation to handle 'edit computer' page.
+ * Servlet implementation to handle 'add computer' page.
  */
 @WebServlet("/addComputer")
 public class AddComputerServlet extends HttpServlet {
@@ -36,8 +36,6 @@ public class AddComputerServlet extends HttpServlet {
 
     /** input parameters. sent by JSP. */
     private static class ReqParam {
-        /** Id of computer to edit. */
-        private static final String COMPUTER_ID      = "computerId";
         /** if should update computer. */
         private static final String IS_UPDATE        = "update";
         /** name of computer to update. */
@@ -62,7 +60,7 @@ public class AddComputerServlet extends HttpServlet {
     private IComputerService mComputerService;
     private ICompanyService  mComanyService;
 
-    private final Long             mComputerId   = -1L;
+    private final Long       mComputerId   = null;
     private boolean          mShouldUpdate = false;
     private String           mComputerName;
     private String           mComputerRelease;
@@ -108,7 +106,7 @@ public class AddComputerServlet extends HttpServlet {
         mCheckParameters(request, response);
 
         if (mShouldUpdate) {
-            mDoUpdate(request, response);
+            mDoAdd(request, response);
         }
         mGotoAdd(request, response);
     }
@@ -116,10 +114,10 @@ public class AddComputerServlet extends HttpServlet {
     /* ***
      * PRIVATE METHODS
      */
-    private void mDoUpdate(HttpServletRequest request, HttpServletResponse response) {
+    private void mDoAdd(HttpServletRequest request, HttpServletResponse response) {
         final Computer computer = new ComputerDto(mComputerId, mComputerName, mComputerRelease, mComputerDiscont,
                 mCompanyId).toComputer();
-        mComputerService.update(computer);
+        mComputerService.add(computer);
     }
 
     private void mGotoAdd(HttpServletRequest request, HttpServletResponse response) throws ServletException,

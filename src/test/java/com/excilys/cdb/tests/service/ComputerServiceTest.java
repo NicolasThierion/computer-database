@@ -10,10 +10,10 @@ import java.util.NoSuchElementException;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.excilys.cdb.dao.mysql.CompanyDao;
-import com.excilys.cdb.dao.mysql.ComputerDao;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
+import com.excilys.cdb.persistence.dao.mysql.CompanyDao;
+import com.excilys.cdb.persistence.dao.mysql.ComputerDao;
 import com.excilys.cdb.service.CompanyService;
 import com.excilys.cdb.service.ComputerService;
 import com.excilys.cdb.service.ICompanyService;

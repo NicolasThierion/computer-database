@@ -4,12 +4,12 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Scanner;
 
-import com.excilys.cdb.dao.ICompanyDao;
-import com.excilys.cdb.dao.IComputerDao;
-import com.excilys.cdb.dao.mysql.CompanyDao;
-import com.excilys.cdb.dao.mysql.ComputerDao;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
+import com.excilys.cdb.persistence.dao.ICompanyDao;
+import com.excilys.cdb.persistence.dao.IComputerDao;
+import com.excilys.cdb.persistence.dao.mysql.CompanyDao;
+import com.excilys.cdb.persistence.dao.mysql.ComputerDao;
 
 /**
  * This is the main class for the UI; This program displays a CLI to control

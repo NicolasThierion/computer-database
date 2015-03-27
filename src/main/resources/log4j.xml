@@ -50,12 +50,12 @@
 
 
     <!-- log SQL (pre-execution) plus exceptions caused by SQL -->
-    <!-- <logger name="jdbc.sqlonly" additivity="false"> <level value="debug"
-        /> <appender-ref ref="sql-appender" /> </logger> -->
+    <logger name="jdbc.sqlonly" additivity="false"> <level value="FATAL"
+        /> <appender-ref ref="sql-appender" /> </logger>
 
     <!-- log SQL with timing information, post execution -->
     <logger name="jdbc.sqltiming" additivity="false">
-        <level value="debug" />
+        <level value="FATAL" />
         <appender-ref ref="sql-timing-appender" />
     </logger>
 
@@ -78,7 +78,7 @@
     <!-- by default, log everything to the console with a level of DEBUG
         or higher -->
     <root>
-        <level value="debug" />
+        <level value="FATAL" />
         <appender-ref ref="stdout-appender" />
     </root>
 </log4j:configuration>

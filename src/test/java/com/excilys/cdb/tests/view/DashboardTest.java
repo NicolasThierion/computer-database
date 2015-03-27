@@ -10,7 +10,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
-import com.excilys.cdb.dao.mysql.ComputerDao;
+import com.excilys.cdb.persistence.dao.mysql.ComputerDao;
 import com.excilys.cdb.service.ComputerService;
 import com.excilys.cdb.service.IComputerService;
 
