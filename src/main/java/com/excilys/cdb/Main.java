@@ -20,7 +20,7 @@ public final class Main {
 
         final Logger logger = LoggerFactory.getLogger(Main.class);
         logger.info("Program started");
-        while (context.isExit()) {
+        while (!context.isExit()) {
             CliCommand.getCommand(scanner.next()).execute(context);
         }
         logger.info("Program terminated");

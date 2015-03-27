@@ -20,9 +20,9 @@ import com.excilys.cdb.persistence.mapper.ComputerMapper;
 
 
 /**
- * MySQL immplementation of IComputerDao.
+ * MySQL implementation of IComputerDao.
  *
- * @author Nicolas THIERION
+ * @author Nicolas THIERION.
  * @version 0.2.0
  */
 public final class ComputerDao implements IComputerDao {

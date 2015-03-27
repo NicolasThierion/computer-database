@@ -1,16 +1,14 @@
 package com.excilys.cdb.cli;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
+import com.excilys.cdb.model.validator.ComputerValidator;
 import com.excilys.cdb.service.ServiceException;
 
 /**
@@ -155,25 +153,26 @@ public enum CliCommand {
             }
             System.out.println("Program terminated");
             context.setExit(true);
-            logger.info("Program terminated with command exit");
         }
 
     };
 
+    /* ***
+     * ATTRIBUTES
+     */
+    /** maps the String commands to the corresponding CliCommands. */
     private static Map<String, CliCommand> commands;
     static {
         commands = new HashMap<>();
         for (final CliCommand com : CliCommand.values()) {
-            commands.put(com.commandLabel, com);
+            commands.put(com.mCommandLabel, com);
         }
     }
 
-    private static Logger               logger = LoggerFactory.getLogger(CliCommand.class);
-
-    private final String                commandLabel;
+    private final String                mCommandLabel;
 
     private CliCommand(String commandLabel) {
-        this.commandLabel = commandLabel;
+        mCommandLabel = commandLabel;
     }
 
     /*
@@ -181,7 +180,7 @@ public enum CliCommand {
      */
     private static void populate(CliContext context, Computer computer) {
         //TODO
-        /*
+
         System.out.println("Name : ");
         if (context.getScanner().hasNext()) {
             computer.setName(context.getScanner().next());
@@ -189,33 +188,29 @@ public enum CliCommand {
         System.out.println("Introduced :");
         if (context.getScanner().hasNext()) {
             final String tok = context.getScanner().next();
-            final StringBuilder sb = new StringBuilder();
-            sb.append(tok).append(" ").append("00:00:00");
-            if (ComputerDatabaseValidator.INSTANCE.validateDateTime(sb.toString())) {
+
+            if (new ComputerValidator().validateDateTime(tok)) {
                 final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                final LocalDateTime dateTime = LocalDateTime.parse(sb.toString(), formatter);
-                computer.setIntroducedDate(dateTime);
+                final LocalDate releaseDate = LocalDate.parse(tok, formatter);
+                computer.setReleaseDate(releaseDate);
             }
         }
         System.out.println("Discontinued :");
-        if (context.getScanner().hasNextToken()) {
-            final String tok = context.getScanner().getNextToken();
-            final StringBuilder sb = new StringBuilder();
-            sb.append(tok).append(" ").append("00:00:00");
-            if (ComputerDatabaseValidator.INSTANCE.validateDateTime(sb.toString())) {
+        if (context.getScanner().hasNext()) {
+            final String tok = context.getScanner().next();
+            if (new ComputerValidator().validateDateTime(tok)) {
                 final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                final LocalDateTime dateTime = LocalDateTime.parse(sb.toString(), formatter);
-                computer.setDiscontinuedDate(dateTime);
+                final LocalDate dateTime = LocalDate.parse(tok, formatter);
+                computer.setDiscontDate(dateTime);
             }
         }
         System.out.println("Company id : ");
-        if (context.getScanner().hasNextToken()) {
+        if (context.getScanner().hasNext()) {
             final Company c = new Company();
-            c.setId(Long.valueOf(context.getScanner().getNextToken()));
+            c.setId(Long.valueOf(context.getScanner().next()));
             computer.setCompany(c);
         }
 
-        */
     }
 
     /**
@@ -228,7 +223,6 @@ public enum CliCommand {
     public static CliCommand getCommand(String command) {
         CliCommand c = commands.get(command);
         if (c == null) {
-            logger.info("Bad command entered, redirected on help");
             c = CliCommand.HELP;
         }
         return c;
