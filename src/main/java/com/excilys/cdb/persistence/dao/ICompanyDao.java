@@ -10,9 +10,9 @@ import com.excilys.cdb.model.Company;
  * services.
  *
  * @author Nicolas THIERION
- * @version 0.1.0
+ * @version 0.3.0
  */
-public interface ICompanyDao {
+public interface ICompanyDao extends ICrudDao<Company> {
 
     /**
      * List computers, oder by name.
@@ -24,6 +24,7 @@ public interface ICompanyDao {
      *            number of computer to return.. nb=0 for unbound search.
      * @return the list of computers
      */
+    @Override
     List<Company> listByName(int begin, int nb);
 
     /**
@@ -40,12 +41,14 @@ public interface ICompanyDao {
      */
     List<Company> listByName(int begin, int nb, String name);
 
+    @Override
     Company searchById(long id);
 
     /**
      *
      * @return count of companies entries in database
      */
+    @Override
     int getCount();
 
     /**
@@ -54,6 +57,7 @@ public interface ICompanyDao {
      * @return count of companies entries in database that matches the given
      *         name.
      */
+    @Override
     int getCount(String name);
 
 

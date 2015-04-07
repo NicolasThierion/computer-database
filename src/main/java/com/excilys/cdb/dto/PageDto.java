@@ -42,8 +42,8 @@ public class PageDto implements Serializable {
     /* ***
      * CONSTRUCTORS
      */
-    private void mNewPage(String contentType, int size, int offset, int maxResults, String queryString, String sortBy,
-            String order) {
+    private void mNewPageDto(String contentType, int size, int offset, int maxResults, String queryString,
+            String sortBy, String order) {
 
         mContentType = contentType;
         mOffset = offset;
@@ -61,17 +61,17 @@ public class PageDto implements Serializable {
     }
 
     public PageDto() {
-        mNewPage(null, 0, 0, 0, null, null, null);
+        mNewPageDto(null, 0, 0, 0, null, null, null);
     }
 
     public PageDto(String contentType, int size, int offset, int maxResults, String queryString, String sortBy,
             String order) {
-        mNewPage(contentType, size, offset, maxResults, queryString, sortBy, order);
+        mNewPageDto(contentType, size, offset, maxResults, queryString, sortBy, order);
     }
 
     public PageDto(PageDto pageDto) {
         final PageDto d = pageDto;
-        mNewPage(d.mContentType, d.mSize, d.mOffset, d.mMaxResults, d.mQueryString, d.mSortBy, d.mSortOrder);
+        mNewPageDto(d.mContentType, d.mSize, d.mOffset, d.mMaxResults, d.mQueryString, d.mSortBy, d.mSortOrder);
     }
 
     public static PageDto fromPage(Page<?> page) {
@@ -83,7 +83,7 @@ public class PageDto implements Serializable {
             size = content.size();
         }
         final PageDto dto = new PageDto();
-        dto.mNewPage(contentType, size, page.getOffset(), page.getMaxNum(), page.getSearch(), page.getSortBy(),
+        dto.mNewPageDto(contentType, size, page.getOffset(), page.getMaxNum(), page.getSearch(), page.getSortBy(),
                 page
                 .getSortOrder().toString());
         return dto;

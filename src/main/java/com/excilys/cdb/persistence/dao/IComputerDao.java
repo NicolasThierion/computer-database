@@ -6,11 +6,13 @@ import com.excilys.cdb.model.Computer;
 
 
 /**
- * Data access object interface. Establish connection to BDD, & offers several services.
+ * Data access object interface. Establish connection to BDD, & offers several
+ * services.
+ *
  * @author Nicolas THIERION
- * @version 0.2.0
+ * @version 0.3.0
  */
-public interface IComputerDao {
+public interface IComputerDao extends ICrudDao<Computer> {
 
     /**
      * List computers. Order results by name. Search is unbounded, return all
@@ -18,6 +20,7 @@ public interface IComputerDao {
      *
      * @return the list of results.
      */
+    @Override
     List<Computer> listByName();
 
 
@@ -33,6 +36,7 @@ public interface IComputerDao {
      * @throw IllegalArgumentException if search offset is negative.
      * @return the list of results.
      */
+    @Override
     List<Computer> listByName(int offset, int nb);
 
     /**
@@ -50,6 +54,7 @@ public interface IComputerDao {
      *        search offset is negative
      * @return the list of results.
      */
+    @Override
     List<Computer> listLikeName(int offset, int nb, String name);
 
     /**
@@ -61,11 +66,13 @@ public interface IComputerDao {
      * @throws IllegalArgumentException
      *             if the given id is invalid. Valid id must be positive.
      */
+    @Override
     Computer searchById(long id) throws IllegalArgumentException;
 
     /**
      * @return count of computer entries in database.
      */
+    @Override
     int getCount();
 
     /**
@@ -76,6 +83,7 @@ public interface IComputerDao {
      * @throws if
      *             name is null.
      */
+    @Override
     int getCount(String name) throws IllegalArgumentException;
 
 
@@ -93,6 +101,7 @@ public interface IComputerDao {
      *        an existing computer. Computer will receive a new Id if adding
      *        succeed.
      */
+    @Override
     Computer add(Computer computer) throws DaoException;
 
     /**
@@ -106,6 +115,7 @@ public interface IComputerDao {
      * @throws IllegalArgumentException
      *             if provided computer is invalid.
      */
+    @Override
     Computer update(Computer computer) throws DaoException, IllegalArgumentException;
 
     /**
@@ -118,6 +128,7 @@ public interface IComputerDao {
      * @throws IllegalArgumentException
      *             if provided computer is invalid.
      */
+    @Override
     default void delete(Computer computer) throws DaoException, IllegalArgumentException {
         delete(computer.getId());
     }
@@ -132,6 +143,7 @@ public interface IComputerDao {
      * @throws IllegalArgumentException
      *             if provided computer is invalid.
      */
+    @Override
     void delete(Long id) throws DaoException, IllegalArgumentException;
 
 
