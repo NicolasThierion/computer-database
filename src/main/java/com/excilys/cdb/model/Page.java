@@ -43,7 +43,7 @@ public class Page<T> implements Serializable {
     /** start element. */
     private int               mOffset;
     /** page length. */
-    private int               mSize;
+    private int                   mSize;
     /** page number. */
     private int               mPageNum;
     /** maximum results. */
@@ -190,7 +190,7 @@ public class Page<T> implements Serializable {
 
 
     public int getMaxNum() {
-        return (int) Math.ceil((double) (mMaxResults) / ((double) mSize));
+        return (int) Math.ceil((double) (mMaxResults) / ((double) mSize)) - 1;
     }
 
     /* ***
