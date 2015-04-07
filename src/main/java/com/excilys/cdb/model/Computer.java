@@ -7,7 +7,7 @@ import java.time.LocalDate;
  * @author Nicolas THIERION
  * @version 0.2.0
  */
-public class Computer implements Serializable {
+public class Computer implements Serializable, Identifiable<Long> {
 
     /**
      *
@@ -161,6 +161,7 @@ public class Computer implements Serializable {
      *
      * @return
      */
+    @Override
     public Long getId() {
         return mId;
     }

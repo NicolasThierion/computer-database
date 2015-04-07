@@ -2,8 +2,6 @@ package com.excilys.cdb.persistence.dao;
 
 import java.util.List;
 
-import org.apache.commons.lang.NotImplementedException;
-
 
 /**
  * Data access object interface. Establish connection to BDD, & offers several
@@ -22,7 +20,7 @@ public interface ICrudDao<T> {
      * @return the list of results.
      */
     default List<T> listByName() {
-        throw new NotImplementedException("Method not implemented");
+        throw new UnsupportedOperationException();
     }
 
 
@@ -39,7 +37,7 @@ public interface ICrudDao<T> {
      * @return the list of results.
      */
     default List<T> listByName(int offset, int nb) {
-        throw new NotImplementedException("Method not implemented");
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -58,7 +56,7 @@ public interface ICrudDao<T> {
      * @return the list of results.
      */
     default List<T> listLikeName(int offset, int nb, String name) {
-        throw new NotImplementedException("Method not implemented");
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -70,15 +68,13 @@ public interface ICrudDao<T> {
      * @throws IllegalArgumentException
      *             if the given id is invalid. Valid id must be positive.
      */
-    default T searchById(long id) throws IllegalArgumentException {
-        throw new NotImplementedException("Method not implemented");
-    }
+    T searchById(long id);
 
     /**
      * @return count of entities entries in database.
      */
     default int getCount() {
-        throw new NotImplementedException("Method not implemented");
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -89,7 +85,7 @@ public interface ICrudDao<T> {
      *             name is null.
      */
     default int getCount(String name) throws IllegalArgumentException {
-        throw new NotImplementedException("Method not implemented");
+        throw new UnsupportedOperationException();
     }
 
 
@@ -106,7 +102,7 @@ public interface ICrudDao<T> {
      *        succeed.
      */
     default T add(T computer) throws DaoException {
-        throw new NotImplementedException("Method not implemented");
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -121,7 +117,7 @@ public interface ICrudDao<T> {
      *             if provided entity is invalid.
      */
     default T update(T computer) throws DaoException, IllegalArgumentException {
-        throw new NotImplementedException("Method not implemented");
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -135,7 +131,7 @@ public interface ICrudDao<T> {
      *             if provided entity is invalid.
      */
     default void delete(T computer) throws DaoException, IllegalArgumentException {
-        throw new NotImplementedException("Method not implemented");
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -149,7 +145,7 @@ public interface ICrudDao<T> {
      *             if provided entity is invalid.
      */
     default void delete(Long id) throws DaoException, IllegalArgumentException {
-        throw new NotImplementedException("Method not implemented");
+        throw new UnsupportedOperationException();
     }
 
 

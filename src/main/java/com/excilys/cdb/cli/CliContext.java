@@ -9,16 +9,15 @@ import com.excilys.cdb.persistence.dao.mysql.CompanyDao;
 import com.excilys.cdb.persistence.dao.mysql.ComputerDao;
 import com.excilys.cdb.service.CompanyService;
 import com.excilys.cdb.service.ComputerService;
-import com.excilys.cdb.service.ICompanyService;
-import com.excilys.cdb.service.IComputerService;
+import com.excilys.cdb.service.ICrudService;
 
 public class CliContext {
 
     /* ***
      * ATTRIBUTES
      */
-    private final IComputerService mComputerService = new ComputerService(ComputerDao.getInstance());
-    private final ICompanyService  mCompanyService  = new CompanyService(CompanyDao.getInstance());
+    private final ICrudService<Computer> mComputerService = new ComputerService(ComputerDao.getInstance());
+    private final ICrudService<Company>  mCompanyService  = new CompanyService(CompanyDao.getInstance());
 
     private List<Computer>         mComputers;
     private List<Company>          mCompanies;
@@ -66,11 +65,11 @@ public class CliContext {
         mNewComputer = newComputer;
     }
 
-    public IComputerService getComputerService() {
+    public ICrudService<Computer> getComputerService() {
         return mComputerService;
     }
 
-    public ICompanyService getCompanyService() {
+    public ICrudService<Company> getCompanyService() {
         return mCompanyService;
     }
 

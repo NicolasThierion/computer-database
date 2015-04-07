@@ -15,7 +15,7 @@ import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Page;
 import com.excilys.cdb.persistence.dao.mysql.ComputerDao;
 import com.excilys.cdb.service.ComputerService;
-import com.excilys.cdb.service.IComputerService;
+import com.excilys.cdb.service.ICrudService;
 
 /**
  * Servlet implementation to handle dashboard page.
@@ -59,7 +59,7 @@ public class DashboardServlet extends HttpServlet {
     /* ***
      * ATTRIBUTES
      */
-    private IComputerService mComputerService;
+    private ICrudService mComputerService;
 
     @Override
     public void init() {

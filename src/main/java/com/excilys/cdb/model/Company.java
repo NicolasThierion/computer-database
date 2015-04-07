@@ -9,7 +9,7 @@ import java.io.Serializable;
  * TODO doc
  *
  */
-public class Company implements Serializable {
+public class Company implements Serializable, Identifiable<Long> {
 
     private static final long serialVersionUID = 1233212107449481466L;
 
@@ -74,6 +74,7 @@ public class Company implements Serializable {
         mId = id;
     }
 
+    @Override
     public Long getId() {
         return mId;
     }

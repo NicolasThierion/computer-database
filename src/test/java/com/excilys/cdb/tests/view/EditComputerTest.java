@@ -22,7 +22,7 @@ import com.excilys.cdb.persistence.dao.mysql.ComputerDao;
 import com.excilys.cdb.service.CompanyService;
 import com.excilys.cdb.service.ComputerService;
 import com.excilys.cdb.service.ICompanyService;
-import com.excilys.cdb.service.IComputerService;
+import com.excilys.cdb.service.ICrudService;
 
 /**
  * Test if editComputer Page loads correctly. Test from pre-filling.
@@ -55,7 +55,7 @@ public final class EditComputerTest extends CdbViewTest {
     /**
      * Computer & Company service used for fetching entities in this test suite.
      */
-    private IComputerService    mComputerService;
+    private ICrudService    mComputerService;
     private ICompanyService     mCompanyService;
 
 
