@@ -15,7 +15,9 @@ import com.jolbox.bonecp.BoneCPConfig;
 
 /**
  * Data access object singleton. Establish connections to BDD. Use required
- * credentials to connect to computer-database-db through JDBC MySQL.
+ * credentials to connect to computer-database-db through JDBC MySQL. Either
+ * "env-mysql.properties" or "mysql.properties" files must be in resource path,
+ * & hold a valid db config & credentials.
  *
  * @author Nicolas THIERION
  * @version 0.2.0
@@ -45,7 +47,22 @@ public final class ConnectionFactory {
     /** DB connection information. */
     private Properties               mProperties;
     /** Pool of db connections. */
-    private BoneCP                   mConnections;
+    private BoneCP                   mConnectionPool;
+
+    /**
+     * Current connection opened in this thread. In case of transaction, we will
+     * use one unique connection per thread => one connection per transaction.
+     **/
+    private final ThreadLocal<Transaction> mTlTransaction           = new ThreadLocal<Transaction>() {
+        @Override
+        protected Transaction initialValue() {
+            try {
+                return new Transaction(mConnectionPool.getConnection());
+            } catch (final SQLException e) {
+                throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
+            }
+        }
+    };
 
     /* ***
      * CONSTRUCTORS / DESTRUCTORS
@@ -88,7 +105,7 @@ public final class ConnectionFactory {
      * Close the connection to the DB & free up memory.
      */
     public void destroy() {
-        mConnections.shutdown();
+        mConnectionPool.shutdown();
     }
 
     @Override
@@ -119,8 +136,14 @@ public final class ConnectionFactory {
      */
     public Connection open() throws DaoException {
 
+        // if in transaction mode then return current transaction's connection.
+        if (mTlTransaction.get().isStarted()) {
+            return mTlTransaction.get().getConnection();
+        }
+
+        // else return a new connection from the pool.
         try {
-            Connection conn = mConnections.getConnection();
+            Connection conn = mConnectionPool.getConnection();
             conn = new ConnectionSpy(conn);
             return conn;
         } catch (final SQLException e) {
@@ -135,8 +158,42 @@ public final class ConnectionFactory {
      * @param conn
      */
     public void close(Connection conn) {
+        // if in transaction mode then delay connection closing.
+        if (mTlTransaction.get().isStarted() && mTlTransaction.get().getConnection() == conn) {
+            return;
+        }
+
         try {
             conn.close();
+        } catch (final SQLException e) {
+            throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
+        }
+    }
+
+    /**
+     * Get the current transaction. Doesn't start the transaction. Starting the
+     * transaction will enter in transaction mode : connection will be kept
+     * opened until transaction is closed.
+     *
+     * @return the pending transaction if it exists or a new unstarted
+     *         transaction.
+     */
+    public Transaction getTransaction() {
+        return mTlTransaction.get();
+    }
+
+    /**
+     * close the transaction. Abort changes if not committed.
+     *
+     * @param transaction
+     *            Transaction to close.
+     * @throws DaoException
+     *             if SQL connection cannot be closed.
+     */
+    public void close(Transaction transaction) throws DaoException {
+        try {
+            transaction.end();
+            transaction.getConnection().close();
         } catch (final SQLException e) {
             throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
         }
@@ -177,7 +234,9 @@ public final class ConnectionFactory {
         config.setMinConnectionsPerPartition(POOL_MIN_CONNECTIONS);
         config.setMaxConnectionsPerPartition(POOL_MAX_CONNECTIONS);
         config.setPartitionCount(POOL_PARTITION_COUNT);
-        mConnections = new BoneCP(config);
+        mConnectionPool = new BoneCP(config);
     }
+
+
 
 }
