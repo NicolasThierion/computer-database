@@ -78,7 +78,7 @@ public class CompanyServiceTest {
     @Test
     public final void testListLikeName() {
 
-        //add one computer
+        // add one company
         final String uniqueName = "Unique company [" + java.time.Clock.systemUTC().millis() + "]";
         final String nonExistantName = "I don't exist";
 
@@ -111,6 +111,7 @@ public class CompanyServiceTest {
         final String compName = "Xiaomi";
         final Company company = new Company(compName);
         mCompanyService.add(company);
+        mCompanyService.delete(company);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -118,8 +119,13 @@ public class CompanyServiceTest {
         //add the same computer twice
         final String compName = "Xiaomi";
         final Company company = new Company(compName);
-        mCompanyService.add(company);
-        mCompanyService.add(company);
+        try {
+            mCompanyService.add(company);
+            mCompanyService.add(company);
+        } catch (final IllegalArgumentException e) {
+            mCompanyService.delete(company);
+            throw e;
+        }
     }
 
     @Test

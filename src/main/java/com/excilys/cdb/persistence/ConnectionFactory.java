@@ -158,6 +158,7 @@ public final class ConnectionFactory {
      * @param conn
      */
     public void close(Connection conn) {
+
         // if in transaction mode then delay connection closing.
         if (mTlTransaction.get().isStarted() && mTlTransaction.get().getConnection() == conn) {
             return;
@@ -179,7 +180,18 @@ public final class ConnectionFactory {
      *         transaction.
      */
     public Transaction getTransaction() {
+        try {
+
+            final Connection currentConn = mTlTransaction.get().getConnection();
+            // ensure current transaction is not ended already
+            if (currentConn == null || currentConn.isClosed()) {
+                mTlTransaction.set(new Transaction(mConnectionPool.getConnection()));
+            }
+        } catch (final SQLException e) {
+            e.printStackTrace();
+        }
         return mTlTransaction.get();
+
     }
 
     /**

@@ -101,7 +101,7 @@ public class ComputerServiceTest {
      */
     @Test
     public final void testGetCount() {
-        mComputerService.getCount();
+        assertTrue(mComputerService.getCount() > 0);
     }
 
     /**

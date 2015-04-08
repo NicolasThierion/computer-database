@@ -15,12 +15,11 @@
 
 
 <% //set jsp variables %>
-<c:set var="search" value="${resultsPageBean.search}" />
-<c:set var="resultsCount" value="${resultsPageBean.totalCount}" />
-<c:set var="pageNum" value="${resultsPageBean.num}" />
-<c:set var="pageSize" value="${resultsPageBean.size}" />
-<c:set var="pageNumMax" value="${resultsPageBean.maxNum}" />
-
+<c:set var="search" value="${pageBean.search}" />
+<c:set var="resultsCount" value="${pageBean.totalCount}" />
+<c:set var="pageNum" value="${pageBean.num}" />
+<c:set var="pageSize" value="${pageBean.size}" />
+<c:set var="pageNumMax" value="${pageBean.maxNum}" />
 
 <!DOCTYPE html>
 <html>
@@ -29,6 +28,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Bootstrap -->
 <%@include file="/WEB-INF/includes/bootstrap.jsp" %>
+<script type="text/javascript"> //Function toggleSortBy
+
+</script>
 </head>
 
 <body>
@@ -44,6 +46,11 @@
                     <form id="searchForm" action="searchComputer" method="GET" class="form-inline">
                         <input type="search" id="searchbox" name="search" class="form-control" placeholder="Search name" value="${search}" />
                         <input type="submit" id="searchsubmit" value="Filter by name" class="btn btn-primary" />
+                        <input type="hidden" name="offset" value="${pageBean.offset}"/>
+                        <input type="hidden" name="sortBy" value="${pageBean.sortBy}"/>
+                        <input type="hidden" name="order" value="${pageBean.sortOrder}"/>
+                        <input type="hidden" name="total" value="${pageBean.totalCount}"/>
+                        <input type="hidden" name="size" value="${pageBean.size}"/>
                     </form>
                 </div>
                 <div class="pull-right">
@@ -67,7 +74,7 @@
                                 id="deleteSelected" onclick="$.fn.deleteSelected();"> <i class="fa fa-trash-o fa-lg"></i>
                             </a>
                         </span></th>
-                        <th>Computer name</th>
+                        <th><a onclick="$.fn.toggleSortBy('computer')">Computer name</a></th>
                         <th>Introduced date</th>
                         <!-- Table header for Discontinued Date -->
                         <th>Discontinued date</th>
@@ -77,7 +84,7 @@
                 </thead>
                 <!-- Browse attribute computers -->
                 <tbody id="results">
-                    <c:forEach var="computerBean" items="${resultsPageBean.content}">
+                    <c:forEach var="computerBean" items="${pageBean.content}">
                         <tr>
                             <td class="editMode"><input type="checkbox" name="cb" class="cb" value="0"></td>
                             <td><a href="editComputer?computerId=${computerBean.id}" onclick="">${computerBean.name}</a></td>
@@ -92,7 +99,7 @@
     </section>
 
     <footer class="navbar-fixed-bottom">
-        <mylib:page.paginator page="${resultsPageBean}"/>
+        <mylib:page.paginator page="${pageBean}"/>
     </footer>
     <script src="js/dashboard.js"></script>
 

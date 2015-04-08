@@ -1,14 +1,17 @@
 package com.excilys.cdb.model;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+
+import com.excilys.cdb.persistence.EntityField;
 
 /**
  *
- * @author Nicolas THIERION
- *
- *         TODO JavaDoc.
+ * @author Nicolas THIERION Generic purpose search page, aimed to store search
+ *         results according some search & display parameters.
  * @param <T>
  */
 public class Page<T> implements Serializable {
@@ -28,6 +31,36 @@ public class Page<T> implements Serializable {
     }
 
     /**
+     * Page fields. Fields can used to identify page parameters, & can be passed
+     * from one object to another through a string.
+     *
+     * @author Nicolas THIERION.
+     *
+     */
+    public enum Field implements EntityField<Page<?>> {
+        SEARCH("search"), OFFSET("offset"), SIZE("size"), SORT_BY("sortBy"), SORT_ORDER("order"),
+ TOTAL("total"), OPTIONS(
+                "options");
+
+        private String mLabel;
+
+        private Field(String label) {
+            mLabel = label;
+        }
+
+        @Override
+        public String getLabel() {
+            return mLabel;
+        }
+
+        @Override
+        public String toString() {
+            return mLabel;
+        }
+
+    }
+
+    /**
      *
      */
     private static final long serialVersionUID = -7930434399646098394L;
@@ -37,26 +70,28 @@ public class Page<T> implements Serializable {
      * ATTRIBUTES
      */
     /** entities contained by this page. */
-    private List<T>           mContent;
+    private List<T>               mContent;
     /** optional query string. */
-    private String            mSearch;
+    private String                mSearch;
     /** start element. */
-    private int               mOffset;
+    private int                   mOffset;
     /** page length. */
     private int                   mSize;
     /** page number. */
-    private int               mPageNum;
+    private int                   mPageNum;
     /** maximum results. */
-    private int               mMaxResults;
+    private int                   mMaxResults;
     /** sort criteria. */
-    private String            mSortBy;
+    private String                mSortBy;
     /** sort order. */
-    private SortOrder         mSortOrder;
+    private SortOrder             mSortOrder;
+
+    private Map<String, String>   mOptions;
 
     /* ***
      * CONSTRUCTORS
      */
-    private void mNewPage(List<T> content, int offset,
+    private void mNewPage(List<T> content, int offset, int size,
  int maxResults, String queryString, String sortBy, SortOrder order) {
         if (content != null && maxResults < content.size()) {
             throw new IllegalArgumentException("Content has more element than the provided \"maxResults\" parameter");
@@ -67,9 +102,10 @@ public class Page<T> implements Serializable {
         mSearch = queryString;
         mSortBy = sortBy;
         mSortOrder = order;
+        mOptions = new HashMap<String, String>();
         if (content != null && !content.isEmpty()) {
             mContent = new LinkedList<T>(content);
-            mSize = content.size();
+            mSize = (size < 0 ? content.size() : size);
             mPageNum = (mOffset / mSize) + 1;
         } else {
             mContent = null;
@@ -84,7 +120,7 @@ public class Page<T> implements Serializable {
      * query.
      */
     public Page() {
-        mNewPage(null, 0, 0, null, null, DEFAULT_SORT_ORDER);
+        mNewPage(null, 0, 0, -1, null, null, DEFAULT_SORT_ORDER);
     }
 
     /**
@@ -102,7 +138,7 @@ public class Page<T> implements Serializable {
      */
     public Page(List<T> content, int offset, int maxResults,
             String queryString) {
-        mNewPage(content, offset, maxResults, queryString, null, DEFAULT_SORT_ORDER);
+        mNewPage(content, offset, -1, maxResults, queryString, null, DEFAULT_SORT_ORDER);
     }
 
     /**
@@ -117,7 +153,7 @@ public class Page<T> implements Serializable {
      *            count of total results.
      */
     public Page(List<T> content, int offset, int maxResults) {
-        mNewPage(content, offset, maxResults, null, null, DEFAULT_SORT_ORDER);
+        mNewPage(content, offset, -1, maxResults, null, null, DEFAULT_SORT_ORDER);
     }
 
     /**
@@ -128,7 +164,7 @@ public class Page<T> implements Serializable {
      */
     public Page(Page<T> page) {
         final Page<T> p = page;
-        mNewPage(p.mContent, p.mOffset, p.mMaxResults, p.mSearch, p.mSortBy, p.mSortOrder);
+        mNewPage(p.mContent, p.mOffset, p.mSize, p.mMaxResults, p.mSearch, p.mSortBy, p.mSortOrder);
     }
 
     /**
@@ -138,8 +174,8 @@ public class Page<T> implements Serializable {
      * @param content
      *            content of the page.
      */
-    public Page(List<T> companies) {
-        mNewPage(companies, 0, companies.size(), null, null, DEFAULT_SORT_ORDER);
+    public Page(List<T> content) {
+        mNewPage(content, 0, -1, content.size(), null, null, DEFAULT_SORT_ORDER);
     }
 
     /* ***
@@ -147,9 +183,13 @@ public class Page<T> implements Serializable {
      */
     public String toUrlArgs() {
         final StringBuilder sb = new StringBuilder();
-        sb.append("offset=").append(mOffset).append("&maxResults=").append(mMaxResults);
-        sb.append("&search=").append(mSearch).append("&sortBy=").append(mSortBy);
-        sb.append("&order=").append(mSortOrder).append("&size=").append(mSize);
+        sb.append(Field.OFFSET).append("=").append(mOffset);
+        sb.append("&").append(Field.TOTAL).append("=").append(mMaxResults);
+        sb.append("&").append(Field.SEARCH).append("=").append(mSearch);
+        sb.append("&").append(Field.SORT_BY).append("=").append(mSortBy);
+        sb.append("&").append(Field.SORT_ORDER).append("=").append(mSortOrder);
+        sb.append("&").append(Field.SIZE).append("=").append(mSize);
+        sb.append("&").append(Field.OPTIONS).append("=").append(mOptions);
         return sb.toString();
     }
 
@@ -188,9 +228,16 @@ public class Page<T> implements Serializable {
         return mMaxResults;
     }
 
-
     public int getMaxNum() {
         return (int) Math.ceil((double) (mMaxResults) / ((double) mSize)) - 1;
+    }
+
+    public Map<String, String> getOptions() {
+        return mOptions;
+    }
+
+    public String getOption(String option) {
+        return (mOptions.keySet().contains(option) ? mOptions.get(option) : "false");
     }
 
     /* ***
@@ -198,7 +245,7 @@ public class Page<T> implements Serializable {
      */
 
     public void setContent(List<T> content) {
-        mNewPage(content, mOffset, mMaxResults, mSearch, mSortBy, mSortOrder);
+        mNewPage(content, mOffset, mSize, mMaxResults, mSearch, mSortBy, mSortOrder);
     }
 
     public void setSearch(String queryString) {
@@ -206,7 +253,7 @@ public class Page<T> implements Serializable {
     }
 
     public void setOffset(int offset) {
-        mNewPage(mContent, offset, mMaxResults, mSearch, mSortBy, mSortOrder);
+        mNewPage(mContent, offset, mSize, mMaxResults, mSearch, mSortBy, mSortOrder);
     }
 
     /**
@@ -241,23 +288,41 @@ public class Page<T> implements Serializable {
         mSize = size;
     }
 
+    public void setOption(String option, String value) {
+        mOptions.put(option, value);
+    }
+
+    public void setOption(String option) {
+        mOptions.put(option, "true");
+    }
 
     /* ***
      * Object OVERRIDES
      */
 
     @Override
+    public String toString() {
+
+        final StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName()).append("@").append(hashCode());
+        sb.append("; PageNum=").append(mPageNum).append("; PageLength=").append(mSize);
+        sb.append("; Offset=").append(mOffset).append("; Query=").append(mSearch);
+        return sb.toString();
+    }
+
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result
-                + ((mContent == null) ? 0 : mContent.hashCode());
-        result = prime * result + mSize;
+        result = prime * result + ((mContent == null) ? 0 : mContent.hashCode());
+        result = prime * result + ((mOptions == null) ? 0 : mOptions.hashCode());
         result = prime * result + mMaxResults;
         result = prime * result + mOffset;
         result = prime * result + mPageNum;
-        result = prime * result
-                + ((mSearch == null) ? 0 : mSearch.hashCode());
+        result = prime * result + ((mSearch == null) ? 0 : mSearch.hashCode());
+        result = prime * result + mSize;
+        result = prime * result + ((mSortBy == null) ? 0 : mSortBy.hashCode());
+        result = prime * result + ((mSortOrder == null) ? 0 : mSortOrder.hashCode());
         return result;
     }
 
@@ -272,11 +337,8 @@ public class Page<T> implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-
-        if (!(obj instanceof Page<?>)) {
-            return false;
-        }
-        final Page<?> other = (Page<?>) obj;
+        @SuppressWarnings("unchecked")
+        final Page<T> other = (Page<T>) obj;
         if (mContent == null) {
             if (other.mContent != null) {
                 return false;
@@ -284,9 +346,14 @@ public class Page<T> implements Serializable {
         } else if (!mContent.equals(other.mContent)) {
             return false;
         }
-        if (mSize != other.mSize) {
+        if (mOptions == null) {
+            if (other.mOptions != null) {
+                return false;
+            }
+        } else if (!mOptions.equals(other.mOptions)) {
             return false;
         }
+
         if (mMaxResults != other.mMaxResults) {
             return false;
         }
@@ -303,17 +370,21 @@ public class Page<T> implements Serializable {
         } else if (!mSearch.equals(other.mSearch)) {
             return false;
         }
+        if (mSize != other.mSize) {
+            return false;
+        }
+        if (mSortBy == null) {
+            if (other.mSortBy != null) {
+                return false;
+            }
+        } else if (!mSortBy.equals(other.mSortBy)) {
+            return false;
+        }
+        if (mSortOrder != other.mSortOrder) {
+            return false;
+        }
         return true;
     }
 
-    @Override
-    public String toString() {
-
-        final StringBuilder sb = new StringBuilder();
-        sb.append(getClass().getSimpleName()).append("@").append(hashCode());
-        sb.append("; PageNum=").append(mPageNum).append("; PageLength=").append(mSize);
-        sb.append("; Offset=").append(mOffset).append("; Query=").append(mSearch);
-        return sb.toString();
-    }
 
 }

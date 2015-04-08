@@ -131,35 +131,35 @@ public class PageDto implements Serializable {
      * SETTERS
      */
     public void setQueryString(String queryString) {
-        this.mQueryString = queryString;
+        mQueryString = queryString;
     }
 
     public void setOffset(int offset) {
-        this.mOffset = offset;
+        mOffset = offset;
     }
 
     public void setSize(int size) {
-        this.mSize = size;
+        mSize = size;
     }
 
     public void setPageNum(int pageNum) {
-        this.mPageNum = pageNum;
+        mPageNum = pageNum;
     }
 
     public void setMaxResults(int maxResults) {
-        this.mMaxResults = maxResults;
+        mMaxResults = maxResults;
     }
 
     public void setSortBy(String sortBy) {
-        this.mSortBy = sortBy;
+        mSortBy = sortBy;
     }
 
     public void setSortOrder(String sortOrder) {
-        this.mSortOrder = sortOrder;
+        mSortOrder = sortOrder;
     }
 
     public void setContentType(String contentType) {
-        this.mContentType = contentType;
+        mContentType = contentType;
     }
 
 }

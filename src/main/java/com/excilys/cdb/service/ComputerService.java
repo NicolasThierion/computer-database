@@ -65,15 +65,12 @@ public class ComputerService implements IComputerService {
 
     @Override
     public List<Computer> listLikeName(int offset, int count, String name) {
-
         return mComputerDao.listLike(ComputerMapper.Field.NAME, name, offset, count);
-
     }
 
     @Override
     public Computer add(Computer computer) throws IllegalArgumentException {
         return mComputerDao.add(computer);
-
     }
 
     @Override
@@ -97,7 +94,7 @@ public class ComputerService implements IComputerService {
 
     @Override
     public int getCount(String name) {
-        return mComputerDao.getCountEqual(ComputerMapper.Field.NAME, name);
+        return mComputerDao.getCountLike(ComputerMapper.Field.NAME, name);
     }
 
     @Override

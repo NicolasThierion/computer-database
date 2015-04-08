@@ -36,17 +36,17 @@ public class DashboardServlet extends HttpServlet {
     /** input parameters. */
     private static class ReqParam {
         /** search parameter name. */
-        private static final String SEARCH      = "search";
+        private static final String SEARCH      = Page.Field.SEARCH.getLabel();
         /** page size parameter name. */
-        private static final String PAGE_SIZE   = "size";
+        private static final String PAGE_SIZE   = Page.Field.SIZE.getLabel();
         /** search offset parameter name. */
-        private static final String PAGE_OFFSET = "offset";
+        private static final String PAGE_OFFSET = Page.Field.OFFSET.getLabel();
     }
 
     /** output parameters. */
     private static class ResParam {
         /** Page attribute to be sent to JSP. */
-        private static final String PAGE_BEAN = "resultsPageBean";
+        private static final String PAGE_BEAN = "pageBean";
     }
 
     /** parameters of this context. */
@@ -133,6 +133,7 @@ public class DashboardServlet extends HttpServlet {
 
         final List<ComputerDto> dtos = ComputerDto.fromComputers(computers);
         final Page<ComputerDto> page = new Page<ComputerDto>(dtos, context.offset, totalResults, context.queryName);
+        page.setSize(context.pageSize);
 
         // set result page & send redirect.
         request.setAttribute(ResParam.PAGE_BEAN, page);

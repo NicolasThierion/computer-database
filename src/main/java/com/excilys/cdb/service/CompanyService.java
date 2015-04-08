@@ -58,7 +58,7 @@ public class CompanyService implements ICompanyService {
      * ACCESSORS
      */
     /**
-     * Sets the {@code ICompanyDao} to be used by this Service.
+     * Set the {@code #ICompanyDao} to be used by this Service.
      *
      * @param companyDao
      *            CompanyDao to use.
@@ -68,7 +68,7 @@ public class CompanyService implements ICompanyService {
     }
 
     /**
-     * Sets the {@code IComputerDao} to be used by this Service.
+     * Set the {@code #IComputerDao} to be used by this Service.
      *
      * @param computerDao
      *            ComputerDao to use.
