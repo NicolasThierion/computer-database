@@ -1,3 +1,3 @@
-SELECT COUNT(c.id) AS 'count'
-FROM company c
-WHERE name LIKE ?;
+SELECT COUNT(company.id) AS 'count'
+FROM company company
+WHERE UPPER(%s) LIKE ?;

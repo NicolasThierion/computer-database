@@ -1,3 +1,3 @@
-SELECT COUNT(r.id) AS 'count'
-FROM computer r
-WHERE r.name LIKE ?;
+SELECT COUNT(computer.id) AS 'count'
+FROM computer computer
+WHERE UPPER(%s) LIKE ?;

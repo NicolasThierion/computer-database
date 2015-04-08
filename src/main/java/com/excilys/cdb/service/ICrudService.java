@@ -18,7 +18,7 @@ public interface ICrudService<T extends Identifiable<Long>> {
      *
      * @param offset
      *            Search offset.
-     * @param nb
+     * @param count
      *            Number of results to fetch. Set a negative value for unbounded
      *            search.
      * @throw IllegalArgumentException if search offset is negative.
@@ -39,7 +39,7 @@ public interface ICrudService<T extends Identifiable<Long>> {
      *
      * @param offset
      *            Search offset.
-     * @param nb
+     * @param count
      *            Number of results to fetch. Set a negative value for unbounded
      *            search.
      * @param name

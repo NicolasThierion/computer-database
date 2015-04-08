@@ -42,7 +42,7 @@ public class ComputerDaoTest {
     }
 
     /**
-     * Test of ComputerDao.listByName().
+     * Test of ComputerDao.listBy().
      */
     @Test
     public final void testListByName() {
@@ -74,7 +74,7 @@ public class ComputerDaoTest {
     }
 
     /**
-     * Test of ComputerDao.listByName(String likeName).
+     * Test of ComputerDao.listBy().
      */
     @Test
     public final void testListLikeName() {
@@ -91,8 +91,22 @@ public class ComputerDaoTest {
         assertTrue(list.size() == 1);
         mComputerDao.delete(uniqueComputer);
 
-        list = mComputerDao.listLike(ComputerMapper.Field.NAME, nonExistantName, 0, 0);
+        list = mComputerDao.listLike(ComputerMapper.Field.NAME, nonExistantName);
         assertTrue(list.size() == 0);
+    }
+
+    /**
+     * Test of ComputerDao.listBy().
+     */
+    @Test
+    public final void testListEqualId() {
+
+        List<Computer> list = mComputerDao.listEqual(ComputerMapper.Field.ID, "1");
+        assertTrue(list.size() == 1);
+        list = mComputerDao.listEqual(ComputerMapper.Field.ID, "" + Long.MAX_VALUE);
+        assertTrue(list.size() == 0);
+        list = mComputerDao.listLike(ComputerMapper.Field.ID, "1");
+        assertTrue(list.size() > 1);
     }
 
     /**
@@ -183,7 +197,7 @@ public class ComputerDaoTest {
         final String computerName2 = "Unique computer" + java.time.Clock.systemUTC().millis();
         final LocalDate releaseDate = java.time.LocalDate.of(1999, 1, 1);
         final LocalDate discontinuedDate = java.time.LocalDate.of(2010, 1, 1);
-        final Company company = mCompanyDao.searchBy(CompanyMapper.Field.ID, "" + 1L);
+        final Company company = mCompanyDao.listEqual(CompanyMapper.Field.ID, "" + 1L).get(0);
 
         List<Computer> list = mComputerDao.listLike(ComputerMapper.Field.NAME, computerName);
         final int count = mComputerDao.listLike(ComputerMapper.Field.NAME, computerName).size();
@@ -207,7 +221,8 @@ public class ComputerDaoTest {
         assertTrue(list.size() == count + 1);
 
         // ensure computer has been updated correctly
-        final Computer computerCopy = mComputerDao.searchBy(ComputerMapper.Field.ID, computer.getId().toString());
+        final Computer computerCopy =
+                mComputerDao.listEqual(ComputerMapper.Field.ID, computer.getId().toString()).get(0);
         assertTrue(computer.equals(computerCopy));
         mComputerDao.delete(computer);
 

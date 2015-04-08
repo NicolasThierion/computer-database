@@ -32,7 +32,6 @@ public final class CompanyDao implements ICompanyDao {
      */
     /** various sql script user to build preparedStatements. */
     private static final String REQ_SELECT_COMPANIES_FILENAME = "select_companies_paging.sql";
-    private static final String REQ_SELECT_COMPANY_FILENAME   = "select_company.sql";
     private static final String REQ_COUNT_COMPANIES_FILENAME  = "select_company_count.sql";
     private static final String REQ_INSERT_COMPANY_FILENAME   = "insert_company.sql";
     private static final String REQ_DELETE_COMPANY_FILENAME   = "delete_company_with_id.sql";
@@ -70,7 +69,7 @@ public final class CompanyDao implements ICompanyDao {
 
 
     @Override
-    public List<Company> listLike(EntityField<Company> field, String value, int offset, int count) {
+    public List<Company> listEqual(EntityField<Company> field, String value, int offset, int count) {
 
         Connection dbConn = null;
         PreparedStatement selectCompaniesStatement = null;
@@ -88,8 +87,6 @@ public final class CompanyDao implements ICompanyDao {
         }
 
         count = (count < 0 ? Integer.MAX_VALUE : count);
-        value = "%".concat(value.toUpperCase()).concat("%");
-
         try {
             // get a connection & prepare needed statement
             dbConn = ConnectionFactory.getInstance().getConnection();
@@ -121,64 +118,31 @@ public final class CompanyDao implements ICompanyDao {
         return resList;
     }
 
-    @Override
-    public Company searchBy(EntityField<Company> field, String id) {
-
-        Connection dbConn = null;
-        PreparedStatement selectCompanyStatement = null;
-        ResultSet result = null;
-        Company company = null;
-
-
-        String sqlStr = mQueryStrings.get(REQ_SELECT_COMPANY_FILENAME);
-        sqlStr = String.format(sqlStr, field.getLabel(), field.getLabel());
-
-        try {
-            // get a connection & prepare needed statement
-            dbConn = ConnectionFactory.getInstance().getConnection();
-            selectCompanyStatement = dbConn.prepareStatement(sqlStr);
-
-            // set range parameters
-            int colId = 1;
-            selectCompanyStatement.setString(colId++, id);
-
-            // exec query
-            result = selectCompanyStatement.executeQuery();
-            if (result.first()) {
-                final CompanyMapper mapper = new CompanyMapper();
-                company = mapper.fromResultSet(result);
-            }
-        } catch (final SQLException e) {
-            throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
-        } finally {
-            SqlUtils.safeCloseAll(dbConn, selectCompanyStatement, result);
-        }
-        return company;
-    }
 
     @Override
     public int getCount() {
-        return getCount("");
+        return getCountLike(CompanyMapper.Field.ID, "");
     }
 
     @Override
-    public int getCount(String name) throws IllegalArgumentException {
+    public int getCountEqual(EntityField<Company> field, String value) throws IllegalArgumentException {
         Connection dbConn = null;
         PreparedStatement countCompaniesStatement = null;
         ResultSet result = null;
 
+        String sqlStr = mQueryStrings.get(REQ_COUNT_COMPANIES_FILENAME);
+        sqlStr = String.format(sqlStr, field.getLabel());
+
         // check name parameter
-        if (name == null) {
+        if (value == null) {
             throw new IllegalArgumentException("Company name cannot be null");
         }
-        name = "%" + name + "%";
         int count = 0;
         try {
             // get a connection & prepare needed statement
             dbConn = ConnectionFactory.getInstance().getConnection();
-            countCompaniesStatement = dbConn.prepareStatement(mQueryStrings
-                    .get(REQ_COUNT_COMPANIES_FILENAME));
-            countCompaniesStatement.setString(1, name);
+            countCompaniesStatement = dbConn.prepareStatement(sqlStr);
+            countCompaniesStatement.setString(1, value);
             result = countCompaniesStatement.executeQuery();
             while (result.next()) {
                 count = result.getInt(1);
@@ -284,7 +248,6 @@ public final class CompanyDao implements ICompanyDao {
 
         try {
             SqlUtils.loadSqlQuery(REQ_SELECT_COMPANIES_FILENAME, mQueryStrings);
-            SqlUtils.loadSqlQuery(REQ_SELECT_COMPANY_FILENAME, mQueryStrings);
             SqlUtils.loadSqlQuery(REQ_COUNT_COMPANIES_FILENAME, mQueryStrings);
             SqlUtils.loadSqlQuery(REQ_INSERT_COMPANY_FILENAME, mQueryStrings);
             SqlUtils.loadSqlQuery(REQ_DELETE_COMPANY_FILENAME, mQueryStrings);

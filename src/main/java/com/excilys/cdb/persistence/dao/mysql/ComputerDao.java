@@ -35,7 +35,6 @@ public final class ComputerDao implements IComputerDao {
 
     /** various sql script user to build preparedStatements. */
     private static final String REQ_SELECT_COMPUTERS_FILENAME = "select_computers_paging.sql";
-    private static final String REQ_SELECT_COMPUTER_FILENAME  = "select_computer.sql";
     private static final String REQ_COUNT_COMPUTERS_FILENAME = "select_computer_count.sql";
     private static final String REQ_UPDATE_COMPUTER_FILEMANE = "update_computer.sql";
     private static final String REQ_INSERT_COMPUTER_FILENAME = "insert_computer.sql";
@@ -74,21 +73,9 @@ public final class ComputerDao implements IComputerDao {
     /* ***
      * DAO SERVICES
      */
-    @Override
-
-    public List<Computer> listBy(EntityField<Computer> field) {
-        return listBy(field, 0, Integer.MAX_VALUE);
-    }
 
     @Override
-    public List<Computer> listBy(EntityField<Computer> field, int offset, int count) throws DaoException,
-            IllegalArgumentException {
-        final String value = "";
-        return listLike(field, value, offset, count);
-    }
-
-    @Override
-    public List<Computer> listLike(EntityField<Computer> field, String value, int offset, int count)
+    public List<Computer> listEqual(EntityField<Computer> field, String value, int offset, int count)
             throws IllegalArgumentException {
         Connection dbConn = null;
         PreparedStatement selectComputersStatement = null;
@@ -108,8 +95,6 @@ public final class ComputerDao implements IComputerDao {
         }
 
         count = (count < 0 ? Integer.MAX_VALUE : count);
-        value = "%".concat(value.toUpperCase()).concat("%");
-
         try {
             // get a connection & prepare needed statement
             dbConn = ConnectionFactory.getInstance().getConnection();
@@ -159,59 +144,24 @@ public final class ComputerDao implements IComputerDao {
         return resList;
     }
 
-
-
-    @Override
-    public Computer searchBy(EntityField<Computer> field, String value) throws IllegalArgumentException {
-
-        Connection dbConn = null;
-        PreparedStatement selectComputersStatement = null;
-        ResultSet result = null;
-        final String sqlStr = mQueryStrings.get(REQ_SELECT_COMPUTER_FILENAME);
-
-        Computer computer = null;
-        try {
-            // get a connection & prepare needed statement
-            dbConn = ConnectionFactory.getInstance().getConnection();
-            selectComputersStatement = dbConn.prepareStatement(sqlStr);
-
-            // set range parameters
-            int colId = 1;
-            selectComputersStatement.setString(colId++, field.getLabel());
-            selectComputersStatement.setString(colId++, value);
-
-            // exec query
-            result = selectComputersStatement.executeQuery();
-            if (result.first()) {
-                final ComputerMapper mapper = new ComputerMapper();
-                computer = mapper.fromResultSet(result);
-            }
-
-        } catch (final SQLException e) {
-            throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
-        } finally {
-            SqlUtils.safeCloseAll(dbConn, selectComputersStatement, result);
-        }
-        return computer;
-    }
-
     @Override
     public int getCount() {
-        return getCount("");
+        return getCountLike(ComputerMapper.Field.ID, "");
     }
 
     @Override
-    public int getCount(String name) throws IllegalArgumentException, DaoException {
+    public int getCountEqual(EntityField<Computer> field, String value) throws IllegalArgumentException, DaoException {
 
         Connection dbConn = null;
         PreparedStatement countComputersStatement = null;
         ResultSet result = null;
         int count = 0;
-        final String sqlStr = mQueryStrings.get(REQ_COUNT_COMPUTERS_FILENAME);
+        String sqlStr = mQueryStrings.get(REQ_COUNT_COMPUTERS_FILENAME);
+        sqlStr = String.format(sqlStr, field.getLabel());
 
         // check name parameter
-        if (name == null) {
-            throw new IllegalArgumentException("name cannot be null");
+        if (value == null) {
+            throw new IllegalArgumentException("value cannot be null");
         }
 
         try {
@@ -219,8 +169,7 @@ public final class ComputerDao implements IComputerDao {
             dbConn = ConnectionFactory.getInstance().getConnection();
             countComputersStatement = dbConn.prepareStatement(sqlStr);
 
-            name = "%".concat(name.toUpperCase()).concat("%");
-            countComputersStatement.setString(1, name);
+            countComputersStatement.setString(1, value);
             result = countComputersStatement.executeQuery();
             if (result.first()) {
                 count = result.getInt(1);
@@ -244,20 +193,25 @@ public final class ComputerDao implements IComputerDao {
             dbConn = ConnectionFactory.getInstance().getConnection();
             insertComputerStatement = dbConn.prepareStatement(sqlStr, PreparedStatement.RETURN_GENERATED_KEYS);
 
-            //ensure that we are attempting to add a NEW computer (with id field = null)"
+            // ensure that we are attempting to add a NEW computer (with id
+            // field = null)"
             final Long id = computer.getId();
             if (id != null) {
                 throw new IllegalArgumentException("Trying to add a computer : " + computer
                         + " with non-blank field \"computer id\"");
             }
 
-            //build SQL request :
+            // build SQL request :
             // INSERT INTO computer (name, introduced, discontinued, company_id)
-            //get computer properties
+            // get computer properties
 
             final ComputerMapper h = new ComputerMapper();
             h.fromEntity(computer);
 
+            // ensure company id is valid
+            if (h.getCompany() != null && h.getCompanyId() < 1) {
+                throw new IllegalArgumentException("Company id must be positive.");
+            }
             int colId = 1;
             insertComputerStatement.setString(colId++, h.getName());
             insertComputerStatement.setTimestamp(colId++, h.getSqlReleaseDate());
@@ -387,7 +341,6 @@ public final class ComputerDao implements IComputerDao {
 
         try {
             SqlUtils.loadSqlQuery(REQ_SELECT_COMPUTERS_FILENAME, mQueryStrings);
-            SqlUtils.loadSqlQuery(REQ_SELECT_COMPUTER_FILENAME, mQueryStrings);
             SqlUtils.loadSqlQuery(REQ_COUNT_COMPUTERS_FILENAME, mQueryStrings);
             SqlUtils.loadSqlQuery(REQ_INSERT_COMPUTER_FILENAME, mQueryStrings);
             SqlUtils.loadSqlQuery(REQ_UPDATE_COMPUTER_FILEMANE, mQueryStrings);

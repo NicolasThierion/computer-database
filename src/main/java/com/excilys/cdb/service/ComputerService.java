@@ -96,13 +96,17 @@ public class ComputerService implements IComputerService {
     }
 
     @Override
-    public int getCount(String queryString) {
-        return mComputerDao.getCount(queryString);
+    public int getCount(String name) {
+        return mComputerDao.getCountEqual(ComputerMapper.Field.NAME, name);
     }
 
     @Override
     public Computer search(long computerId) throws IllegalArgumentException {
-        return mComputerDao.searchBy(ComputerMapper.Field.ID, "" + computerId);
+        if (computerId < 0) {
+            throw new IllegalArgumentException("Computer id must be positive");
+        }
+        final List<Computer> list =  mComputerDao.listEqual(ComputerMapper.Field.ID, "" + computerId);
+        return (list.isEmpty() ? null : list.get(0));
     }
 
     private void mCheckParams(IComputerDao computerDao) {

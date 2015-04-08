@@ -108,7 +108,7 @@ public class CompanyService implements ICompanyService {
 
     @Override
     public int getCount(String name) {
-        return mCompanyDao.getCount(name);
+        return mCompanyDao.getCountEqual(CompanyMapper.Field.NAME, name);
     }
 
     @Override
@@ -122,7 +122,12 @@ public class CompanyService implements ICompanyService {
 
     @Override
     public Company search(long companyId) {
-        return mCompanyDao.searchBy(CompanyMapper.Field.ID, "" + companyId);
+        if (companyId <= 0) {
+            throw new IllegalArgumentException("Company id must be positive");
+        }
+
+        final List<Company> list = mCompanyDao.listLike(CompanyMapper.Field.ID, "" + companyId);
+        return (list.size() == 0 ? null : list.get(0));
     }
 
     /**
@@ -131,18 +136,19 @@ public class CompanyService implements ICompanyService {
      *
      * @param id
      *            Id of company to delete.
-     * @throws ServiceException
+     * @throws NoSuchElementException
      *             if no valid computerDao has been found.
      */
     @Override
-    public void delete(Long id) throws NoSuchElementException, ServiceException {
+    public void delete(Long id) throws NoSuchElementException {
         mAssertComputerDao();
 
         final Transaction transaction = mConnectionFactory.getTransaction();
         try {
             try {
                 transaction.begin();
-                final List<Computer> computers = mComputerDao.listBy(ComputerMapper.Field.NAME);
+                final List<Computer> computers = mComputerDao.listEqual(ComputerMapper.Field.COMPANY_ID,
+                        Long.toString(id));
                 // delete all computers that matches this company...
                 for (final Computer computer : computers) {
                     mComputerDao.delete(computer);
@@ -158,7 +164,7 @@ public class CompanyService implements ICompanyService {
                 transaction.end();
             }
         } catch (final SQLException e) {
-            throw new ServiceException(e.getMessage());
+            throw new NoSuchElementException(e.getMessage());
         }
         mConnectionFactory.close(transaction);
     }

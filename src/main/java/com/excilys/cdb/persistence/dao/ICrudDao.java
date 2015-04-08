@@ -30,10 +30,12 @@ public interface ICrudDao<T extends Identifiable<Long>> {
 
     /**
      * List entities. Order results by name. Search is bounded by offset & count
-     * params.
+     * parameters.
      *
      * @param field
-     *            Field to sort the entities by. * @param offset Search offset.
+     *            Field to sort the entities by.
+     * @param offset
+     *            Search offset.
      * @param count
      *            Number of results to fetch. Set a negative value for unbounded
      *            search.
@@ -45,41 +47,77 @@ public interface ICrudDao<T extends Identifiable<Long>> {
     }
 
     /**
-     * List entities with name matching given 'name' parameter. Order results by
-     * name.
+     * List entities with field containing the given 'value' parameter. Order
+     * results by value. Search is bounded by offset & count parameters.
      *
      * @param field
-     *            Field to sort the entities by.
+     *            Requested field to match the given value.
      * @param offset
      *            Search offset.
      * @param count
      *            Number of results to fetch. Set a negative value for unbounded
      *            search.
-     * @param name
-     *            Entity name to search for, non case sensitive.
+     * @param value
+     *            Entity value to search for, non case sensitive.
      * @throw IllegalArgumentException if name is invalid (ie : null) or if
      *        search offset is negative
      * @return the list of results.
      */
     default List<T> listLike(EntityField<T> field, String value, int offset, int count) {
-        throw new UnsupportedOperationException();
+        return listEqual(field, "%".concat(value).toUpperCase().concat("%"), offset, count);
     }
 
+    /**
+     * List entities with field containing the given 'value' parameter. Order
+     * results by value. Unbounded search.
+     *
+     * @param field
+     *            Requested field to match the given value.
+     * @param value
+     *            Entity value to search for, non case sensitive.
+     * @throw IllegalArgumentException if name is invalid (ie : null) or if
+     *        search offset is negative
+     * @return the list of results.
+     */
     default List<T> listLike(EntityField<T> field, String value) {
         return listLike(field, value, 0, -1);
     }
 
     /**
-     * Search an entity in DB given its id.
+     * List entities with field matching the given 'value' parameter. Order
+     * results by value. Unbounded search.
      *
+     * @param field
+     *            Requested field to match the given value.
      * @param value
-     *            value of the requested entity.
-     * @return the first entity that matches, or null if no entity found.
-     * @throws IllegalArgumentException
-     *             if the given id is invalid. Valid id must be positive.
+     *            Entity value to search for, non case sensitive.
+     * @throw IllegalArgumentException if name is invalid (ie : null) or if
+     *        search offset is negative
+     * @return the list of results.
      */
-    T searchBy(EntityField<T> field, String value);
+    default List<T> listEqual(EntityField<T> field, String value) {
+        return listEqual(field, value, 0, -1);
 
+    }
+
+    /**
+     * List entities with field matching the given 'value' parameter. Order
+     * results by value. Search is bounded by offset & count parameters.
+     *
+     * @param field
+     *            Requested field to match the given value.
+     * @param offset
+     *            Search offset.
+     * @param count
+     *            Number of results to fetch. Set a negative value for unbounded
+     *            search.
+     * @param value
+     *            Entity value to search for, non case sensitive.
+     * @throw IllegalArgumentException if name is invalid (ie : null) or if
+     *        search offset is negative
+     * @return the list of results.
+     */
+    List<T> listEqual(EntityField<T> field, String value, int offset, int count);
     /**
      * @return count of entities entries in database.
      */
@@ -88,14 +126,34 @@ public interface ICrudDao<T extends Identifiable<Long>> {
     }
 
     /**
-     * @param name
+     * Count entities where the given field matches the given value.
+     *
+     * @param field
+     *            Requested field to match the given value.
+     * @param value
      *            Name of entities to search for.
-     * @return count of entity entries in database that matches the given name.
-     * @throws if
-     *             name is null.
+     * @return count of entity entries in database that matches the given value.
+     * @throws IllegalArgumentException
+     *             if value is null.
      */
-    default int getCount(String name) throws IllegalArgumentException {
+    default int getCountEqual(EntityField<T> field, String value) throws IllegalArgumentException {
         throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Count entities where the given field contains the given value.
+     *
+     * @param field
+     *            Requested field to match the given value.
+     * @param value
+     *            Name of entities to search for.
+     * @return count of entity entries in database that contains the given
+     *         value.
+     * @throws IllegalArgumentException
+     *             if value is null.
+     */
+    default int getCountLike(EntityField<T> field, String value) throws IllegalArgumentException {
+        return getCountEqual(field, "%".concat(value).toUpperCase().concat("%"));
     }
 
 

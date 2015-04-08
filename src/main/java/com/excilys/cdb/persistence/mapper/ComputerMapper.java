@@ -25,27 +25,27 @@ public class ComputerMapper implements EntityMapper<Computer> {
     /** name of this computer. */
     private String    mName;
     /** manufacturer of this computer. */
-    private Company       mCompany;
+    private Company   mCompany;
     /** release date. */
     private LocalDate mReleaseDate;
     /** discontinuation date. */
     private LocalDate mDiscDate;
     /** id of this computer. Remember to test if not null!!!! */
-    private Long          mId;
+    private Long      mId;
     /** SQL release timestamp to be stored in DB. */
-    private Timestamp     mSqlReleaseDate;
+    private Timestamp mSqlReleaseDate;
     /** SQL discontinuation timestamp to be stored in DB. */
-    private Timestamp     mSqlDiscDate;
+    private Timestamp mSqlDiscDate;
     /** remember to test if not null!!!! */
-    private Long          mCompanyId;
-    private String        mCompanyName;
+    private Long      mCompanyId;
+    private String    mCompanyName;
 
     /* ***
      * COLUMN ENUM
      */
     public static enum Field implements EntityField<Computer> {
-        ID("computer.id"), NAME("computer.name"), INTRODUCED("computer.intro"),
-        DISCONTINUED("computer.disc"), COMPANY_ID("company.id");
+        ID("computer.id"), NAME("computer.name"), INTRODUCED("computer.introduced"),
+        DISCONTINUED("computer.discontinued"), COMPANY_ID("company.id");
 
         String mLabel;
 
