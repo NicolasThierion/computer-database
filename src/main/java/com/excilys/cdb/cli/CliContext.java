@@ -17,7 +17,8 @@ public class CliContext {
      * ATTRIBUTES
      */
     private final ICrudService<Computer> mComputerService = new ComputerService(ComputerDao.getInstance());
-    private final ICrudService<Company>  mCompanyService  = new CompanyService(CompanyDao.getInstance());
+    private final ICrudService<Company>  mCompanyService  = new CompanyService(CompanyDao.getInstance(),
+                                                                  ComputerDao.getInstance());
 
     private List<Computer>         mComputers;
     private List<Company>          mCompanies;

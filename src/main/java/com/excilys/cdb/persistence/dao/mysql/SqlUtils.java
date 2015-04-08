@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Map;
 
+import com.excilys.cdb.persistence.ConnectionFactory;
 
 public final class SqlUtils {
     /** where SQL scripts are stored. */
@@ -59,7 +60,7 @@ public final class SqlUtils {
     }
 
     public static void safeCloseConnection(Connection conn) {
-        safeCloseClosable(conn);
+        ConnectionFactory.getInstance().close(conn);
     }
 
     public static void safeCloseStatement(Statement statement) {

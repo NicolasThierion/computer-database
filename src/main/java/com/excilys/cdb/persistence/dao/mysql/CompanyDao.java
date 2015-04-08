@@ -9,12 +9,14 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.persistence.ConnectionFactory;
+import com.excilys.cdb.persistence.EntityField;
 import com.excilys.cdb.persistence.dao.DaoException;
-import com.excilys.cdb.persistence.dao.ICompanyDao;
 import com.excilys.cdb.persistence.dao.DaoException.ErrorType;
+import com.excilys.cdb.persistence.dao.ICompanyDao;
 import com.excilys.cdb.persistence.mapper.CompanyMapper;
 
 /**
@@ -32,6 +34,8 @@ public final class CompanyDao implements ICompanyDao {
     private static final String REQ_SELECT_COMPANIES_FILENAME = "select_companies_paging.sql";
     private static final String REQ_SELECT_COMPANY_FILENAME   = "select_company.sql";
     private static final String REQ_COUNT_COMPANIES_FILENAME  = "select_company_count.sql";
+    private static final String REQ_INSERT_COMPANY_FILENAME   = "insert_company.sql";
+    private static final String REQ_DELETE_COMPANY_FILENAME   = "delete_company_with_id.sql";
 
     /* ***
      * ATTRIBUTES
@@ -64,35 +68,40 @@ public final class CompanyDao implements ICompanyDao {
      * DAO SERVICES
      */
 
-    @Override
-    public List<Company> listByName(int begin, int nb) throws DaoException {
-
-        final String name = "%%";
-        return listByName(begin, nb, name);
-    }
 
     @Override
-    public List<Company> listByName(int begin, int nb, String name) {
+    public List<Company> listLike(EntityField<Company> field, String value, int offset, int count) {
 
         Connection dbConn = null;
         PreparedStatement selectCompaniesStatement = null;
         ResultSet result = null;
         final List<Company> resList = new LinkedList<Company>();
 
-        // check parameters
-        begin = (begin < 0 ? 0 : begin);
-        nb = (nb < 0 ? Integer.MAX_VALUE : nb);
-        name = name.toUpperCase();
+        // check offset parameter
+        if (offset < 0) {
+            throw new IllegalArgumentException("search offset cannot be negative");
+        }
+
+        // check name parameter
+        if (value == null) {
+            throw new IllegalArgumentException("name cannot be null");
+        }
+
+        count = (count < 0 ? Integer.MAX_VALUE : count);
+        value = "%".concat(value.toUpperCase()).concat("%");
 
         try {
             // get a connection & prepare needed statement
             dbConn = ConnectionFactory.getInstance().getConnection();
-            selectCompaniesStatement = dbConn.prepareStatement(mQueryStrings.get(REQ_SELECT_COMPANIES_FILENAME));
+            String sqlStr = mQueryStrings.get(REQ_SELECT_COMPANIES_FILENAME);
+            sqlStr = String.format(sqlStr, field.getLabel(), field.getLabel());
+            selectCompaniesStatement = dbConn.prepareStatement(sqlStr);
 
             // set range parameters
-            selectCompaniesStatement.setString(1, name);
-            selectCompaniesStatement.setInt(2, begin);
-            selectCompaniesStatement.setInt(3, nb);
+            int colId = 1;
+            selectCompaniesStatement.setString(colId++, value);
+            selectCompaniesStatement.setInt(colId++, offset);
+            selectCompaniesStatement.setInt(colId++, count);
 
             // exec query
             result = selectCompaniesStatement.executeQuery();
@@ -100,9 +109,8 @@ public final class CompanyDao implements ICompanyDao {
             while (result.next()) {
 
                 // get company name;
-                final int compId = result.getInt("id");
-                final String compName = result.getString("name");
-                final Company company = new Company(compId, compName);
+                final CompanyMapper companyMap = new CompanyMapper();
+                final Company company = companyMap.fromResultSet(result);
                 resList.add(company);
             }
         } catch (final SQLException e) {
@@ -114,10 +122,7 @@ public final class CompanyDao implements ICompanyDao {
     }
 
     @Override
-    public Company searchById(long id) {
-        if (id <= 0) {
-            throw new IllegalArgumentException("company ID must be positive.");
-        }
+    public Company searchBy(EntityField<Company> field, String id) {
 
         Connection dbConn = null;
         PreparedStatement selectCompanyStatement = null;
@@ -125,15 +130,17 @@ public final class CompanyDao implements ICompanyDao {
         Company company = null;
 
 
-        final String sqlStr = mQueryStrings.get(REQ_SELECT_COMPANY_FILENAME);
-        try {
+        String sqlStr = mQueryStrings.get(REQ_SELECT_COMPANY_FILENAME);
+        sqlStr = String.format(sqlStr, field.getLabel(), field.getLabel());
 
+        try {
             // get a connection & prepare needed statement
             dbConn = ConnectionFactory.getInstance().getConnection();
             selectCompanyStatement = dbConn.prepareStatement(sqlStr);
 
             // set range parameters
-            selectCompanyStatement.setLong(1, id);
+            int colId = 1;
+            selectCompanyStatement.setString(colId++, id);
 
             // exec query
             result = selectCompanyStatement.executeQuery();
@@ -141,7 +148,6 @@ public final class CompanyDao implements ICompanyDao {
                 final CompanyMapper mapper = new CompanyMapper();
                 company = mapper.fromResultSet(result);
             }
-
         } catch (final SQLException e) {
             throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
         } finally {
@@ -185,6 +191,90 @@ public final class CompanyDao implements ICompanyDao {
         return count;
     }
 
+    @Override
+    public Company add(Company company) {
+        Connection dbConn = null;
+        PreparedStatement insertCompanyStatement = null;
+        ResultSet result = null;
+        final String sqlStr = mQueryStrings.get(REQ_INSERT_COMPANY_FILENAME);
+        try {
+            // get a connection & prepare needed statement
+            dbConn = ConnectionFactory.getInstance().getConnection();
+            insertCompanyStatement = dbConn.prepareStatement(sqlStr, PreparedStatement.RETURN_GENERATED_KEYS);
+
+            // ensure that we are attempting to add a NEW computer (with id
+            // field = null)"
+            final Long id = company.getId();
+            if (id != null) {
+                throw new IllegalArgumentException("Trying to add a company : " + company
+                        + " with non-blank field \"company id\"");
+            }
+
+            // build SQL request :
+            // INSERT INTO computer (name, introduced, discontinued, company_id)
+            // get computer properties
+
+            final CompanyMapper h = new CompanyMapper();
+            h.fromEntity(company);
+
+            int colId = 1;
+            insertCompanyStatement.setString(colId++, h.getName());
+
+            if (insertCompanyStatement.executeUpdate() != 1) {
+                throw new DaoException(
+                        "Something went wrong when adding company " + company
+                        + ". No changes commited.", ErrorType.SQL_ERROR);
+            }
+
+            // get generated id...
+            result = insertCompanyStatement.getGeneratedKeys();
+            if (result.next()) {
+                // & update this computer with new generated id.
+                company.setId(result.getLong(1));
+            }
+            result.close();
+            return company;
+        } catch (final SQLException e) {
+            throw new DaoException("Something went wrong when adding company " + company + " : " + e.getMessage(),
+                    ErrorType.UNKNOWN_ERROR);
+        } finally {
+            SqlUtils.safeCloseAll(dbConn, insertCompanyStatement, result);
+        }
+    }
+
+    /**
+     * Delete the company with given id from DB.
+     *
+     * @throws DaoException
+     *             if deletion failed or if provided computer is invalid or
+     *             doesn't exist.
+     */
+    @Override
+    public void delete(Long id) throws DaoException, IllegalArgumentException {
+        Connection dbConn = null;
+        PreparedStatement deleteCompanyStatement = null;
+        // Delete computer by id : ensure computer has id != null
+        if (id == null) {
+            throw new IllegalArgumentException("Company id is null. Cannot delete this company");
+        }
+        final String sqlStr = mQueryStrings.get(REQ_DELETE_COMPANY_FILENAME);
+        try {
+            // get a connection & prepare needed statement
+            dbConn = ConnectionFactory.getInstance().getConnection();
+            deleteCompanyStatement = dbConn.prepareStatement(sqlStr);
+
+            deleteCompanyStatement.setLong(1, id);
+            if (deleteCompanyStatement.executeUpdate() != 1) {
+                throw new NoSuchElementException("Something went wrong while deleting company no " + id
+                        + ". Maybe this company doesn't exist?");
+            }
+        } catch (final SQLException e) {
+            throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
+        } finally {
+            SqlUtils.safeCloseAll(dbConn, deleteCompanyStatement, null);
+        }
+    }
+
     /* ***
      * PRIVATE METHODS
      */
@@ -196,11 +286,11 @@ public final class CompanyDao implements ICompanyDao {
             SqlUtils.loadSqlQuery(REQ_SELECT_COMPANIES_FILENAME, mQueryStrings);
             SqlUtils.loadSqlQuery(REQ_SELECT_COMPANY_FILENAME, mQueryStrings);
             SqlUtils.loadSqlQuery(REQ_COUNT_COMPANIES_FILENAME, mQueryStrings);
-
+            SqlUtils.loadSqlQuery(REQ_INSERT_COMPANY_FILENAME, mQueryStrings);
+            SqlUtils.loadSqlQuery(REQ_DELETE_COMPANY_FILENAME, mQueryStrings);
 
         } catch (final IOException e) {
             throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
         }
     }
-
 }

@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.excilys.cdb.model.Company;
+import com.excilys.cdb.persistence.EntityField;
 
 /**
  * TODO doc.
@@ -13,8 +14,34 @@ import com.excilys.cdb.model.Company;
  */
 public class CompanyMapper implements EntityMapper<Company> {
 
+    /* ***
+     * ATRIBUTES
+     */
     private Long   mId;
     private String mName;
+
+    /* ***
+     * COLUMN ENUM
+     */
+    public enum Field implements EntityField<Company> {
+        ID("company.id"), NAME("company.name");
+
+        String mLabel;
+
+        Field(String label) {
+            mLabel = label;
+        }
+
+        @Override
+        public String toString() {
+            return mLabel;
+        }
+
+        @Override
+        public String getLabel() {
+            return mLabel;
+        }
+    }
 
     @Override
     public void fromEntity(Company company) {
@@ -25,10 +52,17 @@ public class CompanyMapper implements EntityMapper<Company> {
     @Override
     public Company fromResultSet(ResultSet res) throws SQLException {
         // TODO use named columns
-        int colId = 1;
-        mId = res.getLong(colId++);
-        mName = res.getString(colId++);
+        mId = res.getLong(Field.ID.getLabel());
+        mName = res.getString(Field.NAME.getLabel());
         return new Company(mId, mName);
+    }
+
+    public Long getId() {
+        return mId;
+    }
+
+    public String getName() {
+        return mName;
     }
 
 }

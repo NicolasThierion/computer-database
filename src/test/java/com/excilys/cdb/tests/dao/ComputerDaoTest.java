@@ -17,6 +17,8 @@ import com.excilys.cdb.persistence.dao.ICompanyDao;
 import com.excilys.cdb.persistence.dao.IComputerDao;
 import com.excilys.cdb.persistence.dao.mysql.CompanyDao;
 import com.excilys.cdb.persistence.dao.mysql.ComputerDao;
+import com.excilys.cdb.persistence.mapper.CompanyMapper;
+import com.excilys.cdb.persistence.mapper.ComputerMapper;
 
 /**
  * Unit test for ComputerDao methods.
@@ -48,23 +50,23 @@ public class ComputerDaoTest {
         List<Computer> list;
         //test list construction of various size
         for (final int count : new int[]{2, mComputerDao.getCount(), 0}) {
-            list = mComputerDao.listByName(0, count);
+            list = mComputerDao.listBy(ComputerMapper.Field.NAME, 0, count);
             assertTrue(list.size() == count);
         }
 
         //test list construction out of bounds
-        list = mComputerDao.listByName(mComputerDao.getCount(), mComputerDao.getCount());
+        list = mComputerDao.listBy(ComputerMapper.Field.NAME, mComputerDao.getCount(), mComputerDao.getCount());
         assertTrue(list.size() == 0);
 
         final int count = mComputerDao.getCount();
-        list = mComputerDao.listByName(0, count + 2);
+        list = mComputerDao.listBy(ComputerMapper.Field.NAME, 0, count + 2);
         assertTrue(list.size() == count);
 
         //negative offset
         boolean passed = true;
         try {
             final int invalidOffset = -1;
-            list = mComputerDao.listByName(invalidOffset, count + 2);
+            list = mComputerDao.listBy(ComputerMapper.Field.NAME, invalidOffset, count + 2);
         } catch (final IllegalArgumentException e) {
             passed = false;
         }
@@ -84,12 +86,12 @@ public class ComputerDaoTest {
         final Computer uniqueComputer = new Computer(uniqueName);
         mComputerDao.add(uniqueComputer);
 
-        List<Computer> list = mComputerDao.listLikeName(0, -1, uniqueName);
+        List<Computer> list = mComputerDao.listLike(ComputerMapper.Field.NAME, uniqueName, 0, -1);
 
         assertTrue(list.size() == 1);
         mComputerDao.delete(uniqueComputer);
 
-        list = mComputerDao.listLikeName(0, 0, nonExistantName);
+        list = mComputerDao.listLike(ComputerMapper.Field.NAME, nonExistantName, 0, 0);
         assertTrue(list.size() == 0);
     }
 
@@ -112,7 +114,7 @@ public class ComputerDaoTest {
         mComputerDao.add(computer);
     }
 
-    @Test (expected = DaoException.class)
+    @Test(expected = IllegalArgumentException.class)
     public final void testAddTwice() {
         //add the same computer twice
         final String compName = "Surface pro 3";
@@ -157,19 +159,19 @@ public class ComputerDaoTest {
     @Test
     public final void testDelete() {
         final String computerName = "Surface pro 4";
-        final int count = mComputerDao.listLikeName(0, 0, computerName).size();
+        final int count = mComputerDao.listLike(ComputerMapper.Field.NAME, computerName).size();
 
         final Computer computer = new Computer(computerName);
         mComputerDao.add(computer);
         mComputerDao.delete(computer);
 
-        assertTrue(mComputerDao.listLikeName(0, 0, computerName).size() == count);
+        assertTrue(mComputerDao.listLike(ComputerMapper.Field.NAME, computerName).size() == count);
 
         boolean passed = false;
         try {
             mComputerDao.delete(computer);
             passed = true;
-        } catch (final DaoException e) {
+        } catch (final NoSuchElementException e) {
         }
 
         assertFalse(passed);
@@ -181,10 +183,10 @@ public class ComputerDaoTest {
         final String computerName2 = "Unique computer" + java.time.Clock.systemUTC().millis();
         final LocalDate releaseDate = java.time.LocalDate.of(1999, 1, 1);
         final LocalDate discontinuedDate = java.time.LocalDate.of(2010, 1, 1);
-        final Company company = mCompanyDao.searchById(1L);
+        final Company company = mCompanyDao.searchBy(CompanyMapper.Field.ID, "" + 1L);
 
-        List<Computer> list = mComputerDao.listLikeName(0, -1, computerName);
-        final int count = mComputerDao.listLikeName(0, -1, computerName).size();
+        List<Computer> list = mComputerDao.listLike(ComputerMapper.Field.NAME, computerName);
+        final int count = mComputerDao.listLike(ComputerMapper.Field.NAME, computerName).size();
 
         // add a new computer
         final Computer computer = new Computer(computerName2);
@@ -198,14 +200,14 @@ public class ComputerDaoTest {
         mComputerDao.update(computer);
 
         // ensure modification are effective in db.
-        list = mComputerDao.listLikeName(0, -1, computerName2);
+        list = mComputerDao.listLike(ComputerMapper.Field.NAME, computerName2);
         assertTrue(list.size() == 0);
 
-        list = mComputerDao.listLikeName(0, -1, computerName);
+        list = mComputerDao.listLike(ComputerMapper.Field.NAME, computerName);
         assertTrue(list.size() == count + 1);
 
         // ensure computer has been updated correctly
-        final Computer computerCopy = mComputerDao.searchById(computer.getId());
+        final Computer computerCopy = mComputerDao.searchBy(ComputerMapper.Field.ID, computer.getId().toString());
         assertTrue(computer.equals(computerCopy));
         mComputerDao.delete(computer);
 

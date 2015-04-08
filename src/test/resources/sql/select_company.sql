@@ -1,3 +1,3 @@
-SELECT c.id AS 'id', c.name AS 'name'
-FROM company c
-WHERE c.id = ?;
+SELECT company.id AS 'company_id', company.name AS 'company_name'
+FROM company company
+WHERE %s = ?;

@@ -75,7 +75,7 @@ public class EditComputerServlet extends HttpServlet {
     @Override
     public void init() {
         mComputerService = new ComputerService(ComputerDao.getInstance());
-        mComanyService = new CompanyService(CompanyDao.getInstance());
+        mComanyService = new CompanyService(CompanyDao.getInstance(), ComputerDao.getInstance());
     }
 
     @Override

@@ -27,22 +27,23 @@ public class Company implements Serializable, Identifiable<Long> {
      * CONSTRUCTORS
      */
     /**
-     * Default constructor. Create a company with id = -1 & name = DEFAULT_NAME.
+     * Default constructor. Create a company with id = null & name =
+     * DEFAULT_NAME.
      */
     public Company() {
         mName = DEFAULT_NAME;
-        mId = -1L;
+        mId = null;
     }
 
     /**
-     * Argument constructor. Create a new company with given name & id = -1.
+     * Argument constructor. Create a new company with given name & id = 0.
      *
      * @param name
      *            Name of this company.
      */
     public Company(String name) {
 
-        mId = -1L;
+        mId = null;
         setName(name);
     }
 

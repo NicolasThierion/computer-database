@@ -9,10 +9,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.ConnectionFactory;
+import com.excilys.cdb.persistence.EntityField;
 import com.excilys.cdb.persistence.dao.DaoException;
 import com.excilys.cdb.persistence.dao.DaoException.ErrorType;
 import com.excilys.cdb.persistence.dao.IComputerDao;
@@ -74,47 +76,52 @@ public final class ComputerDao implements IComputerDao {
      */
     @Override
 
-    public List<Computer> listByName() {
-        return listByName(0, Integer.MAX_VALUE);
+    public List<Computer> listBy(EntityField<Computer> field) {
+        return listBy(field, 0, Integer.MAX_VALUE);
     }
 
     @Override
-    public List<Computer> listByName(int begin, int nb) throws DaoException, IllegalArgumentException {
-        final String name = "";
-        return listLikeName(begin, nb, name);
+    public List<Computer> listBy(EntityField<Computer> field, int offset, int count) throws DaoException,
+            IllegalArgumentException {
+        final String value = "";
+        return listLike(field, value, offset, count);
     }
 
     @Override
-    public List<Computer> listLikeName(int offset, int nb, String name) throws IllegalArgumentException {
+    public List<Computer> listLike(EntityField<Computer> field, String value, int offset, int count)
+            throws IllegalArgumentException {
         Connection dbConn = null;
         PreparedStatement selectComputersStatement = null;
         ResultSet result = null;
         final List<Computer> resList = new LinkedList<Computer>();
-        final String sqlStr = mQueryStrings.get(REQ_SELECT_COMPUTERS_FILENAME);
+        String sqlStr = mQueryStrings.get(REQ_SELECT_COMPUTERS_FILENAME);
+        sqlStr = String.format(sqlStr, field.getLabel(), field.getLabel());
 
         // check offset parameter
         if (offset < 0) {
             throw new IllegalArgumentException("search offset cannot be negative");
         }
 
-        // check name parameter
-        if (name == null) {
-            throw new IllegalArgumentException("name cannot be null");
+        // check queried parameter
+        if (value == null) {
+            throw new IllegalArgumentException("search parameter cannot be null");
         }
 
-        nb = (nb < 0 ? Integer.MAX_VALUE : nb);
-        name = "%".concat(name.toUpperCase()).concat("%");
+        count = (count < 0 ? Integer.MAX_VALUE : count);
+        value = "%".concat(value.toUpperCase()).concat("%");
 
         try {
             // get a connection & prepare needed statement
             dbConn = ConnectionFactory.getInstance().getConnection();
             selectComputersStatement = dbConn.prepareStatement(sqlStr);
 
-            //set range parameters
+            // set "search by" parameter
             int colId = 1;
-            selectComputersStatement.setString(colId++, name);
+
+            // set "range" parameter
+            selectComputersStatement.setString(colId++, value);
             selectComputersStatement.setInt(colId++, offset);
-            selectComputersStatement.setInt(colId++, nb);
+            selectComputersStatement.setInt(colId++, count);
 
             //exec query
             result = selectComputersStatement.executeQuery();
@@ -155,10 +162,7 @@ public final class ComputerDao implements IComputerDao {
 
 
     @Override
-    public Computer searchById(long id) throws IllegalArgumentException {
-        if (id <= 0) {
-            throw new IllegalArgumentException("computer ID must be positive.");
-        }
+    public Computer searchBy(EntityField<Computer> field, String value) throws IllegalArgumentException {
 
         Connection dbConn = null;
         PreparedStatement selectComputersStatement = null;
@@ -172,7 +176,9 @@ public final class ComputerDao implements IComputerDao {
             selectComputersStatement = dbConn.prepareStatement(sqlStr);
 
             // set range parameters
-            selectComputersStatement.setLong(1, id);
+            int colId = 1;
+            selectComputersStatement.setString(colId++, field.getLabel());
+            selectComputersStatement.setString(colId++, value);
 
             // exec query
             result = selectComputersStatement.executeQuery();
@@ -241,9 +247,8 @@ public final class ComputerDao implements IComputerDao {
             //ensure that we are attempting to add a NEW computer (with id field = null)"
             final Long id = computer.getId();
             if (id != null) {
-                throw new DaoException("Trying to add a computer : " + computer
-                        + " with non-blank field \"computer id\"",
-                        ErrorType.SQL_ERROR);
+                throw new IllegalArgumentException("Trying to add a computer : " + computer
+                        + " with non-blank field \"computer id\"");
             }
 
             //build SQL request :
@@ -325,9 +330,8 @@ public final class ComputerDao implements IComputerDao {
             updateComputerStatement.setLong(colId++, h.getId());
 
             if (updateComputerStatement.executeUpdate() != 1) {
-                throw new DaoException("Something went wrong while updating computer " + computer
-                        + ". Maybe this computer doesn't exist?",
-                        ErrorType.SQL_ERROR);
+                throw new NoSuchElementException("Something went wrong while updating computer " + computer
+                        + ". Maybe this computer doesn't exist?");
             }
         } catch (final SQLException e) {
             throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
@@ -360,9 +364,8 @@ public final class ComputerDao implements IComputerDao {
 
             deleteComputerStatement.setLong(1, id);
             if (deleteComputerStatement.executeUpdate() != 1) {
-                throw new DaoException("Something went wrong while deleting computer no " + id
-                        + ". Maybe this computer doesn't exist?",
-                        ErrorType.SQL_ERROR);
+                throw new NoSuchElementException("Something went wrong while deleting computer no " + id
+                        + ". Maybe this computer doesn't exist?");
             }
         } catch (final SQLException e) {
             throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);

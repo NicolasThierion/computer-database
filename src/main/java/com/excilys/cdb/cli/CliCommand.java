@@ -21,13 +21,10 @@ public enum CliCommand {
     /**
      * Retrieve all computers.
      */
-    GET_ALL_COMPUTERS("getAllComputers") {
+    LIST_COMPUTERS("list computers") {
 
         @Override
         public void execute(CliContext context) throws ServiceException {
-            if (context == null) {
-                throw new IllegalArgumentException();
-            }
             context.setComputers(context.getComputerService().listByName());
             System.out.println(context.getComputers());
         }
@@ -36,13 +33,10 @@ public enum CliCommand {
     /**
      * Retrieve all companies.
      */
-    GET_ALL_COMPANIES("getAllCompanies") {
+    LIST_COMPANIES("list companies") {
 
         @Override
         public void execute(CliContext context) throws ServiceException {
-            if (context == null) {
-                throw new IllegalArgumentException();
-            }
             context.setCompanies(context.getCompanyService().listByName());
             System.out.println(context.getCompanies());
         }
@@ -51,13 +45,10 @@ public enum CliCommand {
     /**
      * Retrieve a computer.
      */
-    GET_BY_ID_COMPUTER("getByIdComputer") {
+    GET_BY_ID_COMPUTER("list computers id=") {
 
         @Override
         public void execute(CliContext context) throws ServiceException {
-            if (context == null) {
-                throw new IllegalArgumentException();
-            }
             System.out.print("Identifier : ");
             final Long computerId = Long.valueOf(context.getScanner().next());
             context.setComputerId(computerId);
@@ -69,7 +60,7 @@ public enum CliCommand {
     /**
      * Create a new computer.
      */
-    CREATE_COMPUTER("createComputer") {
+    CREATE_COMPUTER("create computer") {
 
         @Override
         public void execute(CliContext context) throws ServiceException {
@@ -92,7 +83,7 @@ public enum CliCommand {
     /**
      * Update a computer.
      */
-    UPDATE_COMPUTER("updateComputer") {
+    UPDATE_COMPUTER("update computer") {
 
         @Override
         public void execute(CliContext context) throws ServiceException {
@@ -111,7 +102,7 @@ public enum CliCommand {
     /**
      * Delete a computer.
      */
-    DELETE_COMPUTER("deleteComputer") {
+    DELETE_COMPUTER("delete computer") {
 
         @Override
         public void execute(CliContext context) throws ServiceException {
@@ -136,8 +127,9 @@ public enum CliCommand {
                 throw new IllegalArgumentException();
             }
             System.out.print("Legal commands : ");
-            System.out.print("-getAllComputers");
-            System.out.print("-getAllCompanies");
+            for (final CliCommand command : values()) {
+                System.out.println(command.mCommandLabel);
+            }
         }
 
     },

@@ -7,13 +7,13 @@
 <div class="container text-center">
     <ul class="pagination">
         <c:if test="${pageNum > 1}">
-            <jsp:setProperty property="offset" name="page" value="${pageOffset - pageSize}" />
+            <jsp:setProperty property="offset" name="page" value="${(pageNum - 2) * pageSize}" />
             <li><a href="dashboard?${page.toUrlArgs()}" aria-label="Previous"> <span aria-hidden="true">&laquo;</span>
             </a></li>
         </c:if>
         <c:forEach var="i" items="-2,-1,0,1,2">
             <c:set var="newNum" value="${pageNum + i}"></c:set>
-            <c:set var="newOffset" value="${pageOffset + i * pageSize}"></c:set>
+            <c:set var="newOffset" value="${(pageNum + i - 1) * pageSize}"></c:set>
             <jsp:setProperty property="num" name="page" value="${newNum}" />
             <jsp:setProperty property="offset" name="page" value="${newOffset}" />
             <c:if test="${newNum > 0 && newNum < pageNumMax}">
@@ -21,7 +21,7 @@
             </c:if>
         </c:forEach>
         <c:if test="${pageNum < pageNumMax}">
-            <jsp:setProperty property="offset" name="page" value="${pageOffset + pageSize}" />
+            <jsp:setProperty property="offset" name="page" value="${pageNum * pageSize}" />
             <li><a href="dashboard?${page.toUrlArgs()}" aria-label="Next"> <span aria-hidden="true">&raquo;</span>
             </a></li>
         </c:if>

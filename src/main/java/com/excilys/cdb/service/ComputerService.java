@@ -6,6 +6,7 @@ import java.util.NoSuchElementException;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.dao.DaoException;
 import com.excilys.cdb.persistence.dao.IComputerDao;
+import com.excilys.cdb.persistence.mapper.ComputerMapper;
 
 public class ComputerService implements IComputerService {
 
@@ -26,6 +27,7 @@ public class ComputerService implements IComputerService {
      *            Computer DAO to be used by this service.
      */
     public ComputerService(IComputerDao computerDao) {
+        mCheckParams(computerDao);
         mComputerDao = computerDao;
     }
 
@@ -58,32 +60,25 @@ public class ComputerService implements IComputerService {
 
     @Override
     public List<Computer> listByName(int offset, int count) {
-        return mComputerDao.listByName(offset, count);
+        return mComputerDao.listBy(ComputerMapper.Field.NAME, offset, count);
     }
 
     @Override
     public List<Computer> listLikeName(int offset, int count, String name) {
 
-        return mComputerDao.listLikeName(offset, count, name);
+        return mComputerDao.listLike(ComputerMapper.Field.NAME, name, offset, count);
 
     }
 
     @Override
     public Computer add(Computer computer) throws IllegalArgumentException {
-        try {
-            return mComputerDao.add(computer);
-        } catch (final DaoException e) {
-            throw new IllegalArgumentException(e.getMessage());
-        }
+        return mComputerDao.add(computer);
+
     }
 
     @Override
     public void update(Computer computer) throws NoSuchElementException {
-        try {
-            mComputerDao.update(computer);
-        } catch (final DaoException e) {
-            throw new NoSuchElementException(e.getMessage());
-        }
+        mComputerDao.update(computer);
     }
 
     @Override
@@ -105,20 +100,14 @@ public class ComputerService implements IComputerService {
         return mComputerDao.getCount(queryString);
     }
 
-
-    @Override
-    public Computer retrieve(long computerId) throws NoSuchElementException, IllegalArgumentException {
-        final Computer computer;
-        computer = search(computerId);
-        if (computer == null) {
-            throw new NoSuchElementException("no computer with id = " + computerId + " found.");
-        }
-
-        return computer;
-    }
-
     @Override
     public Computer search(long computerId) throws IllegalArgumentException {
-        return mComputerDao.searchById(computerId);
+        return mComputerDao.searchBy(ComputerMapper.Field.ID, "" + computerId);
+    }
+
+    private void mCheckParams(IComputerDao computerDao) {
+        if (computerDao == null) {
+            throw new NullPointerException("connection cannot be null");
+        }
     }
 }

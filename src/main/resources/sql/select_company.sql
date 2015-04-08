@@ -1,3 +1,3 @@
-SELECT c.id AS 'id', c.name AS 'name'
+SELECT c.id AS 'company_id', c.name AS 'company_name'
 FROM company c
 WHERE c.id = ?;

@@ -25,7 +25,7 @@ public interface ICrudService<T extends Identifiable<Long>> {
      * @return the list of entities.
      */
     default List<T> listByName(int offset, int count) {
-        return listLikeName(offset, count, null);
+        return listLikeName(offset, count, "");
     }
 
     // TODO doc
@@ -85,7 +85,15 @@ public interface ICrudService<T extends Identifiable<Long>> {
      * @throws IllegalArgumentException
      *             if the given id is invalid. Valid id must be positive.
      */
-    T retrieve(long entityId) throws NoSuchElementException, IllegalArgumentException;
+    default T retrieve(long entityId) throws NoSuchElementException, IllegalArgumentException {
+        final T entity;
+        entity = search(entityId);
+        if (entity == null) {
+            throw new NoSuchElementException("no entity with id = " + entityId + " was found.");
+        }
+
+        return entity;
+    }
 
     /**
      * Attempt to retrieve a entity given its id. Return null if not found.
@@ -153,6 +161,4 @@ public interface ICrudService<T extends Identifiable<Long>> {
     default int getCount(String name) {
         throw new UnsupportedOperationException();
     }
-
-
 }

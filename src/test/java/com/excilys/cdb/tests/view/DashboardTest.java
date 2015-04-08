@@ -12,7 +12,7 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 import com.excilys.cdb.persistence.dao.mysql.ComputerDao;
 import com.excilys.cdb.service.ComputerService;
-import com.excilys.cdb.service.ICrudService;
+import com.excilys.cdb.service.IComputerService;
 
 public final class DashboardTest extends CdbViewTest {
 
@@ -24,7 +24,7 @@ public final class DashboardTest extends CdbViewTest {
     /* ***
      * ATTRIBUTES
      */
-    private ICrudService    mService;
+    private IComputerService    mService;
 
     /* ***
      * FIELDS TO TEST

@@ -3,7 +3,7 @@ package com.excilys.cdb.persistence;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class Transaction {
+public class Transaction implements AutoCloseable {
 
     /* ***
      * ATTRIBUTES
@@ -21,6 +21,7 @@ public class Transaction {
      *            connection this transaction should use.
      */
     public Transaction(Connection conn) {
+        mCheckParams(conn);
         mConn = conn;
     }
 
@@ -63,4 +64,14 @@ public class Transaction {
         return mConn;
     }
 
+    @Override
+    public void close() throws Exception {
+        finalize();
+    }
+
+    private void mCheckParams(Connection conn) {
+        if (conn == null) {
+            throw new NullPointerException("connection cannot be null");
+        }
+    }
 }

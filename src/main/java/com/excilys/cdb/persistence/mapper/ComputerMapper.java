@@ -8,6 +8,7 @@ import java.time.LocalTime;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
+import com.excilys.cdb.persistence.EntityField;
 
 /**
  * TODO doc.
@@ -38,6 +39,30 @@ public class ComputerMapper implements EntityMapper<Computer> {
     /** remember to test if not null!!!! */
     private Long          mCompanyId;
     private String        mCompanyName;
+
+    /* ***
+     * COLUMN ENUM
+     */
+    public static enum Field implements EntityField<Computer> {
+        ID("computer.id"), NAME("computer.name"), INTRODUCED("computer.intro"),
+        DISCONTINUED("computer.disc"), COMPANY_ID("company.id");
+
+        String mLabel;
+
+        Field(String label) {
+            mLabel = label;
+        }
+
+        @Override
+        public String toString() {
+            return mLabel;
+        }
+
+        @Override
+        public String getLabel() {
+            return mLabel;
+        }
+    }
 
     /* ***
      * CONSTRUCTORS

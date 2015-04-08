@@ -15,6 +15,7 @@ import com.excilys.cdb.dto.ComputerDto;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.dao.mysql.ComputerDao;
+import com.excilys.cdb.persistence.mapper.ComputerMapper;
 
 /**
  * Unit test for ComputerDto methods.
@@ -87,7 +88,7 @@ public class ComputerDtoTest {
 
     @Test
     public final void testDtoFromList() {
-        final List<Computer> computers = ComputerDao.getInstance().listByName();
+        final List<Computer> computers = ComputerDao.getInstance().listBy(ComputerMapper.Field.NAME);
         final List<ComputerDto> dtos = ComputerDto.fromComputers(computers);
         assertTrue(computers.size() == dtos.size());
         final Iterator<ComputerDto> dtoIt = dtos.iterator();

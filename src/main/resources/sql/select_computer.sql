@@ -1,4 +1,4 @@
-SELECT r.id AS 'id', r.name AS 'name', r.introduced AS 'introduced', r.discontinued AS 'discontinued',
-y.id AS 'company_id', y.name AS 'compName'
+SELECT r.id AS 'computer_id', r.name AS 'computer_name', r.introduced AS 'computer_intro', r.discontinued AS 'computer_disc',
+y.id AS 'company_id', y.name AS 'company_name'
 FROM computer r LEFT OUTER JOIN company y on (r.company_id = y.id)
 WHERE r.id = ?;

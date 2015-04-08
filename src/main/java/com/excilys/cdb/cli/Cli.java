@@ -6,10 +6,12 @@ import java.util.Scanner;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.persistence.dao.ICompanyDao;
-import com.excilys.cdb.persistence.dao.IComputerDao;
 import com.excilys.cdb.persistence.dao.mysql.CompanyDao;
 import com.excilys.cdb.persistence.dao.mysql.ComputerDao;
+import com.excilys.cdb.service.CompanyService;
+import com.excilys.cdb.service.ComputerService;
+import com.excilys.cdb.service.ICompanyService;
+import com.excilys.cdb.service.IComputerService;
 
 /**
  * This is the main class for the UI; This program displays a CLI to control
@@ -21,8 +23,8 @@ import com.excilys.cdb.persistence.dao.mysql.ComputerDao;
  */
 public final class Cli {
 
-    private static IComputerDao computerDao = ComputerDao.getInstance();
-    private static ICompanyDao  companyDao  = CompanyDao.getInstance();
+    private static IComputerService computerService = new ComputerService(ComputerDao.getInstance());
+    private static ICompanyService  companyService  = new CompanyService(CompanyDao.getInstance());
 
     private static final int PAGE_SIZE   = 10;
 
@@ -53,7 +55,7 @@ public final class Cli {
         List<Computer> list;
         final Scanner sin = new Scanner(System.in);
         do {
-            list = computerDao.listByName(begin, PAGE_SIZE);
+            list = computerService.listByName(begin, PAGE_SIZE);
             printList(list);
             begin += PAGE_SIZE;
             System.out.println("'n' to print next page, 'q' to abort");
@@ -75,7 +77,7 @@ public final class Cli {
         List<Company> list;
         final Scanner sin = new Scanner(System.in);
         do {
-            list = companyDao.listByName(begin, PAGE_SIZE);
+            list = companyService.listByName(begin, PAGE_SIZE);
             printList(list);
             begin += PAGE_SIZE;
             System.out.println("'n' to print next page, 'q' to abort");
