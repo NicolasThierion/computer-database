@@ -37,6 +37,10 @@
 
     <!-- error pages -->
     <error-page>
+        <error-code>400</error-code>
+        <location>/WEB-INF/views/400.jsp</location>
+    </error-page>
+    <error-page>
         <error-code>403</error-code>
         <location>/WEB-INF/views/403.jsp</location>
     </error-page>

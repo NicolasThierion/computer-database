@@ -185,7 +185,7 @@ public class ComputerDto implements Serializable {
     }
 
     public CompanyDto getCompany() {
-        return new CompanyDto(mCompanyDto);
+        return (mCompanyDto != null ? new CompanyDto(mCompanyDto) : null);
     }
 
     /**

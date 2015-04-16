@@ -1,183 +1,71 @@
 package com.excilys.cdb.servlets;
 
-import java.io.IOException;
-import java.security.InvalidParameterException;
 import java.util.List;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.excilys.cdb.dto.ComputerDto;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Page;
-import com.excilys.cdb.persistence.dao.mysql.CompanyDao;
-import com.excilys.cdb.persistence.dao.mysql.ComputerDao;
-import com.excilys.cdb.service.CompanyService;
-import com.excilys.cdb.service.ComputerService;
 import com.excilys.cdb.service.ICompanyService;
 import com.excilys.cdb.service.IComputerService;
+import com.excilys.cdb.servlets.ViewConfig.EditComputer.Get;
+import com.excilys.cdb.servlets.ViewConfig.EditComputer.Set;
 
 /**
  * Servlet implementation to handle 'edit computer' page.
  */
-@WebServlet("/editComputer")
-public class EditComputerServlet extends HttpServlet {
-
-    private static final long serialVersionUID = 8756374436015233990L;
-
-    /* ***
-     * CONSTANTS
-     */
-    /** jsp to redirect to. */
-    private static final String JSP_URI = "/WEB-INF/views/editComputer.jsp";
-
-    /** input parameters. sent by JSP. */
-    private static class ReqParam {
-        /** Id of computer to edit. */
-        private static final String COMPUTER_ID      = "computerId";
-        /** if should update computer. */
-        private static final String IS_UPDATE        = "update";
-        /** name of computer to update. */
-        private static final String COMPUTER_NAME    = "computerName";
-        /** release date of computer to update. */
-        private static final String COMPUTER_RELEASE = "introduced";
-        /** discontinuation date of computer to update. */
-        private static final String COMPUTER_DISCONT = "discontinued";
-        /** company id of computer to update. */
-        private static final String COMPANY_ID       = "companyId";
-    }
-
-    /** output parameters. */
-    private static class ResParam {
-        /** Computer attribute to be sent to JSP. */
-        private static final String COMPUTER_BEAN = "computerBean";
-        /** List of companies to be sent to JSP. */
-        private static final String COMPANIES_PAGE_BEAN = "companiesPageBean";
-    }
+@Controller
+@RequestMapping(value = ViewConfig.EditComputer.MAPPING)
+public class EditComputerServlet {
 
     /* ***
      * ATTRIBUTES
      */
+    @Autowired
     private IComputerService mComputerService;
+    @Autowired
     private ICompanyService  mComanyService;
-
-    private Long             mComputerId   = -1L;
-    private boolean          mShouldUpdate = false;
-    private String           mComputerName;
-    private String           mComputerRelease;
-    private String           mComputerDiscont;
-    private Long             mCompanyId    = null;
-
-    @Override
-    public void init() {
-        mComputerService = new ComputerService(ComputerDao.getInstance());
-        mComanyService = new CompanyService(CompanyDao.getInstance(), ComputerDao.getInstance());
-    }
-
-    @Override
-    public void destroy() {
-        mComputerService = null;
-        mComanyService = null;
-    }
-
-
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public EditComputerServlet() {
-        super();
-    }
-
-    /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-     *      response)
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        mDoGetOrPost(request, response);
-    }
-
-    /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-     *      response)
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-            IOException {
-        mDoGetOrPost(request, response);
-    }
-
-    private void mDoGetOrPost(HttpServletRequest request, HttpServletResponse response) throws IOException,
-            ServletException {
-        ServletUtils.logRequest(request, response);
-        mCheckParameters(request, response);
-
-        if (mShouldUpdate) {
-            mDoUpdate(request, response);
-        }
-        mGotoEdit(request, response);
-    }
-
 
     /* ***
      * PRIVATE METHODS
      */
-    private void mDoUpdate(HttpServletRequest request, HttpServletResponse response) {
-        final Computer computer = new ComputerDto(mComputerId, mComputerName, mComputerRelease, mComputerDiscont,
-                mCompanyId).toComputer();
+    @RequestMapping(method = RequestMethod.POST)
+    public ModelAndView doUpdate(@RequestParam(value = Get.COMPUTER_ID, required = true) Long computerId,
+            @RequestParam(value = Get.COMPUTER_NAME, required = true) String computerName,
+            @RequestParam(value = Get.COMPUTER_RELEASE, defaultValue = "") String computerRelease,
+            @RequestParam(value = Get.COMPUTER_DISCONT, defaultValue = "") String computerDiscont,
+            @RequestParam(value = Get.COMPANY_ID, defaultValue = "") Long companyId) {
+        final Computer computer = new ComputerDto(computerId, computerName, computerRelease, computerDiscont,
+                companyId).toComputer();
         mComputerService.update(computer);
+        final ModelAndView mv = new ModelAndView("redirect:" + ViewConfig.EditComputer.MAPPING);
+        mv.addObject(Get.COMPUTER_ID, computerId);
+        return mv;
     }
 
-    private void mGotoEdit(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-            IOException {
+    @RequestMapping(method = RequestMethod.GET)
+    public ModelAndView gotoEdit(
+            @RequestParam(value = Get.COMPUTER_ID, required = true) final Long computerId) {
 
         // create a new computer from computerId.
-        final ComputerDto computer = ComputerDto.fromComputer(mComputerService.retrieve(mComputerId));
+        final ComputerDto computer = ComputerDto.fromComputer(mComputerService.retrieve(computerId));
 
         // fetch company list for <select>
         final List<Company> companies = mComanyService.listByName();
         final Page<Company> companiesPage = new Page<Company>(companies);
 
+        final ModelAndView mv = new ModelAndView(ViewConfig.EditComputer.MAPPING);
+
         // set attributes & redirect to jsp.
-        request.setAttribute(ResParam.COMPUTER_BEAN, computer);
-        request.setAttribute(ResParam.COMPANIES_PAGE_BEAN, companiesPage);
-        getServletContext().getRequestDispatcher(JSP_URI).forward(request, response);
-    }
-
-    /**
-     * fetch requested fields or parameters for editComputer JSP.
-     *
-     * @param request
-     * @param response
-     */
-    private void mCheckParameters(HttpServletRequest request, HttpServletResponse response) {
-        // ensure computer id is present
-        final String computerIdStr = request.getParameter(ReqParam.COMPUTER_ID);
-
-        if (computerIdStr == null || computerIdStr.trim().isEmpty()) {
-            throw new InvalidParameterException("missing " + ReqParam.COMPUTER_ID + " parameter. Cannot edit.");
-        }
-
-        mComputerId = Long.parseLong(computerIdStr);
-
-
-        final String isUpdateStr = request.getParameter(ReqParam.IS_UPDATE);
-        mShouldUpdate = (isUpdateStr != null ? new Boolean(isUpdateStr) : false);
-
-        // if we came here back from editComputer => update flag is true.
-        if (mShouldUpdate) {
-            mComputerName = request.getParameter(ReqParam.COMPUTER_NAME);
-            mComputerRelease = request.getParameter(ReqParam.COMPUTER_RELEASE);
-            mComputerDiscont = request.getParameter(ReqParam.COMPUTER_DISCONT);
-            final String companyIdStr = request.getParameter(ReqParam.COMPANY_ID);
-            mCompanyId = (companyIdStr != null ? Long.parseLong(companyIdStr) : null);
-            mCompanyId = (mCompanyId == 0 ? null : mCompanyId);
-        }
+        mv.addObject(Set.COMPUTER_BEAN, computer);
+        mv.addObject(Set.COMPANIES_PAGE_BEAN, companiesPage);
+        return mv;
     }
 }
