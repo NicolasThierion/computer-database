@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import org.springframework.stereotype.Repository;
+
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.persistence.ConnectionFactory;
 import com.excilys.cdb.persistence.EntityField;
@@ -25,6 +27,7 @@ import com.excilys.cdb.persistence.mapper.CompanyMapper;
  * @author Nicolas THIERION
  * @version 0.2.0
  */
+@Repository("companyDao")
 public final class CompanyDao implements ICompanyDao {
 
     /* ***

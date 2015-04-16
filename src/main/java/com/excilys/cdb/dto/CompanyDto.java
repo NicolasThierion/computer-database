@@ -2,6 +2,9 @@ package com.excilys.cdb.dto;
 
 import java.io.Serializable;
 
+import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.stereotype.Component;
+
 import com.excilys.cdb.model.Company;
 
 /**
@@ -10,6 +13,7 @@ import com.excilys.cdb.model.Company;
  * @author Nicolas THIERION
  * @version 0.2.0
  */
+@Component
 public class CompanyDto implements Serializable {
 
 
@@ -23,6 +27,7 @@ public class CompanyDto implements Serializable {
      */
 
     /** name of this company. */
+    @NotEmpty
     private String            mName;
     /** Name of this company. */
     private Long              mId;

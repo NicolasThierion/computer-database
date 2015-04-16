@@ -4,6 +4,12 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.ConnectionFactory;
@@ -13,13 +19,24 @@ import com.excilys.cdb.persistence.dao.IComputerDao;
 import com.excilys.cdb.persistence.mapper.CompanyMapper;
 import com.excilys.cdb.persistence.mapper.ComputerMapper;
 
+/**
+ * Spring-autowired Company service. Offers CRUD services for companies.
+ *
+ * @author Nicolas THIERION.
+ *
+ */
+@Service
 public class CompanyService implements ICompanyService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CompanyService.class);
 
     /* ***
      * ATTRIBUTES
      */
     /** Computer & Company DAO used by this Service. */
+    @Autowired
     private ICompanyDao             mCompanyDao;
+    @Autowired
     private IComputerDao            mComputerDao;
 
     private final ConnectionFactory mConnectionFactory = ConnectionFactory.getInstance();
@@ -52,6 +69,14 @@ public class CompanyService implements ICompanyService {
      */
     public CompanyService(ICompanyDao companyDao) {
         mCompanyDao = companyDao;
+    }
+
+    /**
+     * Default constructor. Will not be usable until ComputerService &
+     * CompanyService has been set.
+     *
+     */
+    public CompanyService() {
     }
 
     /* ***
@@ -97,7 +122,13 @@ public class CompanyService implements ICompanyService {
     }
 
     @Override
+    public List<Company> listLikeName(int offset, int count, String name) {
+        return mCompanyDao.listLike(CompanyMapper.Field.NAME, name, offset, count);
+    }
+
+    @Override
     public List<Company> listByName(int begin, int nb) {
+        LOG.info("listByName(" + begin + ", " + nb + ")");
         return mCompanyDao.listBy(CompanyMapper.Field.NAME, begin, nb);
     }
 
@@ -108,6 +139,7 @@ public class CompanyService implements ICompanyService {
 
     @Override
     public int getCount(String name) {
+        LOG.info("getCount(" + name + ")");
         return mCompanyDao.getCountEqual(CompanyMapper.Field.NAME, name);
     }
 
@@ -122,6 +154,7 @@ public class CompanyService implements ICompanyService {
 
     @Override
     public Company search(long companyId) {
+        LOG.info("search(" + companyId + ")");
         if (companyId <= 0) {
             throw new IllegalArgumentException("Company id must be positive");
         }
@@ -139,8 +172,10 @@ public class CompanyService implements ICompanyService {
      * @throws NoSuchElementException
      *             if no valid computerDao has been found.
      */
+    @Transactional
     @Override
     public void delete(Long id) throws NoSuchElementException {
+        LOG.info("delete(" + id + ")");
         mAssertComputerDao();
 
         final Transaction transaction = mConnectionFactory.getTransaction();
@@ -169,13 +204,10 @@ public class CompanyService implements ICompanyService {
         mConnectionFactory.close(transaction);
     }
 
-    @Override
-    public List<Company> listLikeName(int offset, int count, String name) {
-        return mCompanyDao.listLike(CompanyMapper.Field.NAME, name, offset, count);
-    }
 
     @Override
     public Company add(Company company) throws IllegalArgumentException {
+        LOG.info("add(" + company + ")");
         return mCompanyDao.add(company);
     }
 

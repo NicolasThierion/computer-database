@@ -5,6 +5,9 @@ import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.stereotype.Component;
+
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 
@@ -14,6 +17,7 @@ import com.excilys.cdb.model.Computer;
  * @author Nicolas THIERION
  * @version 0.2.0
  */
+@Component
 public class ComputerDto implements Serializable {
 
 
@@ -27,6 +31,7 @@ public class ComputerDto implements Serializable {
      */
 
     /** name of this computer. */
+    @NotEmpty
     private String            mName;
     /** manufacturer of this computer. */
     private CompanyDto        mCompanyDto;

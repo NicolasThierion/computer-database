@@ -1,3 +1,5 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
 <select class="form-control" id="companyId" name="companyId">
     <option value="0">--</option>
     <c:set var="selected" value=""></c:set>

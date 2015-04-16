@@ -2,6 +2,8 @@ package com.excilys.cdb.model;
 
 import java.io.Serializable;
 
+import org.springframework.stereotype.Component;
+
 /**
  *
  * @author Nicolas THIERION
@@ -9,6 +11,7 @@ import java.io.Serializable;
  * TODO doc
  *
  */
+@Component
 public class Company implements Serializable, Identifiable<Long> {
 
     private static final long serialVersionUID = 1233212107449481466L;

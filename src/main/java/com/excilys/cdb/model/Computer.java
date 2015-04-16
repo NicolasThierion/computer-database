@@ -3,10 +3,13 @@ package com.excilys.cdb.model;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+import org.springframework.stereotype.Component;
+
 /**
  * @author Nicolas THIERION
  * @version 0.2.0
  */
+@Component
 public class Computer implements Serializable, Identifiable<Long> {
 
     /**

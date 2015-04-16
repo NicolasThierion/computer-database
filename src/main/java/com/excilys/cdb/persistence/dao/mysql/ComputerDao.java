@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import org.springframework.stereotype.Repository;
+
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.ConnectionFactory;
@@ -27,6 +29,7 @@ import com.excilys.cdb.persistence.mapper.ComputerMapper;
  * @author Nicolas THIERION.
  * @version 0.2.0
  */
+@Repository("computerDao")
 public final class ComputerDao implements IComputerDao {
 
     /* ***

@@ -3,6 +3,8 @@ package com.excilys.cdb.dto;
 import java.io.Serializable;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import com.excilys.cdb.model.Page;
 
 /**
@@ -12,6 +14,7 @@ import com.excilys.cdb.model.Page;
  *         TODO JavaDoc.
  * @param <T>
  */
+@Component
 public class PageDto implements Serializable {
 
     /**
