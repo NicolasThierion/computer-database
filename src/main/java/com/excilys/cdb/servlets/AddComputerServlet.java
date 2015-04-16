@@ -29,18 +29,6 @@ public class AddComputerServlet {
     private static final Logger LOG          = LoggerFactory.getLogger(AddComputerServlet.class);
 
     /* ***
-     * CONSTANTS
-     */
-    /** jsp to redirect to. */
-    private static final String VIEW_MAPPING = "/addComputer";
-
-    /** output parameters. */
-    private static class ResParam {
-        /** List of companies to be sent to JSP. */
-        private static final String COMPANIES_PAGE_BEAN = "companiesPageBean";
-    }
-
-    /* ***
      * ATTRIBUTES
      */
     @Autowired
@@ -52,7 +40,7 @@ public class AddComputerServlet {
      * CONTROLLER'S PUBLIC METHODS
      */
 
-    @RequestMapping(value = VIEW_MAPPING, method = RequestMethod.GET)
+    @RequestMapping(value = ViewConfig.AddComputer.MAPPING, method = RequestMethod.GET)
     public ModelAndView gotoAdd() {
         LOG.info("gotoAdd()");
 
@@ -60,14 +48,14 @@ public class AddComputerServlet {
         final List<Company> companies = mComanyService.listByName();
         final Page<Company> companiesPage = new Page<Company>(companies);
 
-        final ModelAndView mv = new ModelAndView(VIEW_MAPPING);
+        final ModelAndView mv = new ModelAndView(ViewConfig.AddComputer.MAPPING);
 
         // set attributes & redirect to jsp.
-        mv.addObject(ResParam.COMPANIES_PAGE_BEAN, companiesPage);
+        mv.addObject(ViewConfig.AddComputer.Set.COMPANIES_PAGE_BEAN, companiesPage);
         return mv;
     }
 
-    @RequestMapping(value = "/addComputer", method = RequestMethod.POST)
+    @RequestMapping(value = ViewConfig.AddComputer.MAPPING, method = RequestMethod.POST)
     public ModelAndView doAdd(@ModelAttribute("computerForm") ComputerDto computerDto,
             BindingResult bindingResult, Model model) {
         LOG.info("doAdd(" + computerDto + ", " + bindingResult + ", " + model + ")");
@@ -78,6 +66,6 @@ public class AddComputerServlet {
         }
         final Computer computer = computerDto.toComputer();
         mComputerService.add(computer);
-        return new ModelAndView(VIEW_MAPPING);
+        return new ModelAndView(ViewConfig.Dashboard.MAPPING);
     }
 }

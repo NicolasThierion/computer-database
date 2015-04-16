@@ -41,26 +41,25 @@ public class Page<T> implements Serializable {
      *
      */
     public enum Field implements EntityField<Page<?>> {
-        SEARCH("search"), OFFSET("offset"), SIZE("size"), SORT_BY("sortBy"), SORT_ORDER("order"),
+        SEARCH("search"), OFFSET("offset"), SIZE("size"), SORT_BY("sort_by"), SORT_ORDER("sort_order"),
  TOTAL("total"), OPTIONS(
                 "options");
 
-        private String mLabel;
+        public final String label;
 
-        private Field(String label) {
-            mLabel = label;
+        private Field(String pLabel) {
+            label = pLabel;
         }
 
         @Override
         public String getLabel() {
-            return mLabel;
+            return label;
         }
 
         @Override
         public String toString() {
-            return mLabel;
+            return label;
         }
-
     }
 
     /**

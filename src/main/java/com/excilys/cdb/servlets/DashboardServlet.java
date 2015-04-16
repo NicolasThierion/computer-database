@@ -1,170 +1,66 @@
 package com.excilys.cdb.servlets;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.excilys.cdb.dto.ComputerDto;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Page;
-import com.excilys.cdb.persistence.dao.mysql.ComputerDao;
-import com.excilys.cdb.service.ComputerService;
 import com.excilys.cdb.service.IComputerService;
-
+import com.excilys.cdb.servlets.ViewConfig.Dashboard;
+import com.excilys.cdb.servlets.ViewConfig.Dashboard.Get;
+import com.excilys.cdb.servlets.ViewConfig.Dashboard.Set;
 /**
  * Servlet implementation to handle dashboard page.
  */
 @Controller
-@WebServlet("/dashboard")
-public class DashboardServlet extends HttpServlet {
-
-    private static final long serialVersionUID = 8756374436015233990L;
-
-    /* ***
-     * CONSTANTS
-     */
-    /** Default amount of result to display int he page. */
-    private static final int    DEFAULT_PAGE_SIZE = 10;
-    /** jsp to redirect to. */
-    private static final String JSP_URI          = "/WEB-INF/views/dashboard.jsp";
-
-    /** input parameters. */
-    private static class ReqParam {
-        /** search parameter name. */
-        private static final String SEARCH      = Page.Field.SEARCH.getLabel();
-        /** page size parameter name. */
-        private static final String PAGE_SIZE   = Page.Field.SIZE.getLabel();
-        /** search offset parameter name. */
-        private static final String PAGE_OFFSET = Page.Field.OFFSET.getLabel();
-    }
-
-    /** output parameters. */
-    private static class ResParam {
-        /** Page attribute to be sent to JSP. */
-        private static final String PAGE_BEAN = "pageBean";
-    }
-
-    /** parameters of this context. */
-    private class ServletContext {
-        public int    pageSize = DEFAULT_PAGE_SIZE;
-        public int    offset   = 0;
-        public String queryName;
-    }
+@RequestMapping(value = ViewConfig.Dashboard.MAPPING)
+public class DashboardServlet {
 
     /* ***
      * ATTRIBUTES
      */
+    @Autowired
     private IComputerService mComputerService;
-
-    @Override
-    public void init() {
-        mComputerService = new ComputerService(ComputerDao.getInstance());
-    }
-
-    @Override
-    public void destroy() {
-        mComputerService = null;
-    }
-
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public DashboardServlet() {
-        super();
-    }
-
-    /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-     *      response)
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        mDoGetOrPost(request, response);
-    }
-
-    /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-     *      response)
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-            IOException {
-        mDoGetOrPost(request, response);
-    }
-
-    private void mDoGetOrPost(HttpServletRequest request, HttpServletResponse response) throws IOException,
-            ServletException {
-        ServletUtils.logRequest(request, response);
-        mGotoDashboard(request, response);
-    }
 
     /**
      * Redirect to dashBoard.
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
      */
-    private void mGotoDashboard(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-    IOException {
-
+    @RequestMapping(method = RequestMethod.GET)
+    public ModelAndView gotoDashboard(
+            @RequestParam(value = Get.PAGE_SIZE, defaultValue = ""
+            + Dashboard.DEFAULT_PAGE_SIZE) int pageSize,
+            @RequestParam(value = Get.SEARCH, defaultValue = "") String queryName,
+            @RequestParam(value = Get.PAGE_OFFSET, defaultValue = "0") int offset) {
         List<Computer> computers = new LinkedList<Computer>();
 
-        // get page variables
-        final ServletContext context = mCheckParameters(request, response);
-
         // count results & store them in a Page<Computer>
-        final int totalResults = mComputerService.getCount(context.queryName);
+        final int totalResults = mComputerService.getCount(queryName);
 
         if (totalResults > 0) {
             // select all computer in page range, & ensure offset is not too
             // far.
-            computers = mComputerService.listLikeName(context.offset, context.pageSize, context.queryName);
-            if (context.offset > totalResults) {
-                context.offset = totalResults;
+            computers = mComputerService.listLikeName(offset, pageSize, queryName);
+            if (offset > totalResults) {
+                offset = totalResults;
             }
         }
 
         final List<ComputerDto> dtos = ComputerDto.fromComputers(computers);
-        final Page<ComputerDto> page = new Page<ComputerDto>(dtos, context.offset, totalResults, context.queryName);
-        page.setSize(context.pageSize);
+        final Page<ComputerDto> page = new Page<ComputerDto>(dtos, offset, totalResults, queryName);
+        page.setSize(pageSize);
+
+        final ModelAndView mv = new ModelAndView(ViewConfig.Dashboard.MAPPING);
 
         // set result page & send redirect.
-        request.setAttribute(ResParam.PAGE_BEAN, page);
-        getServletContext().getRequestDispatcher(JSP_URI).forward(request, response);
-    }
-
-    private ServletContext mCheckParameters(HttpServletRequest request, HttpServletResponse response) {
-
-        final ServletContext context = new ServletContext();
-
-        // presence of search parameter?
-        context.queryName = request.getParameter(ReqParam.SEARCH);
-        // search empty name if name is null => search for all computers.
-        if (context.queryName == null) {
-            context.queryName = "";
-        }
-
-        // presence of pageSize parameter?
-        final String pageSizeStr = request.getParameter(ReqParam.PAGE_SIZE);
-        if (pageSizeStr != null && !pageSizeStr.trim().isEmpty()) {
-            context.pageSize = Integer.parseInt(pageSizeStr.trim());
-        }
-
-        // presence of offset parameter?
-        final String offsetStr = request.getParameter(ReqParam.PAGE_OFFSET);
-        if (offsetStr != null && !offsetStr.trim().isEmpty()) {
-            context.offset = Integer.parseInt(offsetStr.trim());
-        }
-        return context;
+        mv.addObject(Set.PAGE_BEAN, page);
+        return mv;
     }
 }

@@ -32,7 +32,7 @@
     </servlet-mapping>
 
     <welcome-file-list>
-        <welcome-file>dashboard</welcome-file>
+        <welcome-file>/dashboard</welcome-file>
     </welcome-file-list>
 
     <!-- error pages -->

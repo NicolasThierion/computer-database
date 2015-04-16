@@ -18,6 +18,7 @@
     <context:component-scan base-package="com.excilys.cdb.servlets" />
 
     <!-- configure view-resolver to make Spring able to match view name to the actual JSPs -->
+
     <bean
         class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix">
