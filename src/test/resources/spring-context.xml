@@ -11,6 +11,7 @@
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context.xsd">
 
+    <import resource="classpath:spring-datasource.xml" />
 
     <!-- enable Autowiring -->
     <context:annotation-config />
@@ -21,7 +22,6 @@
     <mvc:annotation-driven />
     <mvc:default-servlet-handler />
 
-    <import resource="classpath:spring-datasource.xml" />
     <!-- disabled, as autowiring is enabled -->
     <!-- <import resource="classpath:spring-beans-wiring.xml" /> -->
 

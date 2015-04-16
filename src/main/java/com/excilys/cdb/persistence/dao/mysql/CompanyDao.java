@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.cdb.model.Company;
@@ -45,6 +47,10 @@ public final class CompanyDao implements ICompanyDao {
     /** Singleton's instance. */
     private static CompanyDao   mInstance                     = null;
     private Map<String, String> mQueryStrings;
+
+    /** db connection. */
+    @Autowired
+    private JdbcTemplate        jdbcTemplate;
 
     /* ***
      * CONSTRUCTORS / DESTRUCTORS

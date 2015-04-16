@@ -66,6 +66,6 @@ public class AddComputerServlet {
         }
         final Computer computer = computerDto.toComputer();
         mComputerService.add(computer);
-        return new ModelAndView(ViewConfig.Dashboard.MAPPING);
+        return new ModelAndView("redirect:" + ViewConfig.Dashboard.MAPPING);
     }
 }
