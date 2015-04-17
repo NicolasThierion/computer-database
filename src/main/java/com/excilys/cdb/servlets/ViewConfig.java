@@ -13,12 +13,13 @@ public final class ViewConfig {
     public static class AddComputer {
         public static final String MAPPING = "/addComputer";
 
-        public static class Set extends SetParam {
-            public static final String COMPANY_DTO_LIST = "companyDtoList";
+        public static class Get extends GetParam {
+            public static final String COMPUTER_DTO = "computerDto";
         }
 
-        public static class Get extends GetParam {
-            public static final String COMPUTER_DTO = "addComputerForm";
+        public static class Set extends SetParam {
+            public static final String COMPANY_DTO_LIST = "companyDtoList";
+            public static final String COMPUTER_DTO     = AddComputer.Get.COMPUTER_DTO;
         }
 
     }
@@ -30,8 +31,6 @@ public final class ViewConfig {
         public static final class Get extends GetParam {
             /** Id of computer to edit. */
             public static final String COMPUTER_ID      = "computerId";
-            /** if should update computer. */
-            public static final String IS_UPDATE        = "update";
             /** name of computer to update. */
             public static final String COMPUTER_NAME    = "computerName";
             /** release date of computer to update. */
@@ -40,14 +39,17 @@ public final class ViewConfig {
             public static final String COMPUTER_DISCONT = "discontinued";
             /** company id of computer to update. */
             public static final String COMPANY_ID       = "companyId";
+            /** Computer dto to sent by the JSP. */
+            public static final String COMPUTER_DTO     = "computerDto";
+
         }
 
         /** output parameters. */
         public static class Set extends SetParam {
-            /** Computer attribute to be sent to JSP. */
-            public static final String COMPUTER_BEAN       = "computerBean";
-            /** List of companies to be sent to JSP. */
-            public static final String COMPANIES_PAGE_BEAN = "companiesPageBean";
+            /** company list for filling <select> in form. */
+            public static final String COMPANY_DTO_LIST = "companyDtoList";
+            /** Computer dto to be sent to JSP. */
+            public static final String COMPUTER_DTO     = EditComputer.Get.COMPUTER_DTO;
         }
     }
 

@@ -1,3 +1,6 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1" session="false"%>
+
+
 <%@ taglib tagdir="/WEB-INF/tags" prefix="mylib"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
@@ -20,37 +23,37 @@
                     <h1>
                         <spring:message code="addComputer.form.title" />
                     </h1>
-                    <spring:message code="addComputer.form.namePlaceholder"
+                    <spring:message code="editComputer.form.namePlaceholder"
                         var="namePlaceholder" />
-                    <spring:message code="addComputer.form.introducedPlaceholder"
+                    <spring:message code="editComputer.form.introducedPlaceholder"
                         var="introducedPlaceholder" />
-                    <spring:message code="addComputer.form.discontinuedPlaceholder"
+                    <spring:message code="editComputer.form.discontinuedPlaceholder"
                         var="discontinuedPlaceholder" />
-                    <form:form id="addComputer" method="POST" action="addComputer" commandName="addComputerForm">
+                    <form:form id="addComputer" method="POST" action="addComputer" modelAttribute="computerDto">
                         <fieldset>
                             <div class="form-group">
-                                <label for="computerName"><spring:message code="addComputer.form.name" /></label>
+                                <label for="computerName"><spring:message code="editComputer.form.name" /></label>
                                 <form:input name="computerName" path="name" class="form-control" id="computerName"
                                     placeholder="${namePlaceholder}" />
                                 <form:errors path="name" cssClass="error" />
                             </div>
                             <div class="form-group">
-                                <label for="introduced"><spring:message code="addComputer.form.introduced" /></label>
+                                <label for="introduced"><spring:message code="editComputer.form.introduced" /></label>
                                 <form:input type="date" name="introduced" path="introducedDate" class="form-control" id="introduced"
                                     placeholder="${introducedPlaceholder}" />
                                 <form:errors path="introducedDate" cssClass="error" />
                             </div>
                             <div class="form-group">
-                                <label for="discontinued"><spring:message code="addComputer.form.discontinued" /></label>
+                                <label for="discontinued"><spring:message code="editComputer.form.discontinued" /></label>
                                 <form:input type="date" name="discontinued" path="discontinuedDate" class="form-control"
                                     id="discontinued" placeholder="${discontinuedPlaceholder}" />
                                 <form:errors path="discontinuedDate" cssClass="error" />
                             </div>
                             <div class="form-group">
-                                <label for="companyId"><spring:message code="addComputer.form.company" /></label>
+                                <label for="companyId"><spring:message code="editComputer.form.company" /></label>
                                 <form:select name="companyId" path="companyId" cssClass="form-control">
                                     <form:option value="" >
-                                        <spring:message code="addComputer.form.defaultCompanyLabel" />
+                                        <spring:message code="editComputer.form.defaultCompanyLabel" />
                                     </form:option>
                                     <form:options items="${companyDtoList}" itemLabel="name" itemValue="id"/>
                                 </form:select>

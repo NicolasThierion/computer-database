@@ -41,8 +41,8 @@ public final class AddComputerTest extends CdbViewTest {
     /* ***
      * FIELDS TO TEST
      */
-    private static final String PAGE_TITLE     = "Computer Database";
-    private static final String ADD_MAIN_TITLE = "Add Computer";
+    private static final String ADD_MAIN_TITLE = "Add computer";
+    private static final String PAGE_TITLE     = "Computer Database - " + ADD_MAIN_TITLE;
 
     /* ***
      * ATTRIBUTES
@@ -172,7 +172,7 @@ public final class AddComputerTest extends CdbViewTest {
         boolean res = (dto.getCompanyId().equals(companyId));
         res = res && (dto.getName().equals(computerName));
         res = res && (dto.getReleaseDate().equals(computerRelease));
-        res = res && (dto.getDiscontDate().equals(computerDiscont));
+        res = res && (dto.getDiscontinuedDate().equals(computerDiscont));
         return res;
     }
 }

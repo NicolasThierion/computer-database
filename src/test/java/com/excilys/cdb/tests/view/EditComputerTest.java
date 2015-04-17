@@ -42,8 +42,9 @@ public final class EditComputerTest extends CdbViewTest {
     /* ***
      * FIELDS TO TEST
      */
-    private static final String PAGE_TITLE         = "Computer Database";
-    private static final String EDIT_MAIN_TITLE    = "Edit Computer";
+    private static final String EDIT_MAIN_TITLE    = "Edit computer";
+    private static final String PAGE_TITLE         = "Computer Database - " + EDIT_MAIN_TITLE;
+
 
     /* ***
      * ATTRIBUTES
@@ -153,22 +154,11 @@ public final class EditComputerTest extends CdbViewTest {
             if (computer.getReleaseDate() != null && !computer.getReleaseDate().trim().isEmpty()) {
                 assertTrue(releaseInput.getAttribute("value").equals(computer.getReleaseDate()));
             }
-            if (computer.getDiscontDate() != null && !computer.getDiscontDate().trim().isEmpty()) {
-                assertTrue(discontinuedInput.getAttribute("value").equals(computer.getDiscontDate()));
+            if (computer.getDiscontinuedDate() != null && !computer.getDiscontinuedDate().trim().isEmpty()) {
+                assertTrue(discontinuedInput.getAttribute("value").equals(computer.getDiscontinuedDate()));
             }
             if (computer.getCompanyName() != null && !computer.getCompanyName().trim().isEmpty()) {
                 assertTrue(companyInput.getText().equals(computer.getCompanyName()));
-            }
-
-            // find error tips elements
-            final WebElement nameError = form.findElement(By.id("computerNameError"));
-            final WebElement releaseError = form.findElement(By.id("introducedError"));
-            final WebElement discontinuedError = form.findElement(By.id("discontinuedError"));
-
-            // check fields validity
-            for (final WebElement elt : new WebElement[] {nameError, releaseError, discontinuedError}) {
-                final String classStr = elt.getAttribute("class");
-                assertTrue(!classStr.contains("error") || classStr.contains("collapse"));
             }
         }
     }

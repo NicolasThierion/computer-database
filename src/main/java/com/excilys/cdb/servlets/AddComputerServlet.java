@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,14 +54,14 @@ public class AddComputerServlet {
         // set attributes & redirect to jsp.
         mv.addObject(Set.COMPANY_DTO_LIST, companyDtos);
         // set an empty computerDto to hold form fields from POST.
-        mv.addObject(Get.COMPUTER_DTO, new ComputerDto());
+        mv.addObject(Set.COMPUTER_DTO, new ComputerDto());
         return mv;
     }
 
     @RequestMapping(value = ViewConfig.AddComputer.MAPPING, method = RequestMethod.POST)
     public ModelAndView doAdd(@ModelAttribute(Get.COMPUTER_DTO) ComputerDto computerDto,
-            BindingResult bindingResult, Model model) {
-        LOG.info("doAdd(" + computerDto + ", " + bindingResult + ", " + model + ")");
+            BindingResult bindingResult) {
+        LOG.info("doAdd(" + computerDto + ", " + bindingResult + ")");
 
         if (bindingResult.hasErrors()) {
             // TODO

@@ -1,18 +1,20 @@
 package com.excilys.cdb.servlets;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.excilys.cdb.dto.CompanyDto;
 import com.excilys.cdb.dto.ComputerDto;
-import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.model.Page;
 import com.excilys.cdb.service.ICompanyService;
 import com.excilys.cdb.service.IComputerService;
 import com.excilys.cdb.servlets.ViewConfig.EditComputer.Get;
@@ -37,16 +39,12 @@ public class EditComputerServlet {
      * PRIVATE METHODS
      */
     @RequestMapping(method = RequestMethod.POST)
-    public ModelAndView doUpdate(@RequestParam(value = Get.COMPUTER_ID, required = true) Long computerId,
-            @RequestParam(value = Get.COMPUTER_NAME, required = true) String computerName,
-            @RequestParam(value = Get.COMPUTER_RELEASE, defaultValue = "") String computerRelease,
-            @RequestParam(value = Get.COMPUTER_DISCONT, defaultValue = "") String computerDiscont,
-            @RequestParam(value = Get.COMPANY_ID, defaultValue = "") Long companyId) {
-        final Computer computer = new ComputerDto(computerId, computerName, computerRelease, computerDiscont,
-                companyId).toComputer();
+    public ModelAndView doUpdate(@ModelAttribute(Get.COMPUTER_DTO) ComputerDto computerDto,
+            BindingResult bindingResult) {
+        final Computer computer = computerDto.toComputer();
         mComputerService.update(computer);
         final ModelAndView mv = new ModelAndView("redirect:" + ViewConfig.EditComputer.MAPPING);
-        mv.addObject(Get.COMPUTER_ID, computerId);
+        mv.addObject(Get.COMPUTER_ID, computerDto.getId());
         return mv;
     }
 
@@ -55,17 +53,17 @@ public class EditComputerServlet {
             @RequestParam(value = Get.COMPUTER_ID, required = true) final Long computerId) {
 
         // create a new computer from computerId.
-        final ComputerDto computer = ComputerDto.fromComputer(mComputerService.retrieve(computerId));
+        final ComputerDto computerDto = ComputerDto.fromComputer(mComputerService.retrieve(computerId));
 
         // fetch company list for <select>
-        final List<Company> companies = mComanyService.listByName();
-        final Page<Company> companiesPage = new Page<Company>(companies);
+        final List<CompanyDto> companyDtos = new LinkedList<CompanyDto>();
+        mComanyService.listByName().stream().forEach(s -> companyDtos.add(CompanyDto.fromCompany(s)));
 
         final ModelAndView mv = new ModelAndView(ViewConfig.EditComputer.MAPPING);
 
         // set attributes & redirect to jsp.
-        mv.addObject(Set.COMPUTER_BEAN, computer);
-        mv.addObject(Set.COMPANIES_PAGE_BEAN, companiesPage);
+        mv.addObject(Set.COMPUTER_DTO, computerDto);
+        mv.addObject(Set.COMPANY_DTO_LIST, companyDtos);
         return mv;
     }
 }
