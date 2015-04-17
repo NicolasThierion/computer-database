@@ -38,12 +38,19 @@ public class EditComputerServlet {
     /* ***
      * PRIVATE METHODS
      */
+    /**
+     * do the update & redirect to dashboard.
+     *
+     * @param computerDto
+     * @param bindingResult
+     * @return
+     */
     @RequestMapping(method = RequestMethod.POST)
     public ModelAndView doUpdate(@ModelAttribute(Get.COMPUTER_DTO) ComputerDto computerDto,
             BindingResult bindingResult) {
         final Computer computer = computerDto.toComputer();
         mComputerService.update(computer);
-        final ModelAndView mv = new ModelAndView("redirect:" + ViewConfig.EditComputer.MAPPING);
+        final ModelAndView mv = new ModelAndView("redirect:" + ViewConfig.Dashboard.MAPPING);
         mv.addObject(Get.COMPUTER_ID, computerDto.getId());
         return mv;
     }

@@ -167,39 +167,43 @@ public class CompanyService implements ICompanyService {
      * delete company with given ID a delete computers that belongs to this
      * company.
      *
-     * @param id
+     * @param ids
      *            Id of company to delete.
      * @throws NoSuchElementException
      *             if no valid computerDao has been found.
      */
     @Transactional
     @Override
-    public void delete(Long id) throws NoSuchElementException {
-        LOG.info("delete(" + id + ")");
+    public void delete(long... ids) throws NoSuchElementException {
+        LOG.info("delete(" + ids + ")");
         mAssertComputerDao();
 
         final Transaction transaction = mConnectionFactory.getTransaction();
-        try {
+
+        // TODO use SQL to delete many
+        for (final Long id : ids) {
             try {
-                transaction.begin();
-                final List<Computer> computers = mComputerDao.listEqual(ComputerMapper.Field.COMPANY_ID,
-                        Long.toString(id));
-                // delete all computers that matches this company...
-                for (final Computer computer : computers) {
-                    mComputerDao.delete(computer);
+                try {
+                    transaction.begin();
+                    final List<Computer> computers = mComputerDao.listEqual(ComputerMapper.Field.COMPANY_ID,
+                            Long.toString(id));
+                    // delete all computers that matches this company...
+                    for (final Computer computer : computers) {
+                        mComputerDao.delete(computer);
+                    }
+                    // ... & delete this company
+                    mCompanyDao.delete(id);
+                    transaction.commit();
+                    transaction.end();
+                } catch (final SQLException e) {
+                    transaction.rollback();
+                    throw new ServiceException(e.getMessage());
+                } finally {
+                    transaction.end();
                 }
-                // ... & delete this company
-                mCompanyDao.delete(id);
-                transaction.commit();
-                transaction.end();
             } catch (final SQLException e) {
-                transaction.rollback();
-                throw new ServiceException(e.getMessage());
-            } finally {
-                transaction.end();
+                throw new NoSuchElementException(e.getMessage());
             }
-        } catch (final SQLException e) {
-            throw new NoSuchElementException(e.getMessage());
         }
         mConnectionFactory.close(transaction);
     }
@@ -229,6 +233,7 @@ public class CompanyService implements ICompanyService {
             throw new NullPointerException("ComputerDao cannot be null");
         }
     }
+
 
 
 }

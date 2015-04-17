@@ -136,12 +136,12 @@ public interface ICrudService<T extends Identifiable<Long>> {
     /**
      * Delete the given compute from DB.
      *
-     * @param id
+     * @param ids
      *            The id of entity to delete.
      * @throws NoSuchElementException
      *             if no entity with this id can be found.
      */
-    default void delete(Long id) throws NoSuchElementException {
+    default void delete(long... ids) throws NoSuchElementException {
         throw new UnsupportedOperationException();
     }
 
@@ -161,4 +161,5 @@ public interface ICrudService<T extends Identifiable<Long>> {
     default int getCount(String name) {
         throw new UnsupportedOperationException();
     }
+
 }

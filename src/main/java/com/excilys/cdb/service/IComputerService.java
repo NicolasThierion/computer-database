@@ -79,13 +79,13 @@ public interface IComputerService extends ICrudService<Computer> {
     /**
      * Delete the given compute from DB.
      *
-     * @param id
+     * @param ids
      *            The id of computer to delete.
      * @throws NoSuchElementException
      *             if no computer with this id can be found.
      */
     @Override
-    void delete(Long id) throws NoSuchElementException;
+    void delete(long... ids) throws NoSuchElementException;
 
     /**
      * @param name
@@ -95,4 +95,5 @@ public interface IComputerService extends ICrudService<Computer> {
      */
     @Override
     int getCount(String name);
+
 }

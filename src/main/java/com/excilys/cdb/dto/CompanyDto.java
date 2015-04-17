@@ -82,6 +82,18 @@ public class CompanyDto implements Serializable {
         mNewCompanyDto(companyDto.mId, companyDto.mName);
     }
 
+    /**
+     * Constructor with argument. Create a new CompanyDto given its id and name.
+     *
+     * @param id
+     *            id of the company.
+     * @param name
+     *            name of the company.
+     */
+    public CompanyDto(Long id, String name) {
+        mNewCompanyDto(id, name);
+    }
+
     /* ***
      * GETTERS
      */

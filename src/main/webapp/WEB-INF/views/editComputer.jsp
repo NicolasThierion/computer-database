@@ -1,6 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1" session="false"%>
-
-
 <%@ taglib tagdir="/WEB-INF/tags" prefix="mylib"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
@@ -20,16 +18,16 @@
         <div class="container">
             <div class="row">
                 <div class="col-xs-8 col-xs-offset-2 box">
+                    <div class="label label-default pull-right">id: ${computerDto.id}</div>
                     <h1>
                         <spring:message code="editComputer.form.title" />
                     </h1>
-                    <spring:message code="editComputer.form.namePlaceholder"
-                        var="namePlaceholder" />
-                    <spring:message code="editComputer.form.introducedPlaceholder"
-                        var="introducedPlaceholder" />
-                    <spring:message code="editComputer.form.discontinuedPlaceholder"
-                        var="discontinuedPlaceholder" />
-                    <form:form id="editComputer" method="POST" action="editComputer" modelAttribute="computerDto" onsubmit="return validate()">
+                    <spring:message code="editComputer.form.namePlaceholder" var="namePlaceholder" />
+                    <spring:message code="editComputer.form.introducedPlaceholder" var="introducedPlaceholder" />
+                    <spring:message code="editComputer.form.discontinuedPlaceholder" var="discontinuedPlaceholder" />
+                    <form:form id="editComputer" method="POST" action="editComputer" modelAttribute="computerDto"
+                        onsubmit="return validate()">
+                         <form:input type="hidden" name="computerId" path="id" value="${computerDto.id}" />
                         <fieldset>
                             <div class="form-group">
                                 <label for="computerName"><spring:message code="editComputer.form.name" /></label>
@@ -39,8 +37,8 @@
                             </div>
                             <div class="form-group">
                                 <label for="introduced"><spring:message code="editComputer.form.introduced" /></label>
-                                <form:input type="date" name="introduced" path="introducedDate" class="form-control" id="introduced"
-                                    placeholder="${introducedPlaceholder}" />
+                                <form:input type="date" name="introduced" path="introducedDate" class="form-control"
+                                    id="introduced" placeholder="${introducedPlaceholder}" />
                                 <form:errors path="introducedDate" cssClass="error" />
                             </div>
                             <div class="form-group">
@@ -52,17 +50,16 @@
                             <div class="form-group">
                                 <label for="companyId"><spring:message code="editComputer.form.company" /></label>
                                 <form:select name="companyId" path="companyId" cssClass="form-control">
-                                    <form:option value="" >
+                                    <form:option value="">
                                         <spring:message code="editComputer.form.defaultCompanyLabel" />
                                     </form:option>
-                                    <form:options items="${companyDtoList}" itemLabel="name" itemValue="id"/>
+                                    <form:options items="${companyDtoList}" itemLabel="name" itemValue="id" />
                                 </form:select>
                             </div>
                         </fieldset>
                         <div class="actions pull-right">
-                            <input type="submit" value="<spring:message code="add" />"
-                                class="btn btn-primary"> or <a href="dashboard" class="btn btn-default"><spring:message
-                                    code="cancel" /></a>
+                            <input type="submit" value="<spring:message code="edit" />" class="btn btn-primary">
+                            or <a href="dashboard" class="btn btn-default"><spring:message code="cancel" /></a>
                         </div>
                     </form:form>
                 </div>

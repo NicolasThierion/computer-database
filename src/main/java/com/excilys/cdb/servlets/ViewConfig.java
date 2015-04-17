@@ -7,6 +7,7 @@ package com.excilys.cdb.servlets;
  *
  */
 public final class ViewConfig {
+
     private ViewConfig() {
     }
 
@@ -55,6 +56,16 @@ public final class ViewConfig {
 
     public static class SearchComputer extends Dashboard {
         public static final String MAPPING = "/searchComputer";
+    }
+
+    public static class DeleteComputer {
+        public static final String MAPPING = "/deleteComputer";
+
+        /** input parameters. sent by JSP. */
+        public static final class Get extends GetParam {
+            /** Id of computer to edit. */
+            public static final String COMPUTER_IDS = "selection";
+        }
     }
 
     public static class Dashboard {

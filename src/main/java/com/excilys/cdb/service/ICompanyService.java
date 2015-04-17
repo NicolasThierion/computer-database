@@ -72,7 +72,7 @@ public interface ICompanyService extends ICrudService<Company> {
      *             if no company with this id can be found.
      */
     @Override
-    void delete(Long id) throws NoSuchElementException;
+    void delete(long... id) throws NoSuchElementException;
 
     /**
      * @param name

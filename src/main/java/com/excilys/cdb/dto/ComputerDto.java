@@ -88,7 +88,7 @@ public class ComputerDto implements Serializable {
      *
      * @param computer
      *            Computer to build the DTO. Can be null.
-     * @return
+     * @return the created ComputerDto.
      */
     public static ComputerDto fromComputer(Computer computer) {
         final ComputerDto dto = new ComputerDto();
@@ -237,11 +237,21 @@ public class ComputerDto implements Serializable {
         setCompany(companyDto);
     }
 
+
     public void setReleaseDate(String releaseDate) {
         mReleaseDate = releaseDate;
     }
 
-    public void setDiscDate(String discDate) {
+    /**
+     * same as {@code #setReleaseDate(String)}.
+     *
+     * @param releaseDate
+     */
+    public void setIntroducedDate(String releaseDate) {
+        mReleaseDate = releaseDate;
+    }
+
+    public void setDiscontinuedDate(String discDate) {
         mDiscDate = discDate;
     }
 
@@ -249,6 +259,39 @@ public class ComputerDto implements Serializable {
         mId = id;
     }
 
+    /**
+     * Same as {@code #setCompanyName(String)}.
+     *
+     * @param companyName
+     */
+    public void setCompany(String companyName) {
+        setCompanyName(companyName);
+    }
+
+    /**
+     * Same as {@code #setCompanyId(long)}.
+     *
+     * @param companyId
+     */
+    public void setCompany(Long companyId) {
+        setCompanyId(companyId);
+    }
+
+    public void setCompanyName(String companyName) {
+            if (mCompanyDto != null) {
+            mCompanyDto.setName(companyName);
+            } else {
+            mCompanyDto = new CompanyDto(null, companyName);
+            }
+    }
+
+    public void setCompanyId(Long companyId) {
+        if (mCompanyDto != null) {
+            mCompanyDto.setId(companyId);
+        } else {
+            mCompanyDto = new CompanyDto(companyId, null);
+        }
+    }
     /* ***
      * Object OVERRIDES
      */

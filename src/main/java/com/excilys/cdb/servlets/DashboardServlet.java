@@ -21,7 +21,6 @@ import com.excilys.cdb.servlets.ViewConfig.Dashboard.Set;
  * Servlet implementation to handle dashboard page.
  */
 @Controller
-@RequestMapping(value = ViewConfig.Dashboard.MAPPING)
 public class DashboardServlet {
 
     /* ***
@@ -33,12 +32,23 @@ public class DashboardServlet {
     /**
      * Redirect to dashBoard.
      */
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value = ViewConfig.Dashboard.MAPPING, method = RequestMethod.GET)
     public ModelAndView gotoDashboard(
             @RequestParam(value = Get.PAGE_SIZE, defaultValue = ""
-            + Dashboard.DEFAULT_PAGE_SIZE) int pageSize,
-            @RequestParam(value = Get.SEARCH, defaultValue = "") String queryName,
-            @RequestParam(value = Get.PAGE_OFFSET, defaultValue = "0") int offset) {
+                    + Dashboard.DEFAULT_PAGE_SIZE) int pageSize,
+                    @RequestParam(value = Get.PAGE_OFFSET, defaultValue = "0") int offset) {
+        return doSearch(pageSize, offset, "");
+    }
+
+    /**
+     * Search computer.
+     */
+    @RequestMapping(value = ViewConfig.SearchComputer.MAPPING, method = RequestMethod.GET)
+    public ModelAndView doSearch(
+            @RequestParam(value = Get.PAGE_SIZE, defaultValue = "" + Dashboard.DEFAULT_PAGE_SIZE) int pageSize,
+            @RequestParam(value = Get.PAGE_OFFSET, defaultValue = "0") int offset,
+            @RequestParam(value = Get.SEARCH, required = true) String queryName) {
+
         List<Computer> computers = new LinkedList<Computer>();
 
         // count results & store them in a Page<Computer>
@@ -61,6 +71,22 @@ public class DashboardServlet {
 
         // set result page & send redirect.
         mv.addObject(Set.PAGE_BEAN, page);
+        return mv;
+    }
+
+    /**
+     * Delete the given computer & redirect to dashBoard.
+     */
+    @RequestMapping(
+            value = {ViewConfig.DeleteComputer.MAPPING, ViewConfig.SearchComputer.MAPPING},
+            method = RequestMethod.POST)
+    public ModelAndView doDeleteComputer(
+            @RequestParam(value = ViewConfig.DeleteComputer.Get.COMPUTER_IDS, required = true) long[] computerIds) {
+
+        mComputerService.delete(computerIds);
+        final ModelAndView mv = new ModelAndView("redirect:" + ViewConfig.Dashboard.MAPPING);
+
+        // retirect to dashboard
         return mv;
     }
 }

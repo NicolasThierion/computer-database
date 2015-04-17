@@ -106,12 +106,16 @@ public class ComputerService implements IComputerService {
     }
 
     @Override
-    public void delete(Long id) throws NoSuchElementException {
-        LOG.info("delete(" + id + ")");
-        try {
-            mComputerDao.delete(id);
-        } catch (final DaoException e) {
-            throw new NoSuchElementException(e.getMessage());
+    public void delete(long... ids) throws NoSuchElementException {
+        LOG.info("delete(" + ids + ")");
+
+        // TODO use SQL to delete many
+        for (final long id : ids) {
+            try {
+                mComputerDao.delete(id);
+            } catch (final DaoException e) {
+                throw new NoSuchElementException(e.getMessage());
+            }
         }
     }
 

@@ -56,8 +56,8 @@
                 </div>
             </div>
         </div>
-        <form id="deleteForm" action="#" method="POST">
-            <input type="hidden" name="selection" value="">
+        <form id="deleteForm" action="deleteComputer" method="POST">
+            <input type="hidden" name="selection" value="" />
         </form>
         <!-- search results page list -->
         <div class="container" style="margin-top: 10px;">
@@ -83,7 +83,7 @@
                 <tbody id="results">
                     <c:forEach var="computerBean" items="${pageBean.content}">
                         <tr>
-                            <td class="editMode"><input type="checkbox" name="cb" class="cb" value="0"></td>
+                            <td class="editMode"><input type="checkbox" name="cb" class="cb" value="${computerBean.id}"></td>
                             <td><a href="editComputer?computerId=${computerBean.id}" onclick="">${computerBean.name}</a></td>
                             <td>${computerBean.releaseDate}</td>
                             <td>${computerBean.discontinuedDate}</td>
