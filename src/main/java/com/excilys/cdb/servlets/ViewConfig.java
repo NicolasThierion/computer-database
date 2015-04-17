@@ -12,9 +12,15 @@ public final class ViewConfig {
 
     public static class AddComputer {
         public static final String MAPPING = "/addComputer";
-        public static class Set {
-            public static final String COMPANIES_PAGE_BEAN = "companiesPageBean";
+
+        public static class Set extends SetParam {
+            public static final String COMPANY_DTO_LIST = "companyDtoList";
         }
+
+        public static class Get extends GetParam {
+            public static final String COMPUTER_DTO = "addComputerForm";
+        }
+
     }
 
     public static class EditComputer {

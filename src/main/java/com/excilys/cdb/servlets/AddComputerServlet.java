@@ -1,5 +1,6 @@
 package com.excilys.cdb.servlets;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -13,13 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.excilys.cdb.dto.CompanyDto;
 import com.excilys.cdb.dto.ComputerDto;
-import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.model.Page;
 import com.excilys.cdb.service.ICompanyService;
 import com.excilys.cdb.service.IComputerService;
-
+import com.excilys.cdb.servlets.ViewConfig.AddComputer.Get;
+import com.excilys.cdb.servlets.ViewConfig.AddComputer.Set;
 /**
  * Servlet implementation to handle 'add computer' page.
  */
@@ -45,18 +46,21 @@ public class AddComputerServlet {
         LOG.info("gotoAdd()");
 
         // fetch company list for <select>
-        final List<Company> companies = mComanyService.listByName();
-        final Page<Company> companiesPage = new Page<Company>(companies);
+        final List<CompanyDto> companyDtos = new LinkedList<CompanyDto>();
+        mComanyService.listByName().stream().forEach(s -> companyDtos.add(CompanyDto.fromCompany(s)));
+
 
         final ModelAndView mv = new ModelAndView(ViewConfig.AddComputer.MAPPING);
 
         // set attributes & redirect to jsp.
-        mv.addObject(ViewConfig.AddComputer.Set.COMPANIES_PAGE_BEAN, companiesPage);
+        mv.addObject(Set.COMPANY_DTO_LIST, companyDtos);
+        // set an empty computerDto to hold form fields from POST.
+        mv.addObject(Get.COMPUTER_DTO, new ComputerDto());
         return mv;
     }
 
     @RequestMapping(value = ViewConfig.AddComputer.MAPPING, method = RequestMethod.POST)
-    public ModelAndView doAdd(@ModelAttribute("computerForm") ComputerDto computerDto,
+    public ModelAndView doAdd(@ModelAttribute(Get.COMPUTER_DTO) ComputerDto computerDto,
             BindingResult bindingResult, Model model) {
         LOG.info("doAdd(" + computerDto + ", " + bindingResult + ", " + model + ")");
 

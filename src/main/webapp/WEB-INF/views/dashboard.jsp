@@ -27,15 +27,12 @@
 <title>Computer Database</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Bootstrap -->
-<%@include file="/WEB-INF/includes/bootstrap.jsp" %>
-<script type="text/javascript"> //Function toggleSortBy
-
-</script>
+<%@include file="/WEB-INF/partials/bootstrap.jsp" %>
 </head>
 
 <body>
     <!-- header -->
-    <%@include file="/WEB-INF/includes/header.jsp" %>
+    <%@include file="/WEB-INF/partials/header.jsp" %>
     <!-- main -->
     <section id="main">
         <div class="container">
@@ -89,7 +86,7 @@
                             <td class="editMode"><input type="checkbox" name="cb" class="cb" value="0"></td>
                             <td><a href="editComputer?computerId=${computerBean.id}" onclick="">${computerBean.name}</a></td>
                             <td>${computerBean.releaseDate}</td>
-                            <td>${computerBean.discontDate}</td>
+                            <td>${computerBean.discontinuedDate}</td>
                             <td>${computerBean.manufacturer.name}</td>
                         </tr>
                     </c:forEach>

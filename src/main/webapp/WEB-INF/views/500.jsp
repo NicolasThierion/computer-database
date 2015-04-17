@@ -4,11 +4,11 @@
 <title>Computer Database</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Bootstrap -->
-<%@include file="/WEB-INF/includes/bootstrap.jsp"%>
+<%@include file="/WEB-INF/partials/bootstrap.jsp"%>
 </head>
 <c:set var="exception" value="${requestScope['javax.servlet.error.exception']}" />
 <body>
-    <%@include file="/WEB-INF/includes/header.jsp"%>
+    <%@include file="/WEB-INF/partials/header.jsp"%>
     <section id="main">
         <div class="container">
             <div class="alert alert-danger">

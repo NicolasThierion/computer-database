@@ -52,14 +52,23 @@ public class CompanyDto implements Serializable {
      * Create a new Company DTO corresponding to the given Company Object.
      *
      * @param company
-     *            company to build the DTO.
+     *            company to build the DTO. Can be null.
      * @return
      */
     public static CompanyDto fromCompany(Company company) {
         final CompanyDto dto = new CompanyDto();
-        final Long id = company.getId();
-        final String name = company.getName();
+
+        final Long id;
+        final String name;
+        if (company == null) {
+            id = null;
+            name = null;
+        } else {
+            id = company.getId();
+            name = company.getName();
+        }
         dto.mNewCompanyDto(id, name);
+
         return dto;
     }
 
@@ -76,7 +85,6 @@ public class CompanyDto implements Serializable {
     /* ***
      * GETTERS
      */
-
     public String getName() {
         return mName;
     }
@@ -84,6 +92,18 @@ public class CompanyDto implements Serializable {
     public Long getId() {
         return mId;
     }
+
+    /* ***
+     * SETTERS
+     */
+    public void setName(String name) {
+        mName = name;
+    }
+
+    public void setId(Long id) {
+        mId = id;
+    }
+
     /* ***
      * Object OVERRIDES
      */

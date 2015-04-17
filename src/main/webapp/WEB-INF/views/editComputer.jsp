@@ -23,10 +23,10 @@
 <title>Computer Database</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Bootstrap -->
-<%@include file="/WEB-INF/includes/bootstrap.jsp"%>
+<%@include file="/WEB-INF/partials/bootstrap.jsp"%>
 </head>
 <body>
-    <%@include file="/WEB-INF/includes/header.jsp"%>
+    <%@include file="/WEB-INF/partials/header.jsp"%>
     <section id="main">
         <div class="container">
             <div class="row">
@@ -52,12 +52,12 @@
                             <div class="form-group">
                                 <label for="discontinued">Discontinued date</label> <input type="date"
                                     class="form-control" id="discontinued" placeholder="Discontinued date"
-                                    name="discontinued" value="${computerBean.discontDate}"> <span
+                                    name="discontinued" value="${computerBean.discontinuedDate}"> <span
                                     id="discontinuedError" class="collapse error">Invalid date.</span>
                             </div>
                             <div class="form-group">
                                 <label for="companyId">Company</label>
-                                <mylib:page.toSelect entities="${companiesPageBean}"
+                                <mylib:map.toSelect entities="${companiesPageBean}"
                                     selectedId="${computerBean.company.id}" selectTagId="companyId" />
                             </div>
                         </fieldset>

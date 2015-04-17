@@ -1,52 +1,67 @@
-<jsp:useBean id="companiesPageBean" scope="request" class="com.excilys.cdb.model.Page" />
 <%@ taglib tagdir="/WEB-INF/tags" prefix="mylib"%>
-
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<jsp:useBean id="companyDtoList" scope="request" class="java.util.LinkedList" />
 <!DOCTYPE html>
 <html>
 <head>
-<title>Computer Database</title>
+<title><spring:message code="addComputer.page.title" /></title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Bootstrap -->
-<%@include file="/WEB-INF/includes/bootstrap.jsp"%>
+<%@include file="/WEB-INF/partials/bootstrap.jsp"%>
 </head>
 <body>
     <!-- header -->
-    <%@include file="/WEB-INF/includes/header.jsp"%>
+    <%@include file="/WEB-INF/partials/header.jsp"%>
     <section id="main">
         <div class="container">
             <div class="row">
                 <div class="col-xs-8 col-xs-offset-2 box">
-                    <h1>Add Computer</h1>
-                    <form action="addComputer" method="POST" onsubmit="return validate()">
-                        <input type="hidden" name="update" value="true" />
+                    <h1>
+                        <spring:message code="addComputer.form.title" />
+                    </h1>
+                    <spring:message code="addComputer.form.namePlaceholder"
+                        var="namePlaceholder" />
+                    <spring:message code="addComputer.form.introducedPlaceholder"
+                        var="introducedPlaceholder" />
+                    <spring:message code="addComputer.form.discontinuedPlaceholder"
+                        var="discontinuedPlaceholder" />
+                    <form:form id="addComputer" method="POST" action="addComputer" commandName="addComputerForm">
                         <fieldset>
                             <div class="form-group">
-                                <label for="computerName">Computer name</label> <input type="text" class="form-control"
-                                    id="computerName" name="computerName" placeholder="Computer name"> <span
-                                    id="computerNameError" class="collapse error">Valid name is mandatory</span>
+                                <label for="computerName"><spring:message code="addComputer.form.name" /></label>
+                                <form:input name="computerName" path="name" class="form-control" id="computerName"
+                                    placeholder="${namePlaceholder}" />
+                                <form:errors path="name" cssClass="error" />
                             </div>
                             <div class="form-group">
-                                <label for="introduced">Introduced date</label> <input type="date" class="form-control"
-                                    id="introduced" name="introduced" placeholder="Introduced date"> <span
-                                    id="introducedError" class="collapse error">invalid date.</span>
+                                <label for="introduced"><spring:message code="addComputer.form.introduced" /></label>
+                                <form:input type="date" name="introduced" path="introducedDate" class="form-control" id="introduced"
+                                    placeholder="${introducedPlaceholder}" />
+                                <form:errors path="introducedDate" cssClass="error" />
                             </div>
                             <div class="form-group">
-                                <label for="discontinued">Discontinued date</label> <input type="date"
-                                    class="form-control" id="discontinued" name="discontinued"
-                                    placeholder="Discontinued date"> <span id="discontinuedError"
-                                    class="collapse error">invalid date.</span>
+                                <label for="discontinued"><spring:message code="addComputer.form.discontinued" /></label>
+                                <form:input type="date" name="discontinued" path="discontinuedDate" class="form-control"
+                                    id="discontinued" placeholder="${discontinuedPlaceholder}" />
+                                <form:errors path="discontinuedDate" cssClass="error" />
                             </div>
                             <div class="form-group">
-                                <label for="companyId">Company</label>
-                                <mylib:page.toSelect entities="${companiesPageBean}"
-                                    selectedId="${computerBean.company.id}" selectTagId="companyId" />
+                                <label for="companyId"><spring:message code="addComputer.form.company" /></label>
+                                <form:select name="companyId" path="companyId" cssClass="form-control">
+                                    <form:option value="" >
+                                        <spring:message code="addComputer.form.defaultCompanyLabel" />
+                                    </form:option>
+                                    <form:options items="${companyDtoList}" itemLabel="name" itemValue="id"/>
+                                </form:select>
                             </div>
                         </fieldset>
                         <div class="actions pull-right">
-                            <input type="submit" value="Add" class="btn btn-primary"> or <a href="dashboards"
-                                class="btn btn-default">Cancel</a>
+                            <input type="submit" value="<spring:message code="add" />"
+                                class="btn btn-primary"> or <a href="dashboard" class="btn btn-default"><spring:message
+                                    code="cancel" /></a>
                         </div>
-                    </form>
+                    </form:form>
                 </div>
             </div>
         </div>

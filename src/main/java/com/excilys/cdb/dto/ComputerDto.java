@@ -66,7 +66,7 @@ public class ComputerDto implements Serializable {
         mName = name;
         mReleaseDate = releaseDate;
         mDiscDate = discontDate;
-        mCompanyDto = (company != null ? new CompanyDto(company) : null);
+        mCompanyDto = (company != null ? company : CompanyDto.fromCompany(null));
     }
 
     public ComputerDto(Long id, String name, String releaseDate, String discontDate, CompanyDto company) {
@@ -87,18 +87,31 @@ public class ComputerDto implements Serializable {
      * Create a new Computer DTO corresponding to the given Computer Object.
      *
      * @param computer
-     *            Computer to build the DTO.
+     *            Computer to build the DTO. Can be null.
      * @return
      */
     public static ComputerDto fromComputer(Computer computer) {
         final ComputerDto dto = new ComputerDto();
-        final Company company = computer.getCompany();
-        final Long id = computer.getId();
-        final String name = computer.getName();
-        final String releaseDate = (computer.getReleaseDate() != null ? computer.getReleaseDate().toString() : "");
-        final String discontDate = (computer.getDiscontDate() != null ? computer.getDiscontDate().toString() : "");
-        final CompanyDto companyDto = (company != null ? CompanyDto.fromCompany(company) : null);
+        Company company;
+        Long id;
+        String name;
+        String releaseDate;
+        String discontDate;
 
+        if (computer == null) {
+            company = null;
+            id = null;
+            name = null;
+            releaseDate = null;
+            discontDate = null;
+        } else {
+            company = computer.getCompany();
+            id = computer.getId();
+            name = computer.getName();
+            releaseDate = (computer.getReleaseDate() != null ? computer.getReleaseDate().toString() : "");
+            discontDate = (computer.getDiscontDate() != null ? computer.getDiscontDate().toString() : "");
+        }
+        final CompanyDto companyDto = (company != null ? CompanyDto.fromCompany(company) : null);
         dto.mNewComputerDto(id, name, releaseDate, discontDate, companyDto);
         return dto;
     }
@@ -172,11 +185,21 @@ public class ComputerDto implements Serializable {
         return mCompanyDto.getId();
     }
 
+    /**
+     * Same as {@code #getIntroducedDate()}.
+     *
+     * @return
+     */
     public String getReleaseDate() {
         return mReleaseDate;
     }
 
-    public String getDiscontDate() {
+    public String getIntroducedDate() {
+        return mReleaseDate;
+    }
+
+
+    public String getDiscontinuedDate() {
         return mDiscDate;
     }
 
@@ -185,7 +208,7 @@ public class ComputerDto implements Serializable {
     }
 
     public CompanyDto getCompany() {
-        return (mCompanyDto != null ? new CompanyDto(mCompanyDto) : null);
+        return mCompanyDto;
     }
 
     /**
@@ -267,5 +290,4 @@ public class ComputerDto implements Serializable {
         }
         return true;
     }
-
 }
