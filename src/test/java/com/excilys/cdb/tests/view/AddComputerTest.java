@@ -15,6 +15,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.support.ui.Select;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.excilys.cdb.dto.ComputerDto;
 import com.excilys.cdb.model.Computer;
@@ -33,6 +35,7 @@ import com.excilys.cdb.service.IComputerService;
  */
 public final class AddComputerTest extends CdbViewTest {
 
+    private static final Logger LOG            = LoggerFactory.getLogger(AddComputerTest.class);
     /* ***
      * TEST CONSTANTS & PARAMETERS
      */
@@ -108,7 +111,7 @@ public final class AddComputerTest extends CdbViewTest {
         final String name = "TestComputerName" + java.time.Clock.systemUTC().millis();
         for (final String rd : new String[] {"", "2010-01-01"}) {
             for (final String dd : new String[] {"", "2011-01-01"}) {
-                for (final Long compId : new Long[] {1L, 0L}) {
+                for (final Long compId : new Long[] {1L, null}) {
                     assertTrue(mAddComputer(name, rd, dd, compId));
                 }
             }
@@ -149,13 +152,14 @@ public final class AddComputerTest extends CdbViewTest {
         nameInput.sendKeys(computerName);
         releaseInput.sendKeys(computerRelease);
         discontinuedInput.sendKeys(computerDiscont);
-        companySelect.selectByValue("" + companyId);
+        companySelect.selectByValue("" + (companyId != null ? companyId : ""));
 
         // submit form
         form.submit();
         final List<Computer> computers = mComputerService.listLikeName(computerName);
         //assert computer has been added
         if (computers.size() != count + 1) {
+            LOG.error("Computer not added");
             return false;
         }
 
@@ -169,7 +173,7 @@ public final class AddComputerTest extends CdbViewTest {
         final Computer computer = Collections.max(computers, computerComparatorById);
         final ComputerDto dto = ComputerDto.fromComputer(computer);
 
-        boolean res = (dto.getCompanyId().equals(companyId));
+        boolean res = (companyId == null && dto.getCompanyId() == null || dto.getCompanyId().equals(companyId));
         res = res && (dto.getName().equals(computerName));
         res = res && (dto.getReleaseDate().equals(computerRelease));
         res = res && (dto.getDiscontinuedDate().equals(computerDiscont));

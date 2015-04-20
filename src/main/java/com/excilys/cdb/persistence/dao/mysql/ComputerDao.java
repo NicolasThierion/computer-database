@@ -122,14 +122,16 @@ public final class ComputerDao implements IComputerDao {
                 final ComputerMapper h = new ComputerMapper();
                 h.fromResultSet(result);
 
-                Company company;
+                Company company = null;
 
                 //store used companies in a map in order to not construct same company twice.
-                if (!companiesMap.containsKey(new Long(h.getCompanyId()))) {
-                    company = new Company(h.getCompanyId(), h.getCompanyName());
-                    companiesMap.put(new Long(h.getCompanyId()), company);
-                } else {
-                    company = companiesMap.get(new Long(h.getCompanyId()));
+                if (h.getCompanyId() != null) {
+                    if (!companiesMap.containsKey(h.getCompanyId())) {
+                        company = new Company(h.getCompanyId(), h.getCompanyName());
+                        companiesMap.put(new Long(h.getCompanyId()), company);
+                    } else {
+                        company = companiesMap.get(new Long(h.getCompanyId()));
+                    }
                 }
 
                 //finally, create the computer & add it to the list

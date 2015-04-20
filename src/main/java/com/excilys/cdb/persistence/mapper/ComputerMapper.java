@@ -105,7 +105,16 @@ public class ComputerMapper implements EntityMapper<Computer> {
         mCompanyId = res.getLong(colId++);
         mCompanyName = res.getString(colId++);
 
-        return new Computer(mId, mName, new Company(mCompanyId, mCompanyName), mReleaseDate, mDiscDate);
+        // create a company out of information
+        Company company;
+        if (mCompanyId == 0) {
+            company = null;
+            mCompanyId = null;
+        } else {
+            company = new Company(mCompanyId, mCompanyName);
+        }
+
+        return new Computer(mId, mName, company, mReleaseDate, mDiscDate);
     }
 
     /* ***

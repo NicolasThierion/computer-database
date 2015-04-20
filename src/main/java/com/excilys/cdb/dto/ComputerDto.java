@@ -210,7 +210,7 @@ public class ComputerDto implements Serializable {
      * @return
      */
     public CompanyDto getManufacturer() {
-        return new CompanyDto(mCompanyDto);
+        return (mCompanyDto != null ? new CompanyDto(mCompanyDto) : null);
     }
 
     public boolean isValid() {
@@ -286,7 +286,10 @@ public class ComputerDto implements Serializable {
     }
 
     public void setCompanyId(Long companyId) {
-        if (mCompanyDto != null) {
+
+        if (companyId == null) {
+            mCompanyDto = null;
+        } else if (mCompanyDto != null) {
             mCompanyDto.setId(companyId);
         } else {
             mCompanyDto = new CompanyDto(companyId, null);

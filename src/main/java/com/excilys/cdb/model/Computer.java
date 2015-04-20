@@ -43,6 +43,7 @@ public class Computer implements Serializable, Identifiable<Long> {
     private void mNewComputer(Long id, final String name, Company manufacturer,
             LocalDate releaseDate,
             LocalDate discontinuedDate) {
+
         // check name
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException(
