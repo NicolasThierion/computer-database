@@ -74,18 +74,14 @@ public final class ViewConfig {
 
         /** input parameters. */
         public static final class Get extends GetParam {
-            /** search parameter name. */
-            public static final String SEARCH      = "search";
-            /** page size parameter name. */
-            public static final String PAGE_SIZE   = "size";
-            /** search offset parameter name. */
-            public static final String PAGE_OFFSET = "offset";
+            /** Page progerties (search parameter, page size & offset). */
+            public static final String PAGE_BEAN = "pageBean";
         }
 
         /** output parameters. */
         public static final class Set extends SetParam {
             /** Page attribute to be sent to JSP. */
-            public static final String PAGE_BEAN = "pageBean";
+            public static final String PAGE_BEAN = Get.PAGE_BEAN;
         }
 
     }

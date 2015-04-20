@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,23 +34,27 @@ public class DashboardServlet {
      * Redirect to dashBoard.
      */
     @RequestMapping(value = ViewConfig.Dashboard.MAPPING, method = RequestMethod.GET)
-    public ModelAndView gotoDashboard(
-            @RequestParam(value = Get.PAGE_SIZE, defaultValue = ""
-                    + Dashboard.DEFAULT_PAGE_SIZE) int pageSize,
-                    @RequestParam(value = Get.PAGE_OFFSET, defaultValue = "0") int offset) {
-        return doSearch(pageSize, offset, "");
+    public ModelAndView gotoDashboard(@ModelAttribute(Get.PAGE_BEAN) Page<?> page) {
+        if (page.getSearch() == null) {
+            page.setSearch("");
+        }
+        if (page.getSize() <= 0) {
+            page.setSize(Dashboard.DEFAULT_PAGE_SIZE);
+        }
+        return doSearch(page);
     }
 
     /**
      * Search computer.
      */
     @RequestMapping(value = ViewConfig.SearchComputer.MAPPING, method = RequestMethod.GET)
-    public ModelAndView doSearch(
-            @RequestParam(value = Get.PAGE_SIZE, defaultValue = "" + Dashboard.DEFAULT_PAGE_SIZE) int pageSize,
-            @RequestParam(value = Get.PAGE_OFFSET, defaultValue = "0") int offset,
-            @RequestParam(value = Get.SEARCH, required = true) String queryName) {
+    public ModelAndView doSearch(@ModelAttribute(Get.PAGE_BEAN) Page<?> page) {
 
         List<Computer> computers = new LinkedList<Computer>();
+
+        final String queryName = page.getSearch();
+        int offset = page.getOffset();
+        final int pageSize = page.getSize();
 
         // count results & store them in a Page<Computer>
         final int totalResults = mComputerService.getCount(queryName);
@@ -64,7 +69,7 @@ public class DashboardServlet {
         }
 
         final List<ComputerDto> dtos = ComputerDto.fromComputers(computers);
-        final Page<ComputerDto> page = new Page<ComputerDto>(dtos, offset, totalResults, queryName);
+        page = new Page<ComputerDto>(dtos, offset, totalResults, queryName);
         page.setSize(pageSize);
 
         final ModelAndView mv = new ModelAndView(ViewConfig.Dashboard.MAPPING);
@@ -81,10 +86,19 @@ public class DashboardServlet {
             value = {ViewConfig.DeleteComputer.MAPPING, ViewConfig.SearchComputer.MAPPING},
             method = RequestMethod.POST)
     public ModelAndView doDeleteComputer(
-            @RequestParam(value = ViewConfig.DeleteComputer.Get.COMPUTER_IDS, required = true) long[] computerIds) {
+            @RequestParam(value = ViewConfig.DeleteComputer.Get.COMPUTER_IDS, required = true) long[] computerIds,
+            @ModelAttribute(Get.PAGE_BEAN) Page<?> page) {
 
         mComputerService.delete(computerIds);
-        final ModelAndView mv = new ModelAndView("redirect:" + ViewConfig.Dashboard.MAPPING);
+
+        // we will redirect to dashboard. As dashboard is handled by GET, it
+        // cannot get attributes from this POST context. We have to pass
+        // attributes through url manually.
+        final String url = new StringBuilder().append(ViewConfig.Dashboard.MAPPING)
+                .append("?")
+                .append(page.toUrlArgs()).toString();
+        final ModelAndView mv = new ModelAndView("redirect:" + url);
+        mv.addObject(Set.PAGE_BEAN, page);
 
         // retirect to dashboard
         return mv;

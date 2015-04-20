@@ -46,7 +46,6 @@
                         <input type="hidden" name="offset" value="${pageBean.offset}"/>
                         <input type="hidden" name="sortBy" value="${pageBean.sortBy}"/>
                         <input type="hidden" name="order" value="${pageBean.sortOrder}"/>
-                        <input type="hidden" name="total" value="${pageBean.totalCount}"/>
                         <input type="hidden" name="size" value="${pageBean.size}"/>
                     </form>
                 </div>
@@ -58,6 +57,11 @@
         </div>
         <form id="deleteForm" action="deleteComputer" method="POST">
             <input type="hidden" name="selection" value="" />
+            <input type="hidden" name="offset" value="${pageBean.offset}"/>
+            <input type="hidden" name="search" value="${pageBean.search}"/>
+            <input type="hidden" name="sortBy" value="${pageBean.sortBy}"/>
+            <input type="hidden" name="order" value="${pageBean.sortOrder}"/>
+            <input type="hidden" name="size" value="${pageBean.size}"/>
         </form>
         <!-- search results page list -->
         <div class="container" style="margin-top: 10px;">

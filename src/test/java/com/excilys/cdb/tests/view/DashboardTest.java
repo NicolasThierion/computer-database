@@ -39,6 +39,14 @@ public final class DashboardTest extends CdbViewTest {
 
     private String              mUrl;
 
+    /* ***
+     * public methods
+     */
+    public void assertTitleCount(int count) {
+        final String searchTitle = mWebDriver.findElement(By.id(SEARCH_TITLE_ID)).getText();
+        assertTrue(searchTitle.startsWith("" + count));
+    }
+
     /**
      * Init webDriver, DAOs & Service.
      */
@@ -79,8 +87,7 @@ public final class DashboardTest extends CdbViewTest {
             searchBox.submit();
 
             // ensure title displays the right count of results.
-            final String searchTitle = mWebDriver.findElement(By.id(SEARCH_TITLE_ID)).getText();
-            assertTrue(searchTitle.startsWith("" + mService.getCount(searchWords)));
+            assertTitleCount(mService.getCount(searchWords));
         }
     }
 }
