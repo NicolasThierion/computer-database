@@ -69,6 +69,10 @@ public class ComputerDto implements Serializable {
         mCompanyDto = company;
     }
 
+    public ComputerDto(Long id, String name, String releaseDate, String discontDate) {
+        mNewComputerDto(id, name, releaseDate, discontDate, null);
+    }
+
     public ComputerDto(Long id, String name, String releaseDate, String discontDate, CompanyDto company) {
         mNewComputerDto(id, name, releaseDate, discontDate, company);
     }
@@ -135,6 +139,7 @@ public class ComputerDto implements Serializable {
         mNewComputerDto(computerDto.mId, computerDto.mName, computerDto.mReleaseDate, computerDto.mDiscDate,
                 computerDto.mCompanyDto);
     }
+
 
     /* ***
      * PUBLIC METHODS

@@ -78,7 +78,7 @@
     <!-- by default, log everything to the console with a level of DEBUG
         or higher -->
     <root>
-        <level value="debug" />
+        <level value="error" />
         <appender-ref ref="stdout-appender" />
     </root>
 </log4j:configuration>
