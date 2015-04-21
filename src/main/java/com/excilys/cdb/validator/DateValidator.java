@@ -16,13 +16,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DateValidator implements ConstraintValidator<DateFormat, String> {
-    private static final String DATE_REGEX_CODE  = "date.regex";
     private static final String DATE_FORMAT_CODE = "date.format";
 
     @Autowired
     private MessageSource       messageSource;
     private String              mDatePattern;
-    private String              mDateFormat;
     private DateFormat          mConstraintAnnotation;
 
 
@@ -31,8 +29,7 @@ public class DateValidator implements ConstraintValidator<DateFormat, String> {
     public void initialize(DateFormat constraintAnnotation) {
         final Locale locale = LocaleContextHolder.getLocale();
         mConstraintAnnotation = constraintAnnotation;
-        mDatePattern = messageSource.getMessage(DATE_REGEX_CODE, null, locale);
-        mDateFormat = messageSource.getMessage(DATE_FORMAT_CODE, null, locale);
+        mDatePattern = messageSource.getMessage(DATE_FORMAT_CODE, null, locale);
 
     }
 
@@ -43,12 +40,16 @@ public class DateValidator implements ConstraintValidator<DateFormat, String> {
 
     public boolean isValid(String value, boolean acceptEmpty) {
 
+        if (mDatePattern == null) {
+            initialize(null);
+        }
+
         if (acceptEmpty && (value == null || value.trim().isEmpty())) {
             return true;
         }
         if (GenericValidator.isDate(value, mDatePattern, true)) {
             try {
-                final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(mDateFormat);
+                final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(mDatePattern);
                 LocalDate.parse(value, dateFormatter);
                 return true;
             } catch (final DateTimeParseException e) {

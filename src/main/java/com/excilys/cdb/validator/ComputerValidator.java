@@ -71,9 +71,11 @@ public class ComputerValidator implements Validator {
             errors.rejectValue("id", ErrorCodes.COMPUTER_ID.toString());
         }
 
-        if (computer.getReleaseDate().compareTo(computer.getDiscontinuedDate()) > 0) {
-            errors.rejectValue("introducedDate", ErrorCodes.DATE_CHRONOLOGY.toString());
-            errors.rejectValue("discontinuedDate", ErrorCodes.DATE_CHRONOLOGY.toString());
+        if (computer.getReleaseDate() != null) {
+            if (computer.getReleaseDate().compareTo(computer.getDiscontinuedDate()) > 0) {
+                errors.rejectValue("introducedDate", ErrorCodes.DATE_CHRONOLOGY.toString());
+                errors.rejectValue("discontinuedDate", ErrorCodes.DATE_CHRONOLOGY.toString());
+            }
         }
     }
 
