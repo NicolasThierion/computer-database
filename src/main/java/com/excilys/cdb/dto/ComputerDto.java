@@ -33,7 +33,7 @@ public class ComputerDto implements Serializable {
 
     /** name of this computer. */
     @NotEmpty(message = "computer.error.name.empty")
-    private String            mName;
+    private String            name;
     /** manufacturer of this computer. */
     private CompanyDto        mCompanyDto;
     /** release date. */
@@ -66,7 +66,7 @@ public class ComputerDto implements Serializable {
      */
     private void mNewComputerDto(Long id, String name, String releaseDate, String discontDate, CompanyDto company) {
         mId = (id != null ? new Long(id) : null);
-        mName = name;
+        this.name = name;
         mReleaseDate = releaseDate;
         mDiscDate = discontDate;
         mCompanyDto = company;
@@ -139,7 +139,7 @@ public class ComputerDto implements Serializable {
      *            ComputerDto Object to copy.
      */
     public ComputerDto(ComputerDto computerDto) {
-        mNewComputerDto(computerDto.mId, computerDto.mName, computerDto.mReleaseDate, computerDto.mDiscDate,
+        mNewComputerDto(computerDto.mId, computerDto.name, computerDto.mReleaseDate, computerDto.mDiscDate,
                 computerDto.mCompanyDto);
     }
 
@@ -153,8 +153,8 @@ public class ComputerDto implements Serializable {
         final Company company = new Company();
 
         computer.setId(mId);
-        if (mName != null) {
-            computer.setName(mName);
+        if (this.name != null) {
+            computer.setName(this.name);
         }
         if (mReleaseDate != null && !mReleaseDate.trim().isEmpty()) {
             computer.setReleaseDate(LocalDate.parse(mReleaseDate));
@@ -175,7 +175,7 @@ public class ComputerDto implements Serializable {
      */
 
     public String getName() {
-        return mName;
+        return this.name;
     }
 
     public String getCompanyName() {
@@ -222,14 +222,14 @@ public class ComputerDto implements Serializable {
     }
 
     public boolean isValid() {
-        return mName != null && !mName.trim().isEmpty() && toComputer().isValid();
+        return this.name != null && !this.name.trim().isEmpty() && toComputer().isValid();
     }
 
     /* ***
      * SETTERS
      */
     public void setName(String name) {
-        mName = name;
+        this.name = name;
     }
 
     public void setCompanyDto(CompanyDto companyDto) {
@@ -314,7 +314,7 @@ public class ComputerDto implements Serializable {
         result = prime * result + ((mCompanyDto == null) ? 0 : mCompanyDto.hashCode());
         result = prime * result + ((mDiscDate == null) ? 0 : mDiscDate.hashCode());
         result = prime * result + ((mId == null) ? 0 : mId.hashCode());
-        result = prime * result + ((mName == null) ? 0 : mName.hashCode());
+        result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
         result = prime * result + ((mReleaseDate == null) ? 0 : mReleaseDate.hashCode());
         return result;
     }
@@ -353,11 +353,11 @@ public class ComputerDto implements Serializable {
         } else if (!mId.equals(other.mId)) {
             return false;
         }
-        if (mName == null) {
-            if (other.mName != null) {
+        if (this.name == null) {
+            if (other.name != null) {
                 return false;
             }
-        } else if (!mName.equals(other.mName)) {
+        } else if (!this.equals(other.name)) {
             return false;
         }
         if (mReleaseDate == null) {

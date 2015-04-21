@@ -38,7 +38,7 @@ public class EditComputerServlet {
     @Autowired
     private IComputerService mComputerService;
     @Autowired
-    private ICompanyService  mComanyService;
+    private ICompanyService  mCompanyService;
 
     @Autowired
     private ComputerValidator mComputerValidator;
@@ -103,7 +103,7 @@ public class EditComputerServlet {
 
     private List<CompanyDto> mGetCompanyDtoList() {
         final List<CompanyDto> companyDtos = new LinkedList<CompanyDto>();
-        mComanyService.listByName().stream().forEach(s -> companyDtos.add(CompanyDto.fromCompany(s)));
+        mCompanyService.listByName().stream().forEach(s -> companyDtos.add(CompanyDto.fromCompany(s)));
         return companyDtos;
     }
 }
