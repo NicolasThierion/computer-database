@@ -19,6 +19,7 @@
     <context:component-scan base-package="com.excilys.cdb.model" />
     <context:component-scan base-package="com.excilys.cdb.dto" />
     <context:component-scan base-package="com.excilys.cdb.service" />
+    <context:component-scan base-package="com.excilys.cdb.validator" />
     <context:annotation-config />
 
     <!-- Enable @requestMapping, @Controller annotations  -->

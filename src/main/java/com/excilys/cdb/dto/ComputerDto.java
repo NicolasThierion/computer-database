@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
+import com.excilys.cdb.validator.DateFormat;
 
 /**
  * DTO of Computer Object. Compliant with JavaBean standard.
@@ -31,13 +32,15 @@ public class ComputerDto implements Serializable {
      */
 
     /** name of this computer. */
-    @NotEmpty
+    @NotEmpty(message = "computer.error.name.empty")
     private String            mName;
     /** manufacturer of this computer. */
     private CompanyDto        mCompanyDto;
     /** release date. */
+    @DateFormat(acceptEmpty = true)
     private String            mReleaseDate;
     /** discontinuation date. */
+    @DateFormat(acceptEmpty = true)
     private String            mDiscDate;
     /** id of this computer. */
     private Long              mId;
@@ -103,10 +106,10 @@ public class ComputerDto implements Serializable {
             final Company company = computer.getCompany();
             final Long id = computer.getId();
             final String name = computer.getName();
-            final String releaseDate = (computer.getReleaseDate() != null ? computer.getReleaseDate().toString()
-                    : "");
-            final String discontDate = (computer.getDiscontDate() != null ? computer.getDiscontDate().toString()
-                    : "");
+            final String releaseDate = (computer.getReleaseDate() != null
+                    ? computer.getReleaseDate().toString() : "");
+            final String discontDate = (computer.getDiscontinuedDate() != null
+                    ? computer.getDiscontinuedDate().toString() : "");
             final CompanyDto companyDto = (company != null ? CompanyDto.fromCompany(company) : null);
             dto.mNewComputerDto(id, name, releaseDate, discontDate, companyDto);
         }
@@ -219,7 +222,7 @@ public class ComputerDto implements Serializable {
     }
 
     public boolean isValid() {
-        return toComputer().isValid();
+        return mName != null && !mName.trim().isEmpty() && toComputer().isValid();
     }
 
     /* ***
@@ -229,7 +232,7 @@ public class ComputerDto implements Serializable {
         mName = name;
     }
 
-    public void setCompany(CompanyDto companyDto) {
+    public void setCompanyDto(CompanyDto companyDto) {
         mCompanyDto = companyDto;
     }
 
@@ -239,7 +242,7 @@ public class ComputerDto implements Serializable {
      * @param companyDto
      */
     public void setManufacturer(CompanyDto companyDto) {
-        setCompany(companyDto);
+        setCompanyDto(companyDto);
     }
 
 

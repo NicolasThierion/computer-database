@@ -73,7 +73,7 @@ public class ComputerMapper implements EntityMapper<Computer> {
         mId = computer.getId();
         mName = computer.getName();
         mReleaseDate = computer.getReleaseDate();
-        mDiscDate = computer.getDiscontDate();
+        mDiscDate = computer.getDiscontinuedDate();
         mCompany = computer.getCompany();
         if (mCompany != null) {
             mCompanyId = computer.getCompany().getId();

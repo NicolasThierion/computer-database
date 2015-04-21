@@ -17,7 +17,7 @@ import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.dao.mysql.ComputerDao;
 import com.excilys.cdb.service.ComputerService;
 import com.excilys.cdb.service.IComputerService;
-import com.excilys.cdb.servlets.ViewConfig;
+import com.excilys.cdb.servlet.ViewConfig;
 
 /**
  * Test if addComputer Page loads correctly.

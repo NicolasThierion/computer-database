@@ -34,7 +34,7 @@
         <spring.version>4.1.6.RELEASE</spring.version>
         <hibernate.validator.version>5.1.3.Final</hibernate.validator.version>
         <apache.commons.dbcp2.version>2.1</apache.commons.dbcp2.version>
-
+        <apache.commons.commons-validator>1.4.1</apache.commons.commons-validator>
     </properties>
 
     <dependencies>
@@ -131,6 +131,13 @@
             <artifactId>validation-api</artifactId>
             <version>${javax.validation.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+            <version>${apache.commons.commons-validator}</version>
+        </dependency>
+
 
         <!-- db driver -->
         <dependency>

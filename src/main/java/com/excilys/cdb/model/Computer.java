@@ -3,6 +3,7 @@ package com.excilys.cdb.model;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -26,6 +27,7 @@ public class Computer implements Serializable, Identifiable<Long> {
      */
 
     /** name of this computer. */
+    @NotEmpty(message = "computer.error.name.empty")
     private String              mName;
     /** manufacturer of this computer. */
     private Company             mCompany;
@@ -235,7 +237,7 @@ public class Computer implements Serializable, Identifiable<Long> {
         mReleaseDate = releaseDate;
     }
 
-    public LocalDate getDiscontDate() {
+    public LocalDate getDiscontinuedDate() {
         return mDiscDate;
     }
 
@@ -255,10 +257,10 @@ public class Computer implements Serializable, Identifiable<Long> {
 
     /**
      * Says if the computer is valid. A valid computer must have a positive id,
-     * a non-null & non-empty name, optional release & discontinuation dates
-     * must be temporally coherent.
+     * a non-null & non-empty name, optional release & discontinued dates must
+     * be temporally coherent.
      *
-     * @return true if the computer is valide.
+     * @return true if the computer is valid.
      */
     public boolean isValid() {
         boolean res = (mId != null && mId > 0);

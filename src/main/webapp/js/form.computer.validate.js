@@ -52,11 +52,11 @@ var focusedField = null;
 var checkNameField = function() {
     if (checkName($("#computerName").val())) {
         $("#computerName").removeClass("error");
-        $("#computerNameError").addClass("collapse");
+        $("#nameError").addClass("collapse");
     } else {
         $("#computerName").addClass("error");
-        $("#computerNameError").removeClass("collapse");
-        $("#computerNameError").addClass("error");
+        $("#nameError").removeClass("collapse");
+        $("#nameError").addClass("error");
 
         if(!error) {
             error = true;

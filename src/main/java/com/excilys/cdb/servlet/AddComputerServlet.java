@@ -1,7 +1,9 @@
-package com.excilys.cdb.servlets;
+package com.excilys.cdb.servlet;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +20,8 @@ import com.excilys.cdb.dto.ComputerDto;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.service.ICompanyService;
 import com.excilys.cdb.service.IComputerService;
-import com.excilys.cdb.servlets.ViewConfig.AddComputer.Get;
-import com.excilys.cdb.servlets.ViewConfig.AddComputer.Set;
+import com.excilys.cdb.servlet.ViewConfig.AddComputer.Get;
+import com.excilys.cdb.servlet.ViewConfig.AddComputer.Set;
 /**
  * Servlet implementation to handle 'add computer' page.
  */
@@ -59,7 +61,7 @@ public class AddComputerServlet {
     }
 
     @RequestMapping(value = ViewConfig.AddComputer.MAPPING, method = RequestMethod.POST)
-    public ModelAndView doAdd(@ModelAttribute(Get.COMPUTER_DTO) ComputerDto computerDto,
+    public ModelAndView doAdd(@Valid @ModelAttribute(Get.COMPUTER_DTO) ComputerDto computerDto,
             BindingResult bindingResult) {
         LOG.info("doAdd(" + computerDto + ", " + bindingResult + ")");
 

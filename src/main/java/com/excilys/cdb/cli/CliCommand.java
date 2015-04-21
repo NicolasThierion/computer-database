@@ -8,8 +8,8 @@ import java.util.Map;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.model.validator.ComputerValidator;
 import com.excilys.cdb.service.ServiceException;
+import com.excilys.cdb.validator.DateValidator;
 
 /**
  * Pattern command for the processing of actions.
@@ -181,7 +181,7 @@ public enum CliCommand {
         if (context.getScanner().hasNext()) {
             final String tok = context.getScanner().next();
 
-            if (new ComputerValidator().validateDateTime(tok)) {
+            if (new DateValidator().isValid(tok, true)) {
                 final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                 final LocalDate releaseDate = LocalDate.parse(tok, formatter);
                 computer.setReleaseDate(releaseDate);
@@ -190,7 +190,7 @@ public enum CliCommand {
         System.out.println("Discontinued :");
         if (context.getScanner().hasNext()) {
             final String tok = context.getScanner().next();
-            if (new ComputerValidator().validateDateTime(tok)) {
+            if (new DateValidator().isValid(tok, true)) {
                 final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                 final LocalDate dateTime = LocalDate.parse(tok, formatter);
                 computer.setDiscontDate(dateTime);

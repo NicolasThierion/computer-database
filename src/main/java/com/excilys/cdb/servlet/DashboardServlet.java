@@ -1,4 +1,4 @@
-package com.excilys.cdb.servlets;
+package com.excilys.cdb.servlet;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -15,9 +15,9 @@ import com.excilys.cdb.dto.ComputerDto;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Page;
 import com.excilys.cdb.service.IComputerService;
-import com.excilys.cdb.servlets.ViewConfig.Dashboard;
-import com.excilys.cdb.servlets.ViewConfig.Dashboard.Get;
-import com.excilys.cdb.servlets.ViewConfig.Dashboard.Set;
+import com.excilys.cdb.servlet.ViewConfig.Dashboard;
+import com.excilys.cdb.servlet.ViewConfig.Dashboard.Get;
+import com.excilys.cdb.servlet.ViewConfig.Dashboard.Set;
 /**
  * Servlet implementation to handle dashboard page.
  */
@@ -30,6 +30,9 @@ public class DashboardServlet {
     @Autowired
     private IComputerService mComputerService;
 
+    /* ***
+     * PUBLIC SERVLET METHODS
+     */
     /**
      * Redirect to dashBoard.
      */

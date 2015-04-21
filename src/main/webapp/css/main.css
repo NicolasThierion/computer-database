@@ -35,3 +35,6 @@ input[type='checkbox'] {
 input.error {
     border : 2px solid red;
 }
+.collapse {
+	visibility: collapse;
+}

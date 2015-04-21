@@ -25,6 +25,8 @@
                     <spring:message code="editComputer.form.namePlaceholder" var="namePlaceholder" />
                     <spring:message code="editComputer.form.introducedPlaceholder" var="introducedPlaceholder" />
                     <spring:message code="editComputer.form.discontinuedPlaceholder" var="discontinuedPlaceholder" />
+                    <spring:message code="computer.error.name.valid" var="nameError" />
+                    <spring:message code="dates.error.valid" var="dateError" />
                     <form:form id="editComputer" method="POST" action="editComputer" modelAttribute="computerDto"
                         onsubmit="return validate()">
                          <form:input type="hidden" name="computerId" path="id" value="${computerDto.id}" />
@@ -34,18 +36,21 @@
                                 <form:input name="computerName" path="name" class="form-control" id="computerName"
                                     placeholder="${namePlaceholder}" />
                                 <form:errors path="name" cssClass="error" />
+                                <span id="nameError" class="collapse error">${nameError}</span>
                             </div>
                             <div class="form-group">
                                 <label for="introduced"><spring:message code="editComputer.form.introduced" /></label>
                                 <form:input type="date" name="introduced" path="introducedDate" class="form-control"
                                     id="introduced" placeholder="${introducedPlaceholder}" />
                                 <form:errors path="introducedDate" cssClass="error" />
+                                <span id="introducedError" class="collapse error">${dateError}</span>
                             </div>
                             <div class="form-group">
                                 <label for="discontinued"><spring:message code="editComputer.form.discontinued" /></label>
                                 <form:input type="date" name="discontinued" path="discontinuedDate" class="form-control"
                                     id="discontinued" placeholder="${discontinuedPlaceholder}" />
                                 <form:errors path="discontinuedDate" cssClass="error" />
+                                <span id="discontinuedError" class="collapse error">${dateError}</span>
                             </div>
                             <div class="form-group">
                                 <label for="companyId"><spring:message code="editComputer.form.company" /></label>
