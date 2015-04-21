@@ -26,10 +26,12 @@ import com.excilys.cdb.servlet.ViewConfig.EditComputer.Set;
 import com.excilys.cdb.validator.ComputerValidator;
 
 /**
- * Servlet implementation to handle 'edit computer' page.
+ * Servlet implementation to handle 'edit computer' page. Handle
+ * "Add computer url" ({@link #ViewConfig.AddComputer.MAPPING}) & "Edit computer url" (
+ * {@link #ViewConfig.EditComputer.MAPPING}).
  */
 @Controller
-@RequestMapping(value = ViewConfig.EditComputer.MAPPING)
+@RequestMapping()
 public class EditComputerServlet {
 
     /* ***
@@ -49,13 +51,57 @@ public class EditComputerServlet {
     }
 
     /**
+     * Go to "Add computer" JSP.
+     *
+     * @return
+     */
+    @RequestMapping(value = ViewConfig.AddComputer.MAPPING, method = RequestMethod.GET)
+    public ModelAndView gotoAdd() {
+
+        // fetch company list for <select>
+        final List<CompanyDto> companyDtos = mGetCompanyDtoList();
+
+        final ModelAndView mv = new ModelAndView(ViewConfig.AddComputer.MAPPING);
+
+        // set attributes & redirect to jsp.
+        mv.addObject(ViewConfig.AddComputer.Set.COMPANY_DTO_LIST, companyDtos);
+        // set an empty computerDto to hold form fields from POST.
+        mv.addObject(ViewConfig.AddComputer.Set.COMPUTER_DTO, new ComputerDto());
+        return mv;
+    }
+
+    @RequestMapping(value = ViewConfig.AddComputer.MAPPING, method = RequestMethod.POST)
+    public ModelAndView doAdd(@Valid @ModelAttribute(Get.COMPUTER_DTO) ComputerDto computerDto,
+            BindingResult bindingResult) {
+        ModelAndView mv;
+        if (bindingResult.hasErrors()) {
+            // some errors... Let validator fill error placeholders in JSP
+            // then keep editing this computer on this page.
+            mv = new ModelAndView(ViewConfig.AddComputer.MAPPING);
+
+            // fetch company list for <select>
+            final List<CompanyDto> companyDtos = mGetCompanyDtoList();
+
+            // set attributes & redirect to jsp.
+            mv.addObject(ViewConfig.AddComputer.Set.COMPUTER_DTO, computerDto);
+            mv.addObject(ViewConfig.AddComputer.Set.COMPANY_DTO_LIST, companyDtos);
+        } else {
+            mv = new ModelAndView("redirect:" + ViewConfig.Dashboard.MAPPING);
+            final Computer computer = computerDto.toComputer();
+            mComputerService.add(computer);
+        }
+
+        return mv;
+    }
+
+    /**
      * do the update & redirect to dashboard.
      *
      * @param computerDto
      * @param bindingResult
      * @return
      */
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(value = ViewConfig.EditComputer.MAPPING, method = RequestMethod.POST)
     public ModelAndView doUpdate(@Valid @ModelAttribute(Get.COMPUTER_DTO) ComputerDto computerDto,
             BindingResult bindingResult) {
 
@@ -71,7 +117,6 @@ public class EditComputerServlet {
             // set attributes & redirect to jsp.
             mv.addObject(Set.COMPUTER_DTO, computerDto);
             mv.addObject(Set.COMPANY_DTO_LIST, companyDtos);
-            return mv;
         } else {
             // no errors : update this computer...
             final Computer computer = computerDto.toComputer();
@@ -83,7 +128,7 @@ public class EditComputerServlet {
         return mv;
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value = ViewConfig.EditComputer.MAPPING, method = RequestMethod.GET)
     public ModelAndView gotoEdit(
             @RequestParam(value = Get.COMPUTER_ID, required = true) final Long computerId) {
 
@@ -100,6 +145,7 @@ public class EditComputerServlet {
         mv.addObject(Set.COMPANY_DTO_LIST, companyDtos);
         return mv;
     }
+
 
     private List<CompanyDto> mGetCompanyDtoList() {
         final List<CompanyDto> companyDtos = new LinkedList<CompanyDto>();

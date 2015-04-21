@@ -15,21 +15,25 @@ public final class ViewConfig {
         public static final String MAPPING = "/addComputer";
 
         public static class Get extends GetParam {
+            /** Computer dto to sent by the JSP. */
             public static final String COMPUTER_DTO = "computerDto";
         }
 
+        /** output parameters. */
         public static class Set extends SetParam {
+            /** company list for filling <select> in form. */
             public static final String COMPANY_DTO_LIST = "companyDtoList";
-            public static final String COMPUTER_DTO     = AddComputer.Get.COMPUTER_DTO;
+            /** Computer dto to be sent to JSP. */
+            public static final String COMPUTER_DTO     = EditComputer.Get.COMPUTER_DTO;
         }
 
     }
 
-    public static class EditComputer {
+    public static class EditComputer extends AddComputer {
         public static final String MAPPING = "/editComputer";
 
         /** input parameters. sent by JSP. */
-        public static final class Get extends GetParam {
+        public static final class Get extends AddComputer.Get {
             /** Id of computer to edit. */
             public static final String COMPUTER_ID      = "computerId";
             /** name of computer to update. */
@@ -40,18 +44,12 @@ public final class ViewConfig {
             public static final String COMPUTER_DISCONT = "discontinued";
             /** company id of computer to update. */
             public static final String COMPANY_ID       = "companyId";
-            /** Computer dto to sent by the JSP. */
-            public static final String COMPUTER_DTO     = "computerDto";
-
         }
 
-        /** output parameters. */
-        public static class Set extends SetParam {
-            /** company list for filling <select> in form. */
-            public static final String COMPANY_DTO_LIST = "companyDtoList";
-            /** Computer dto to be sent to JSP. */
-            public static final String COMPUTER_DTO     = EditComputer.Get.COMPUTER_DTO;
+        public static class Set extends AddComputer.Set {
         }
+
+
     }
 
     public static class SearchComputer extends Dashboard {
