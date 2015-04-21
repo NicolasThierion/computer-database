@@ -29,6 +29,7 @@ public final class ViewConfig {
 
     }
 
+
     public static class EditComputer extends AddComputer {
         public static final String MAPPING = "/editComputer";
 
@@ -82,6 +83,15 @@ public final class ViewConfig {
             public static final String PAGE_BEAN = Get.PAGE_BEAN;
         }
 
+    }
+
+    public static class LocaleChanger {
+        public static final String MAPPING = "/changeLang";
+
+        public static class Get extends GetParam {
+            public static final String LANG     = "lang";
+            public static final String REDIRECT = "redirect";
+        }
     }
 
     public abstract static class SetParam {
