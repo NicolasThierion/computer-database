@@ -22,9 +22,9 @@
                     <h1>
                         <spring:message code="editComputer.form.title" />
                     </h1>
-                    <spring:message code="editComputer.form.namePlaceholder" var="namePlaceholder" />
-                    <spring:message code="editComputer.form.introducedPlaceholder" var="introducedPlaceholder" />
-                    <spring:message code="editComputer.form.discontinuedPlaceholder" var="discontinuedPlaceholder" />
+                    <spring:message code="editComputer.form.placeholder.name" var="namePlaceholder" />
+                    <spring:message code="editComputer.form.placeholder.introduced" var="introducedPlaceholder" />
+                    <spring:message code="editComputer.form.placeholder.discontinued" var="discontinuedPlaceholder" />
                     <spring:message code="computer.error.name.valid" var="nameError" />
                     <spring:message code="dates.error.valid" var="dateError" />
                     <form:form id="editComputer" method="POST" action="editComputer" modelAttribute="computerDto"

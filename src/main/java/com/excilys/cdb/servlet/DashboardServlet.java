@@ -56,6 +56,11 @@ public class DashboardServlet {
         List<Computer> computers = new LinkedList<Computer>();
 
         final String queryName = page.getSearch();
+        // redirect to dashboard if no query supplied
+        if (queryName == null) {
+            return gotoDashboard(page);
+        }
+
         int offset = page.getOffset();
         final int pageSize = page.getSize();
 

@@ -23,12 +23,9 @@
                     <h1>
                         <spring:message code="addComputer.form.title" />
                     </h1>
-                    <spring:message code="editComputer.form.namePlaceholder"
-                        var="namePlaceholder" />
-                    <spring:message code="editComputer.form.introducedPlaceholder"
-                        var="introducedPlaceholder" />
-                    <spring:message code="editComputer.form.discontinuedPlaceholder"
-                        var="discontinuedPlaceholder" />
+                    <spring:message code="editComputer.form.placeholder.name" var="namePlaceholder" />
+                    <spring:message code="editComputer.form.placeholder.introduced" var="introducedPlaceholder" />
+                    <spring:message code="editComputer.form.placeholder.discontinued" var="discontinuedPlaceholder" />
                     <form:form id="addComputer" method="POST" action="addComputer" modelAttribute="computerDto">
                         <fieldset>
                             <div class="form-group">

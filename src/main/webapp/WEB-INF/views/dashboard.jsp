@@ -33,16 +33,26 @@
 <body>
     <!-- header -->
     <%@include file="/WEB-INF/partials/header.jsp" %>
+    <spring:message code="dashboard.n_computers_found" var="msg_computersFound" />
+    <spring:message code="dashboard.button.addComputer" var="msg_addComputer" />
+    <spring:message code="dashboard.button.editComputer" var="msg_editComputer" />
+    <spring:message code="dashboard.button.filterByName" var="msg_filterByName" />
+    <spring:message code="dashboard.computerName" var="msg_computerName" />
+    <spring:message code="dashboard.computerIntroduced" var="msg_computerIntroduced" />
+    <spring:message code="dashboard.computerDiscontinued" var="msg_computerDiscontinued" />
+    <spring:message code="dashboard.company" var="msg_company" />
+
+    <spring:message code="dashboard.placeholder.searchName" var="placeholder_searchName" />
     <!-- main -->
     <section id="main">
         <div class="container">
             <!-- main title : count search results. -->
-            <h1 id="homeTitle">${resultsCount} Computers found</h1>
+            <h1 id="homeTitle">${resultsCount} ${msg_computersFound}</h1>
             <div id="actions" class="form-horizontal">
                 <div class="pull-left">
                     <form id="searchForm" action="searchComputer" method="GET" class="form-inline">
-                        <input type="search" id="searchbox" name="search" class="form-control" placeholder="Search name" value="${search}" />
-                        <input type="submit" id="searchsubmit" value="Filter by name" class="btn btn-primary" />
+                        <input type="search" id="searchbox" name="search" class="form-control" placeholder="${placeholder_searchName}" value="${search}" />
+                        <input type="submit" id="searchsubmit" value="${msg_filterByName }" class="btn btn-primary" />
                         <input type="hidden" name="offset" value="${pageBean.offset}"/>
                         <input type="hidden" name="sortBy" value="${pageBean.sortBy}"/>
                         <input type="hidden" name="order" value="${pageBean.sortOrder}"/>
@@ -50,8 +60,8 @@
                     </form>
                 </div>
                 <div class="pull-right">
-                    <a class="btn btn-success" id="addComputer" href="addComputer">Add Computer</a> <a
-                        class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();">Edit</a>
+                    <a class="btn btn-success" id="addComputer" href="addComputer">${msg_addComputer}</a> <a
+                        class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();">${msg_editComputer}</a>
                 </div>
             </div>
         </div>
@@ -75,12 +85,12 @@
                                 id="deleteSelected" onclick="$.fn.deleteSelected();"> <i class="fa fa-trash-o fa-lg"></i>
                             </a>
                         </span></th>
-                        <th><a onclick="$.fn.toggleSortBy('computer')">Computer name</a></th>
-                        <th>Introduced date</th>
+                        <th><a onclick="$.fn.toggleSortBy('computer')">${msg_computerName}</a></th>
+                        <th>${msg_computerIntroduced}</th>
                         <!-- Table header for Discontinued Date -->
-                        <th>Discontinued date</th>
+                        <th>${msg_computerDiscontinued}</th>
                         <!-- Table header for Company -->
-                        <th>Company</th>
+                        <th>${msg_company}</th>
                     </tr>
                 </thead>
                 <!-- Browse attribute computers -->
