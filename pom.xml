@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -6,16 +7,29 @@
     <groupId>com.excilys.cdb</groupId>
     <artifactId>computer-database</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
 
     <name>computer-database</name>
     <url>http://maven.apache.org</url>
+    <packaging>pom</packaging>
+
+    <!-- cdb modules definition -->
+    <modules>
+        <module>computer-database-service</module>
+        <module>computer-database-dao</module>
+        <module>computer-database-webapp</module>
+        <module>computer-database-cli</module>
+        <module>computer-database-binding</module>
+        <module>computer-database-core</module>
+    </modules>
 
     <!-- project properties -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jreSource>1.8</jreSource>
         <jreTarget>1.8</jreTarget>
+
+        <project.groupId>com.excilys.cdb</project.groupId>
+        <project.version>1.0-SNAPSHOT</project.version>
 
         <!-- dependencies versions -->
         <junit.version>4.12</junit.version>
@@ -37,20 +51,98 @@
         <apache.commons.commons-validator>1.4.1</apache.commons.commons-validator>
     </properties>
 
+    <!-- dependencies management -->
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- computer-database modules -->
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>computer-database-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>computer-database-dao</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>computer-database-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>computer-database-binding</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- db driver -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-dbcp2</artifactId>
+                <version>${apache.commons.dbcp2.version}</version>
+            </dependency>
+
+            <!-- MySQL Connect -->
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql.connector.version}</version>
+            </dependency>
+
+            <!-- JUnit -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+
+            <!-- Selenium -->
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-java</artifactId>
+                <version>${selenium.version}</version>
+            </dependency>
+
+            <!-- Servlets -->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>${javax.servlet.servlet-api.version}</version>
+            </dependency>
+
+            <!-- taglib -->
+            <dependency>
+                <groupId>taglibs</groupId>
+                <artifactId>standard</artifactId>
+                <version>${taglib.version}</version>
+            </dependency>
+
+            <!-- jstl -->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>jstl</artifactId>
+                <version>${javax.servlet.jstl.version}</version>
+            </dependency>
+
+
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
+
+        <!-- db driver -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-dbcp2</artifactId>
+        </dependency>
+        
         <!-- JUnit -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
             <scope>test</scope>
-        </dependency>
-
-        <!-- MySQL Connect -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql.connector.version}</version>
         </dependency>
 
         <!-- SLF4j api -->
@@ -81,78 +173,6 @@
             <version>${log4jdbc.version}</version>
         </dependency>
 
-        <!-- Mockito -->
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>${mockito.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Servlets -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>${javax.servlet.servlet-api.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- taglib -->
-        <dependency>
-            <groupId>taglibs</groupId>
-            <artifactId>standard</artifactId>
-            <version>${taglib.version}</version>
-        </dependency>
-
-        <!-- jstl -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>jstl</artifactId>
-            <version>${javax.servlet.jstl.version}</version>
-        </dependency>
-
-        <!-- Selenium -->
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-java</artifactId>
-            <version>${selenium.version}</version>
-        </dependency>
-
-        <!-- BoneCP -->
-        <dependency>
-            <groupId>com.jolbox</groupId>
-            <artifactId>bonecp</artifactId>
-            <version>${bonecp.version}</version>
-        </dependency>
-
-        <!-- Validation -->
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>${javax.validation.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-validator</groupId>
-            <artifactId>commons-validator</artifactId>
-            <version>${apache.commons.commons-validator}</version>
-        </dependency>
-
-
-        <!-- db driver -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-dbcp2</artifactId>
-            <version>${apache.commons.dbcp2.version}</version>
-        </dependency>
-
-        <!-- Hibernate Validator -->
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <version>${hibernate.validator.version}</version>
-        </dependency>
-
         <!-- Spring & modules -->
         <!-- Spring framework -->
         <dependency>
@@ -171,19 +191,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>${spring.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>org.slf4j12</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <!-- Spring jdbc -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
             <version>${spring.version}</version>
             <exclusions>
                 <exclusion>
@@ -229,6 +236,13 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- Hibernate Validator -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${hibernate.validator.version}</version>
+        </dependency>
+
 
     </dependencies>
 
@@ -247,7 +261,6 @@
             </plugin>
         </plugins>
     </build>
-
 
 
 </project>
