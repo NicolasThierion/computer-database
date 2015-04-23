@@ -45,6 +45,25 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
+        <!-- Servlets -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Persistence -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+        </dependency>
+    
+        <!-- local session factory -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+        </dependency>
     </dependencies>
 
 

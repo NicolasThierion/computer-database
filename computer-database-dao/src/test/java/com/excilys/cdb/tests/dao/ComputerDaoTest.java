@@ -209,7 +209,7 @@ public class ComputerDaoTest {
         // update its properties.
         computer.setName(computerName);
         computer.setReleaseDate(releaseDate);
-        computer.setDiscontDate(discontinuedDate);
+        computer.setDiscontinuedDate(discontinuedDate);
         computer.setCompany(company);
         mComputerDao.update(computer);
 

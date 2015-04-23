@@ -11,17 +11,31 @@ import java.util.Map;
 
 import com.excilys.cdb.persistence.ConnectionFactory;
 
-public final class SqlUtils {
-    /** where SQL scripts are stored. */
+public final class QueryUtils {
+    /**
+     * where SQL scripts are stored.
+     *
+     * @deprecated should now use HQL queries instead of SQL ones.
+     */
+    @Deprecated
     private static final String SQL_DIR = "/sql";
 
-    private SqlUtils() {
+    /** where HQL scripts are stored. */
+    private static final String HQL_DIR = "/hql";
+
+    private QueryUtils() {
 
     }
 
-    public static void loadSqlQuery(String sqlFileName, Map<String, String> queriesMap) throws IOException {
+    // TODO remove SQL support
+    public static void loadQuery(String sqlOrHqlFileName, Map<String, String> queriesMap) throws IOException {
 
-        final InputStream fis = SqlUtils.class.getResourceAsStream(SQL_DIR + "/" + sqlFileName);
+        InputStream fis = null;
+        if (sqlOrHqlFileName.endsWith(".sql")) {
+            fis = QueryUtils.class.getResourceAsStream(SQL_DIR + "/" + sqlOrHqlFileName);
+        } else if (sqlOrHqlFileName.endsWith(".hql")) {
+            fis = QueryUtils.class.getResourceAsStream(HQL_DIR + "/" + sqlOrHqlFileName);
+        }
         BufferedReader br = null;
 
         // read file into a string.
@@ -35,7 +49,7 @@ public final class SqlUtils {
         }
 
         // store this string into queries map
-        queriesMap.put(sqlFileName, strBuilder.toString());
+        queriesMap.put(sqlOrHqlFileName, strBuilder.toString());
 
         br.close();
         fis.close();
