@@ -159,7 +159,7 @@ public class Computer implements Serializable, Identifiable<Long> {
     }
 
     /* ***
-     * ACCESSORS
+     * GETTERS
      */
     /**
      * May return null if this is a new computer, that has not yet been added to
@@ -172,12 +172,60 @@ public class Computer implements Serializable, Identifiable<Long> {
         return mId;
     }
 
-    public void setId(Long id) {
-        mId = id;
-    }
-
     public String getName() {
         return mName;
+    }
+
+    /**
+     * Same as {@link #getManufacturer()}.
+     *
+     * @return the manufacturer of this computer.
+     */
+    public Company getCompany() {
+        return mCompany;
+    }
+
+    public Company getManufacturer() {
+        return getCompany();
+    }
+
+    /**
+     * Get introduced date.
+     *
+     * @return
+     */
+    public LocalDate getIntroduced() {
+        return getReleaseDate();
+    }
+
+    /**
+     * @deprecated @see {@link #getIntroduced()}
+     * @return
+     */
+    @Deprecated
+    public LocalDate getReleaseDate() {
+        return mReleaseDate;
+    }
+
+    public LocalDate getDiscontinued() {
+        return mDiscDate;
+    }
+
+    /**
+     * @deprecated @see {@link #getDiscontinued()}
+     * @return
+     */
+    @Deprecated
+    public LocalDate getDiscontinuedDate() {
+        return getDiscontinued();
+    }
+
+    /* ***
+     * SETTERS
+     */
+
+    public void setId(Long id) {
+        mId = id;
     }
 
     /**
@@ -194,15 +242,6 @@ public class Computer implements Serializable, Identifiable<Long> {
     }
 
     /**
-     * Same as {@link #getManufacturer()}.
-     *
-     * @return the manufacturer of this computer.
-     */
-    public Company getCompany() {
-        return mCompany;
-    }
-
-    /**
      * Same as {@link #setManufacturer(Company)}.
      *
      * @param company
@@ -212,33 +251,32 @@ public class Computer implements Serializable, Identifiable<Long> {
         mCompany = company;
     }
 
-    public Company getManufacturer() {
-        return getCompany();
-    }
-
     public void setManufacturer(Company company) {
         setCompany(company);
     }
 
-    public LocalDate getReleaseDate() {
-        return mReleaseDate;
-    }
 
     /**
      *
-     * @param releaseDate
+     * @param introduced
      * @throws IllegalArgumentException
-     *             if date provided is posterior to discontinuation date.
+     *             if date provided is posterior to discontinued date.
      */
-    public void setReleaseDate(LocalDate releaseDate) throws IllegalArgumentException {
-        if (mDiscDate != null && releaseDate != null && releaseDate.compareTo(mDiscDate) > 0) {
+    public void setIntroduced(LocalDate introduced) throws IllegalArgumentException {
+        if (mDiscDate != null && introduced != null && introduced.compareTo(mDiscDate) > 0) {
             throw new IllegalArgumentException("release date must be prior to release date");
         }
-        mReleaseDate = releaseDate;
+        mReleaseDate = introduced;
     }
 
-    public LocalDate getDiscontinuedDate() {
-        return mDiscDate;
+    /**
+     * @deprecated @see {@link #setIntroduced(LocalDate)}
+     * @param releaseDate
+     * @throws IllegalArgumentException
+     */
+    @Deprecated
+    public void setReleaseDate(LocalDate releaseDate) throws IllegalArgumentException {
+        setIntroduced(releaseDate);
     }
 
     /**
@@ -247,12 +285,21 @@ public class Computer implements Serializable, Identifiable<Long> {
      * @throws IllegalArgumentException
      *             if date provided is prior to release date.
      */
-    public void setDiscontDate(LocalDate discontDate) throws IllegalArgumentException {
-
-        if (mReleaseDate != null && discontDate != null && discontDate.compareTo(mReleaseDate) < 0) {
+    public void setDisontinued(LocalDate discontinued) throws IllegalArgumentException {
+        if (mReleaseDate != null && discontinued != null && discontinued.compareTo(mReleaseDate) < 0) {
             throw new IllegalArgumentException("Discontinuation date must be posterior to release date");
         }
-        mDiscDate = discontDate;
+        mDiscDate = discontinued;
+    }
+
+    /**
+     * @deprecated @see {@link #setDisontinued(LocalDate)}
+     * @param discontDate
+     * @throws IllegalArgumentException
+     */
+    @Deprecated
+    public void setDiscontinuedDate(LocalDate discontDate) throws IllegalArgumentException {
+        setDisontinued(discontDate);
     }
 
     /**
@@ -260,8 +307,10 @@ public class Computer implements Serializable, Identifiable<Long> {
      * a non-null & non-empty name, optional release & discontinued dates must
      * be temporally coherent.
      *
+     * @deprecated better use {@link #ComputerValidator}
      * @return true if the computer is valid.
      */
+    @Deprecated
     public boolean isValid() {
         boolean res = (mId != null && mId > 0);
         if (res && mName != null) {
