@@ -8,7 +8,6 @@ import java.sql.SQLException;
  * loads the fiels from a ResultSet & create the corresponding Model Object.
  *
  * @author Nicolas THIERION.
- *
  * @param <T>
  */
 public interface EntityMapper<T> {

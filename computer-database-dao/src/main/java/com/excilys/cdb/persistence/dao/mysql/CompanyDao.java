@@ -2,90 +2,102 @@ package com.excilys.cdb.persistence.dao.mysql;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.EntityField;
-import com.excilys.cdb.persistence.ConnectionFactory;
 import com.excilys.cdb.persistence.dao.DaoException;
 import com.excilys.cdb.persistence.dao.DaoException.ErrorType;
 import com.excilys.cdb.persistence.dao.ICompanyDao;
-import com.excilys.cdb.persistence.mapper.CompanyMapper;
 
 /**
  * MySQL immplementation of ICompanyDao.
  *
  * @author Nicolas THIERION
- * @version 0.2.0
+ * @version 0.3.0
  */
 @Repository("companyDao")
-public final class CompanyDao implements ICompanyDao {
+public class CompanyDao implements ICompanyDao {
 
     /* ***
      * DB REQUESTS
      */
     /** various sql script user to build preparedStatements. */
-    private static final String REQ_SELECT_COMPANIES_FILENAME = "select_companies_paging.sql";
-    private static final String REQ_COUNT_COMPANIES_FILENAME  = "select_company_count.sql";
-    private static final String REQ_INSERT_COMPANY_FILENAME   = "insert_company.sql";
-    private static final String REQ_DELETE_COMPANY_FILENAME   = "delete_company_with_id.sql";
+    private static final String REQ_SELECT_COMPANIES_FILENAME = "select_companies.hql";
+    private static final String REQ_COUNT_COMPANIES_FILENAME  = "select_company_count.hql";
+    private static final String REQ_DELETE_COMPANY_FILENAME   = "delete_company_with_id.hql";
 
     /* ***
      * ATTRIBUTES
      */
     /** Singleton's instance. */
-    private static CompanyDao   mInstance                     = null;
     private Map<String, String> mQueryStrings;
 
-    /** db connection. */
+    /** provides a session to submit HQL queries to datasource. */
     @Autowired
-    private JdbcTemplate        jdbcTemplate;
+    private SessionFactory      mSessionFactory;
+
 
     /* ***
      * CONSTRUCTORS / DESTRUCTORS
      */
-    private CompanyDao() {
-        mLoadSqlQueries();
+
+    /**
+     * Default constructor. Create an empty CompanyDao. This Dao is not usable
+     * until a valid SessionFactoryt has been set. A valid SessionFactory is a
+     * SessionFactory that has access to DB. It will be used to submit query to
+     * DB.
+     */
+    public CompanyDao() {
+        mLoadHqlQueries();
     }
 
     /**
+     * Constructor with argument. Create a new CompanyDao that will use the
+     * given SessionFactory to submid query to the DB.
      *
+     * @param sessionFactory
+     *            SessionFactory to access the DB.
+     */
+    public CompanyDao(SessionFactory sessionFactory) {
+        mLoadHqlQueries();
+        mSessionFactory = sessionFactory;
+    }
+
+    /* ***
+     * ACCESSORS
+     */
+    public void setSessionFactory(SessionFactory sessionFactory) {
+        mSessionFactory = sessionFactory;
+    }
+
+
+    /**
+     * @deprecated this is no more a singleton.
      * @return unique instance of DAO.
      */
+    @Deprecated
     public static CompanyDao getInstance() {
-        synchronized (CompanyDao.class) {
-            if (mInstance == null) {
-                mInstance = new CompanyDao();
-            }
-        }
-        return mInstance;
+        return new CompanyDao();
     }
 
     /* ***
      * DAO SERVICES
      */
-
-
+    @SuppressWarnings("unchecked")
     @Override
     public List<Company> listEqual(EntityField<Company> field, String value, int offset, int count) {
 
-        Connection dbConn = null;
-        PreparedStatement selectCompaniesStatement = null;
-        ResultSet result = null;
-        final List<Company> resList = new LinkedList<Company>();
-
+        List<Company> resList;
         // check offset parameter
         if (offset < 0) {
             throw new IllegalArgumentException("search offset cannot be negative");
@@ -96,124 +108,74 @@ public final class CompanyDao implements ICompanyDao {
             throw new IllegalArgumentException("name cannot be null");
         }
 
+        // check field validity
+        mCheckField(field);
+
         count = (count < 0 ? Integer.MAX_VALUE : count);
-        try {
-            // get a connection & prepare needed statement
-            dbConn = ConnectionFactory.getInstance().getConnection();
-            String sqlStr = mQueryStrings.get(REQ_SELECT_COMPANIES_FILENAME);
-            sqlStr = String.format(sqlStr, field.getLabel(), field.getLabel());
-            selectCompaniesStatement = dbConn.prepareStatement(sqlStr);
 
-            // set range parameters
-            int colId = 1;
-            selectCompaniesStatement.setString(colId++, value);
-            selectCompaniesStatement.setInt(colId++, offset);
-            selectCompaniesStatement.setInt(colId++, count);
+        // get a connection & prepare needed statement
 
-            // exec query
-            result = selectCompaniesStatement.executeQuery();
-            // parse resultSet to build the list of computers.
-            while (result.next()) {
+        // get HQL query string & format it
+        String hqlStr = mQueryStrings.get(REQ_SELECT_COMPANIES_FILENAME);
+        // place field criteria & order by hand...
+        hqlStr = String.format(hqlStr, field.getLabel(), field.getLabel());
+        final Query query = mGetCurrentSession().createQuery(hqlStr);
 
-                // get company name;
-                final CompanyMapper companyMap = new CompanyMapper();
-                final Company company = companyMap.fromResultSet(result);
-                resList.add(company);
-            }
-        } catch (final SQLException e) {
-            throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
-        } finally {
-            SqlUtils.safeCloseAll(dbConn, selectCompaniesStatement, result);
-        }
+        query.setString("value", value);
+
+        // set range parameters
+        query.setFirstResult(offset).setMaxResults(count);
+        // execute the query
+
+        resList = query.list();
         return resList;
     }
 
-
     @Override
     public int getCount() {
-        return getCountLike(CompanyMapper.Field.ID, "");
+        return getCountLike(CompanyField.ID, "");
     }
 
     @Override
     public int getCountEqual(EntityField<Company> field, String value) throws IllegalArgumentException {
-        Connection dbConn = null;
-        PreparedStatement countCompaniesStatement = null;
-        ResultSet result = null;
-
-        String sqlStr = mQueryStrings.get(REQ_COUNT_COMPANIES_FILENAME);
-        sqlStr = String.format(sqlStr, field.getLabel());
-
         // check name parameter
         if (value == null) {
             throw new IllegalArgumentException("Company name cannot be null");
         }
-        int count = 0;
-        try {
-            // get a connection & prepare needed statement
-            dbConn = ConnectionFactory.getInstance().getConnection();
-            countCompaniesStatement = dbConn.prepareStatement(sqlStr);
-            countCompaniesStatement.setString(1, value);
-            result = countCompaniesStatement.executeQuery();
-            while (result.next()) {
-                count = result.getInt(1);
-            }
-        } catch (final SQLException e) {
-            throw new DaoException(e.getMessage(), DaoException.ErrorType.SQL_ERROR);
-        } finally {
-            SqlUtils.safeCloseAll(dbConn, countCompaniesStatement, result);
-        }
-        return count;
+        // check field validity
+        mCheckField(field);
+
+        // get HQL query string & format it
+        String hqlStr = mQueryStrings.get(REQ_COUNT_COMPANIES_FILENAME);
+        // place field criteria by hand...
+        hqlStr = String.format(hqlStr, field.getLabel());
+        final Query query = mGetCurrentSession().createQuery(hqlStr);
+
+        query.setString("value", value);
+
+        // execute the query
+        final Long count = (Long) query.uniqueResult();
+        return count.intValue();
     }
 
     @Override
     public Company add(Company company) {
-        Connection dbConn = null;
-        PreparedStatement insertCompanyStatement = null;
-        ResultSet result = null;
-        final String sqlStr = mQueryStrings.get(REQ_INSERT_COMPANY_FILENAME);
-        try {
-            // get a connection & prepare needed statement
-            dbConn = ConnectionFactory.getInstance().getConnection();
-            insertCompanyStatement = dbConn.prepareStatement(sqlStr, PreparedStatement.RETURN_GENERATED_KEYS);
 
-            // ensure that we are attempting to add a NEW computer (with id
-            // field = null)"
-            final Long id = company.getId();
-            if (id != null) {
-                throw new IllegalArgumentException("Trying to add a company : " + company
-                        + " with non-blank field \"company id\"");
-            }
-
-            // build SQL request :
-            // INSERT INTO computer (name, introduced, discontinued, company_id)
-            // get computer properties
-
-            final CompanyMapper h = new CompanyMapper();
-            h.fromEntity(company);
-
-            int colId = 1;
-            insertCompanyStatement.setString(colId++, h.getName());
-
-            if (insertCompanyStatement.executeUpdate() != 1) {
-                throw new DaoException(
-                        "Something went wrong when adding company " + company
-                        + ". No changes commited.", ErrorType.SQL_ERROR);
-            }
-
-            // get generated id...
-            result = insertCompanyStatement.getGeneratedKeys();
-            if (result.next()) {
-                // & update this computer with new generated id.
-                company.setId(result.getLong(1));
-            }
-            result.close();
-            return company;
-        } catch (final SQLException e) {
-            throw new DaoException("Something went wrong when adding company " + company + " : " + e.getMessage(),
-                    ErrorType.UNKNOWN_ERROR);
-        } finally {
-            SqlUtils.safeCloseAll(dbConn, insertCompanyStatement, result);
+        // ensure that we are attempting to add a NEW computer (with id
+        // field = null)"
+        final Long id = company.getId();
+        if (id != null) {
+            throw new IllegalArgumentException("Trying to add a company : " + company
+                    + " with non-blank field \"company id\"");
         }
+        mGetCurrentSession().save(company);
+        // save computer
+        if (company.getId() == null || company.getId() == 0) {
+            throw new DaoException(new StringBuilder().append("Something went wrong when adding company ")
+                    .append(company).append(". No changes commited.").toString(), ErrorType.SQL_ERROR);
+        }
+
+        return company;
     }
 
     /**
@@ -225,45 +187,48 @@ public final class CompanyDao implements ICompanyDao {
      */
     @Override
     public void delete(Long id) throws DaoException, IllegalArgumentException {
-        Connection dbConn = null;
-        PreparedStatement deleteCompanyStatement = null;
+
         // Delete computer by id : ensure computer has id != null
         if (id == null) {
             throw new IllegalArgumentException("Company id is null. Cannot delete this company");
         }
-        final String sqlStr = mQueryStrings.get(REQ_DELETE_COMPANY_FILENAME);
-        try {
-            // get a connection & prepare needed statement
-            dbConn = ConnectionFactory.getInstance().getConnection();
-            deleteCompanyStatement = dbConn.prepareStatement(sqlStr);
 
-            deleteCompanyStatement.setLong(1, id);
-            if (deleteCompanyStatement.executeUpdate() != 1) {
-                throw new NoSuchElementException("Something went wrong while deleting company no " + id
-                        + ". Maybe this company doesn't exist?");
-            }
-        } catch (final SQLException e) {
-            throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
-        } finally {
-            SqlUtils.safeCloseAll(dbConn, deleteCompanyStatement, null);
+        final String hqlStr = mQueryStrings.get(REQ_DELETE_COMPANY_FILENAME);
+        final Query query = mGetCurrentSession().createQuery(hqlStr);
+        query.setParameter("id", id);
+
+        if (query.executeUpdate() != 1) {
+            throw new NoSuchElementException("Something went wrong while deleting company no " + id
+                    + ". Maybe this company doesn't exist?");
         }
     }
 
     /* ***
      * PRIVATE METHODS
      */
+    private Session mGetCurrentSession() {
+        if (mSessionFactory == null || mSessionFactory.isClosed()) {
+            throw new InstantiationError("No session has been given to this dao. Abording...");
+        }
+        return mSessionFactory.getCurrentSession();
+    }
 
-    private void mLoadSqlQueries() {
+    private void mLoadHqlQueries() {
         mQueryStrings = new HashMap<String, String>();
         new File(".").getAbsolutePath();
         try {
-            SqlUtils.loadSqlQuery(REQ_SELECT_COMPANIES_FILENAME, mQueryStrings);
-            SqlUtils.loadSqlQuery(REQ_COUNT_COMPANIES_FILENAME, mQueryStrings);
-            SqlUtils.loadSqlQuery(REQ_INSERT_COMPANY_FILENAME, mQueryStrings);
-            SqlUtils.loadSqlQuery(REQ_DELETE_COMPANY_FILENAME, mQueryStrings);
+            QueryUtils.loadHqlQuery(REQ_SELECT_COMPANIES_FILENAME, mQueryStrings);
+            QueryUtils.loadHqlQuery(REQ_COUNT_COMPANIES_FILENAME, mQueryStrings);
+            QueryUtils.loadHqlQuery(REQ_DELETE_COMPANY_FILENAME, mQueryStrings);
 
         } catch (final IOException e) {
             throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
+        }
+    }
+
+    private void mCheckField(EntityField<Company> field) {
+        if (!(field instanceof CompanyField)) {
+            throw new IllegalArgumentException("Field must be of type " + CompanyField.class.getName());
         }
     }
 }

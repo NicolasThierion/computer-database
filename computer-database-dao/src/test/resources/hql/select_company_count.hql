@@ -1,3 +1,3 @@
-SELECT COUNT(company.id) AS count
+SELECT COUNT(*) AS count
 FROM Company company
-WHERE UPPER(:criteria) LIKE :value
+WHERE UPPER(%s) LIKE :value

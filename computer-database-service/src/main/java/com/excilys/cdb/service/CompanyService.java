@@ -15,9 +15,9 @@ import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.ConnectionFactory;
 import com.excilys.cdb.persistence.Transaction;
 import com.excilys.cdb.persistence.dao.ICompanyDao;
+import com.excilys.cdb.persistence.dao.ICompanyDao.CompanyField;
 import com.excilys.cdb.persistence.dao.IComputerDao;
-import com.excilys.cdb.persistence.mapper.CompanyMapper;
-import com.excilys.cdb.persistence.mapper.ComputerMapper;
+import com.excilys.cdb.persistence.dao.IComputerDao.ComputerField;
 
 /**
  * Spring-autowired Company service. Offers CRUD services for companies.
@@ -123,13 +123,13 @@ public class CompanyService implements ICompanyService {
 
     @Override
     public List<Company> listLikeName(int offset, int count, String name) {
-        return mCompanyDao.listLike(CompanyMapper.Field.NAME, name, offset, count);
+        return mCompanyDao.listLike(CompanyField.NAME, name, offset, count);
     }
 
     @Override
     public List<Company> listByName(int begin, int nb) {
         LOG.info("listByName(" + begin + ", " + nb + ")");
-        return mCompanyDao.listBy(CompanyMapper.Field.NAME, begin, nb);
+        return mCompanyDao.listBy(CompanyField.NAME, begin, nb);
     }
 
     @Override
@@ -140,7 +140,7 @@ public class CompanyService implements ICompanyService {
     @Override
     public int getCount(String name) {
         LOG.info("getCount(" + name + ")");
-        return mCompanyDao.getCountEqual(CompanyMapper.Field.NAME, name);
+        return mCompanyDao.getCountEqual(CompanyField.NAME, name);
     }
 
     @Override
@@ -159,7 +159,7 @@ public class CompanyService implements ICompanyService {
             throw new IllegalArgumentException("Company id must be positive");
         }
 
-        final List<Company> list = mCompanyDao.listLike(CompanyMapper.Field.ID, "" + companyId);
+        final List<Company> list = mCompanyDao.listLike(CompanyField.ID, "" + companyId);
         return (list.size() == 0 ? null : list.get(0));
     }
 
@@ -185,7 +185,8 @@ public class CompanyService implements ICompanyService {
             try {
                 try {
                     transaction.begin();
-                    final List<Computer> computers = mComputerDao.listEqual(ComputerMapper.Field.COMPANY_ID,
+                    final List<Computer> computers = mComputerDao
+                            .listEqual(ComputerField.COMPANY_ID,
                             Long.toString(id));
                     // delete all computers that matches this company...
                     for (final Computer computer : computers) {

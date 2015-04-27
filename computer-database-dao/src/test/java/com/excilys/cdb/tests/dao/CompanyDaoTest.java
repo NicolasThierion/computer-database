@@ -5,13 +5,15 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.persistence.dao.ICompanyDao;
-import com.excilys.cdb.persistence.dao.mysql.CompanyDao;
-import com.excilys.cdb.persistence.mapper.CompanyMapper;
+import com.excilys.cdb.persistence.dao.ICompanyDao.CompanyField;
 
 /**
  * Unit test for ComputerDao methods.
@@ -20,18 +22,13 @@ import com.excilys.cdb.persistence.mapper.CompanyMapper;
  * @version 0.2.0
  *
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"/applicationContext.xml"})
 public class CompanyDaoTest {
 
     /** Company Dao used for this tests. */
+    @Autowired
     private ICompanyDao  mCompanyDao;
-
-    /**
-     * init Company Dao.
-     */
-    @Before
-    public final void init() {
-        mCompanyDao = CompanyDao.getInstance();
-    }
 
     /**
      * Test of CompanyDao.listBy().
@@ -41,24 +38,24 @@ public class CompanyDaoTest {
 
         List<Company> list;
         //test list construction of various size
-        for (final int count : new int[] {2, mCompanyDao.getCount(), 0}) {
-            list = mCompanyDao.listBy(CompanyMapper.Field.NAME, 0, count);
+        for (final int count : new int[] {2, mCompanyDao.getCount()}) {
+            list = mCompanyDao.listBy(CompanyField.NAME, 0, count);
             assertTrue(list.size() == count);
         }
 
         //test list construction out of bounds
-        list = mCompanyDao.listBy(CompanyMapper.Field.NAME, mCompanyDao.getCount(), mCompanyDao.getCount());
+        list = mCompanyDao.listBy(CompanyField.NAME, mCompanyDao.getCount(), mCompanyDao.getCount());
         assertTrue(list.size() == 0);
 
         final int count = mCompanyDao.getCount();
-        list = mCompanyDao.listBy(CompanyMapper.Field.NAME, 0, count + 2);
+        list = mCompanyDao.listBy(CompanyField.NAME, 0, count + 2);
         assertTrue(list.size() == count);
 
         // negative offset
         boolean passed = true;
         try {
             final int invalidOffset = -1;
-            list = mCompanyDao.listBy(CompanyMapper.Field.NAME, invalidOffset, count + 2);
+            list = mCompanyDao.listBy(CompanyField.NAME, invalidOffset, count + 2);
         } catch (final IllegalArgumentException e) {
             passed = false;
         }
@@ -72,7 +69,7 @@ public class CompanyDaoTest {
     public final void testListLikeName() {
 
         final String name = "Apple";
-        final List<Company> list = mCompanyDao.listLike(CompanyMapper.Field.NAME, name);
+        final List<Company> list = mCompanyDao.listLike(CompanyField.NAME, name);
         assertTrue(list.size() == 1);
     }
 
@@ -82,11 +79,11 @@ public class CompanyDaoTest {
     @Test
     public final void testListEqualId() {
 
-        List<Company> list = mCompanyDao.listEqual(CompanyMapper.Field.ID, "1");
+        List<Company> list = mCompanyDao.listEqual(CompanyField.ID, "1");
         assertTrue(list.size() == 1);
-        list = mCompanyDao.listEqual(CompanyMapper.Field.ID, "" + Long.MAX_VALUE);
+        list = mCompanyDao.listEqual(CompanyField.ID, "" + Long.MAX_VALUE);
         assertTrue(list.size() == 0);
-        list = mCompanyDao.listLike(CompanyMapper.Field.ID, "1");
+        list = mCompanyDao.listLike(CompanyField.ID, "1");
         assertTrue(list.size() > 1);
     }
 

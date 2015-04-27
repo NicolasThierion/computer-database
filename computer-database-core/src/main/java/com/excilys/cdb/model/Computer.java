@@ -285,7 +285,7 @@ public class Computer implements Serializable, Identifiable<Long> {
      * @throws IllegalArgumentException
      *             if date provided is prior to release date.
      */
-    public void setDisontinued(LocalDate discontinued) throws IllegalArgumentException {
+    public void setDiscontinued(LocalDate discontinued) throws IllegalArgumentException {
         if (mReleaseDate != null && discontinued != null && discontinued.compareTo(mReleaseDate) < 0) {
             throw new IllegalArgumentException("Discontinuation date must be posterior to release date");
         }
@@ -293,13 +293,13 @@ public class Computer implements Serializable, Identifiable<Long> {
     }
 
     /**
-     * @deprecated @see {@link #setDisontinued(LocalDate)}
+     * @deprecated @see {@link #setDiscontinued(LocalDate)}
      * @param discontDate
      * @throws IllegalArgumentException
      */
     @Deprecated
     public void setDiscontinuedDate(LocalDate discontDate) throws IllegalArgumentException {
-        setDisontinued(discontDate);
+        setDiscontinued(discontDate);
     }
 
     /**

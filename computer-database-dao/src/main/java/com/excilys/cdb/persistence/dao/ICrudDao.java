@@ -3,6 +3,8 @@ package com.excilys.cdb.persistence.dao;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import javax.transaction.Transactional;
+
 import com.excilys.cdb.model.EntityField;
 import com.excilys.cdb.model.Identifiable;
 
@@ -13,7 +15,9 @@ import com.excilys.cdb.model.Identifiable;
  * @author Nicolas THIERION
  * @version 0.3.0
  */
+@Transactional
 public interface ICrudDao<T extends Identifiable<Long>> {
+
 
     /**
      * List entities. Order results by name. Search is unbounded, return all

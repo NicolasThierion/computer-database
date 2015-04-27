@@ -12,12 +12,7 @@ import java.util.Map;
 import com.excilys.cdb.persistence.ConnectionFactory;
 
 public final class QueryUtils {
-    /**
-     * where SQL scripts are stored.
-     *
-     * @deprecated should now use HQL queries instead of SQL ones.
-     */
-    @Deprecated
+    /** where SQL scripts are stored. */
     private static final String SQL_DIR = "/sql";
 
     /** where HQL scripts are stored. */
@@ -27,15 +22,31 @@ public final class QueryUtils {
 
     }
 
-    // TODO remove SQL support
-    public static void loadQuery(String sqlOrHqlFileName, Map<String, String> queriesMap) throws IOException {
+    /**
+     * @deprecated should now use {@link #loadHqlQuery(String, Map)}
+     * @param sqlFileName
+     * @param queriesMap
+     * @throws IOException
+     */
+    @Deprecated
+    public static void loadSqlQuery(String sqlFileName, Map<String, String> queriesMap) throws IOException {
+        mloadQuery(sqlFileName, queriesMap, SQL_DIR);
+    }
 
-        InputStream fis = null;
-        if (sqlOrHqlFileName.endsWith(".sql")) {
-            fis = QueryUtils.class.getResourceAsStream(SQL_DIR + "/" + sqlOrHqlFileName);
-        } else if (sqlOrHqlFileName.endsWith(".hql")) {
-            fis = QueryUtils.class.getResourceAsStream(HQL_DIR + "/" + sqlOrHqlFileName);
+    public static void loadHqlQuery(String hqlFileName, Map<String, String> queriesMap) throws IOException {
+        mloadQuery(hqlFileName, queriesMap, HQL_DIR);
+    }
+
+    private static void mloadQuery(String sqlOrHqlFileName, Map<String, String> queriesMap, String dir)
+            throws IOException {
+        final String streamStr = new StringBuffer().append(dir).append("/").append(sqlOrHqlFileName).toString();
+        final InputStream fis = QueryUtils.class.getResourceAsStream(dir + "/" + sqlOrHqlFileName);
+
+        if(fis == null) {
+            throw new IOException(new StringBuilder().append("file : \"").append(streamStr).append("\" does not exist")
+                    .toString());
         }
+
         BufferedReader br = null;
 
         // read file into a string.

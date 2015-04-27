@@ -193,7 +193,7 @@ public enum CliCommand {
             if (new DateValidator().isValid(tok, true)) {
                 final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                 final LocalDate dateTime = LocalDate.parse(tok, formatter);
-                computer.setDiscontDate(dateTime);
+                computer.setDiscontinuedDate(dateTime);
             }
         }
         System.out.println("Company id : ");

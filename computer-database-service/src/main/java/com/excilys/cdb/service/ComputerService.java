@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.persistence.dao.DaoException;
 import com.excilys.cdb.persistence.dao.IComputerDao;
-import com.excilys.cdb.persistence.mapper.ComputerMapper;
+import com.excilys.cdb.persistence.dao.IComputerDao.ComputerField;
 
 /**
  * Spring-autowired Computer service. Offers CRUD services for computers.
@@ -84,13 +84,13 @@ public class ComputerService implements IComputerService {
     @Override
     public List<Computer> listByName(int offset, int count) {
         LOG.info("listByName(" + offset + ", " + count + ")");
-        return mComputerDao.listBy(ComputerMapper.Field.NAME, offset, count);
+        return mComputerDao.listBy(ComputerField.NAME, offset, count);
     }
 
     @Override
     public List<Computer> listLikeName(int offset, int count, String name) {
         LOG.info("listByName(" + offset + ", " + count + ", " + name + ")");
-        return mComputerDao.listLike(ComputerMapper.Field.NAME, name, offset, count);
+        return mComputerDao.listLike(ComputerField.NAME, name, offset, count);
     }
 
     @Override
@@ -128,7 +128,7 @@ public class ComputerService implements IComputerService {
     @Override
     public int getCount(String name) {
         LOG.info("getCount(" + name + ")");
-        return mComputerDao.getCountLike(ComputerMapper.Field.NAME, name);
+        return mComputerDao.getCountLike(ComputerField.NAME, name);
     }
 
     @Override
@@ -137,7 +137,7 @@ public class ComputerService implements IComputerService {
         if (computerId < 0) {
             throw new IllegalArgumentException("Computer id must be positive");
         }
-        final List<Computer> list =  mComputerDao.listEqual(ComputerMapper.Field.ID, "" + computerId);
+        final List<Computer> list = mComputerDao.listEqual(ComputerField.ID, "" + computerId);
         return (list.isEmpty() ? null : list.get(0));
     }
 

@@ -160,7 +160,7 @@ public class ComputerDto implements Serializable {
             computer.setReleaseDate(LocalDate.parse(mReleaseDate));
         }
         if (mDiscDate != null && !mDiscDate.trim().isEmpty()) {
-            computer.setDiscontDate(LocalDate.parse(mDiscDate));
+            computer.setDiscontinuedDate(LocalDate.parse(mDiscDate));
         }
         if (mCompanyDto != null) {
             company.setId(mCompanyDto.getId());

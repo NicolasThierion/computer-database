@@ -20,7 +20,6 @@ import com.excilys.cdb.persistence.ConnectionFactory;
 import com.excilys.cdb.persistence.dao.DaoException;
 import com.excilys.cdb.persistence.dao.DaoException.ErrorType;
 import com.excilys.cdb.persistence.dao.IComputerDao;
-import com.excilys.cdb.persistence.mapper.ComputerMapper;
 
 
 /**
@@ -138,13 +137,13 @@ public final class ComputerDao implements IComputerDao {
                 final Computer computer = new Computer(h.getId(), h.getName());
                 computer.setCompany(company);
                 computer.setReleaseDate(h.getReleaseDate());
-                computer.setDiscontDate(h.getDiscDate());
+                computer.setDiscontinuedDate(h.getDiscDate());
                 resList.add(computer);
             }
         } catch (final SQLException e) {
             throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
         } finally {
-            SqlUtils.safeCloseAll(dbConn, selectComputersStatement, result);
+            QueryUtils.safeCloseAll(dbConn, selectComputersStatement, result);
         }
         return resList;
     }
@@ -182,7 +181,7 @@ public final class ComputerDao implements IComputerDao {
         } catch (final SQLException e) {
             throw new DaoException(e.getMessage(), DaoException.ErrorType.SQL_ERROR);
         } finally {
-            SqlUtils.safeCloseAll(dbConn, countComputersStatement, result);
+            QueryUtils.safeCloseAll(dbConn, countComputersStatement, result);
         }
         return count;
     }
@@ -244,7 +243,7 @@ public final class ComputerDao implements IComputerDao {
             throw new DaoException("Something went wrong when adding computer " + computer + " : " + e.getMessage(),
                     ErrorType.UNKNOWN_ERROR);
         } finally {
-            SqlUtils.safeCloseAll(dbConn, insertComputerStatement, result);
+            QueryUtils.safeCloseAll(dbConn, insertComputerStatement, result);
         }
     }
 
@@ -295,7 +294,7 @@ public final class ComputerDao implements IComputerDao {
         } catch (final SQLException e) {
             throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
         } finally {
-            SqlUtils.safeCloseAll(dbConn, updateComputerStatement, null);
+            QueryUtils.safeCloseAll(dbConn, updateComputerStatement, null);
         }
         return computer;
     }
@@ -329,7 +328,7 @@ public final class ComputerDao implements IComputerDao {
         } catch (final SQLException e) {
             throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
         } finally {
-            SqlUtils.safeCloseAll(dbConn, deleteComputerStatement, null);
+            QueryUtils.safeCloseAll(dbConn, deleteComputerStatement, null);
         }
     }
 
@@ -345,11 +344,11 @@ public final class ComputerDao implements IComputerDao {
         mQueryStrings = new HashMap<String, String>();
 
         try {
-            SqlUtils.loadSqlQuery(REQ_SELECT_COMPUTERS_FILENAME, mQueryStrings);
-            SqlUtils.loadSqlQuery(REQ_COUNT_COMPUTERS_FILENAME, mQueryStrings);
-            SqlUtils.loadSqlQuery(REQ_INSERT_COMPUTER_FILENAME, mQueryStrings);
-            SqlUtils.loadSqlQuery(REQ_UPDATE_COMPUTER_FILEMANE, mQueryStrings);
-            SqlUtils.loadSqlQuery(REQ_DELETE_COMPUTER_FILEMANE, mQueryStrings);
+            QueryUtils.loadSqlQuery(REQ_SELECT_COMPUTERS_FILENAME, mQueryStrings);
+            QueryUtils.loadSqlQuery(REQ_COUNT_COMPUTERS_FILENAME, mQueryStrings);
+            QueryUtils.loadSqlQuery(REQ_INSERT_COMPUTER_FILENAME, mQueryStrings);
+            QueryUtils.loadSqlQuery(REQ_UPDATE_COMPUTER_FILEMANE, mQueryStrings);
+            QueryUtils.loadSqlQuery(REQ_DELETE_COMPUTER_FILEMANE, mQueryStrings);
 
         } catch (final IOException e) {
             throw new DaoException(e.getMessage(), ErrorType.DAO_ERROR);

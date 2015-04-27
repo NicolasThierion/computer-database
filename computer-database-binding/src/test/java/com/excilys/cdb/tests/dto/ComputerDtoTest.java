@@ -14,8 +14,8 @@ import org.slf4j.LoggerFactory;
 import com.excilys.cdb.dto.ComputerDto;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
+import com.excilys.cdb.persistence.dao.IComputerDao.ComputerField;
 import com.excilys.cdb.persistence.dao.mysql.ComputerDao;
-import com.excilys.cdb.persistence.mapper.ComputerMapper;
 
 
 /**
@@ -74,7 +74,7 @@ public class ComputerDtoTest {
                                 computer.setName(iName);
                             }
                             computer.setReleaseDate(rd);
-                            computer.setDiscontDate(dd);
+                            computer.setDiscontinuedDate(dd);
                             computer.setCompany(iCompany);
 
                             dto = ComputerDto.fromComputer(computer);
@@ -89,7 +89,7 @@ public class ComputerDtoTest {
 
     @Test
     public final void testDtoFromList() {
-        final List<Computer> computers = ComputerDao.getInstance().listBy(ComputerMapper.Field.NAME);
+        final List<Computer> computers = ComputerDao.getInstance().listBy(ComputerField.NAME);
         final List<ComputerDto> dtos = ComputerDto.fromComputers(computers);
         assertTrue(computers.size() == dtos.size());
         final Iterator<ComputerDto> dtoIt = dtos.iterator();
