@@ -2,7 +2,12 @@ package com.excilys.cdb.model;
 
 import java.io.Serializable;
 
-import org.springframework.stereotype.Component;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  *
@@ -11,7 +16,8 @@ import org.springframework.stereotype.Component;
  * TODO doc
  *
  */
-@Component
+@Entity
+@Table(name = "company")
 public class Company implements Serializable, Identifiable<Long> {
 
     private static final long serialVersionUID = 1233212107449481466L;
@@ -22,9 +28,13 @@ public class Company implements Serializable, Identifiable<Long> {
      * ATTRIBUTES
      */
     /** Company name. */
-    private String mName;
+    @Column(name = "name")
+    private String              name;
     /** Company id. */
-    private Long mId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    private Long id;
 
     /* ***
      * CONSTRUCTORS
@@ -34,8 +44,8 @@ public class Company implements Serializable, Identifiable<Long> {
      * DEFAULT_NAME.
      */
     public Company() {
-        mName = DEFAULT_NAME;
-        mId = null;
+        this.name = DEFAULT_NAME;
+        this.id = null;
     }
 
     /**
@@ -46,7 +56,7 @@ public class Company implements Serializable, Identifiable<Long> {
      */
     public Company(String name) {
 
-        mId = null;
+        this.id = null;
         setName(name);
     }
 
@@ -57,7 +67,7 @@ public class Company implements Serializable, Identifiable<Long> {
      * @param name
      */
     public Company(long id, String name) throws IllegalArgumentException {
-        mId = id;
+        this.id = id;
         setName(name);
     }
 
@@ -66,8 +76,8 @@ public class Company implements Serializable, Identifiable<Long> {
      * @param manufacturer
      */
     public Company(Company manufacturer) {
-        mName = manufacturer.mName;
-        mId = manufacturer.mId;
+        this.name = manufacturer.name;
+        this.id = manufacturer.id;
     }
 
     /* ***
@@ -75,12 +85,12 @@ public class Company implements Serializable, Identifiable<Long> {
      */
 
     public void setId(Long id) {
-        mId = id;
+        this.id = id;
     }
 
     @Override
     public Long getId() {
-        return mId;
+        return id;
     }
 
     /**
@@ -88,15 +98,16 @@ public class Company implements Serializable, Identifiable<Long> {
      * @param name
      */
     public void setName(String name) {
-        mName = name;
+        this.name = name;
     }
 
     public String getName() {
-        return mName;
+        return name;
     }
 
+    @Deprecated
     public boolean isValid() {
-        return (mId != null && mId > 0 && mName != null && !mName.trim().isEmpty());
+        return (id != null && id > 0 && name != null && !name.trim().isEmpty());
     }
 
     /* ***
@@ -107,7 +118,8 @@ public class Company implements Serializable, Identifiable<Long> {
         final StringBuilder sb = new StringBuilder();
         sb.append("{");
         sb.append(super.getClass().getSimpleName()).append(":")
-        .append(" : id=").append(mId).append(" : name=").append(mName);
+.append(" : id=").append(id).append(" : name=")
+                .append(name);
         sb.append("}");
         return sb.toString();
     }
@@ -116,8 +128,8 @@ public class Company implements Serializable, Identifiable<Long> {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((mId == null) ? 0 : mId.hashCode());
-        result = prime * result + ((mName == null) ? 0 : mName.hashCode());
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
         return result;
     }
 
@@ -133,18 +145,18 @@ public class Company implements Serializable, Identifiable<Long> {
             return false;
         }
         final Company other = (Company) obj;
-        if (mId == null) {
-            if (other.mId != null) {
+        if (id == null) {
+            if (other.id != null) {
                 return false;
             }
-        } else if (!mId.equals(other.mId)) {
+        } else if (!id.equals(other.id)) {
             return false;
         }
-        if (mName == null) {
-            if (other.mName != null) {
+        if (name == null) {
+            if (other.name != null) {
                 return false;
             }
-        } else if (!mName.equals(other.mName)) {
+        } else if (!name.equals(other.name)) {
             return false;
         }
         return true;

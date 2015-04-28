@@ -1,5 +1,7 @@
 package com.excilys.cdb.validator;
 
+import java.util.regex.Pattern;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -30,6 +32,7 @@ public class ComputerValidator implements Validator {
      */
     private static enum ErrorCodes {
         NAME_IS_EMPTY("computer.error.name.empty"),
+        NAME_IS_INVALID("computer.error.name.invalid"),
         DATE_CHRONOLOGY("computer.error.dates.chronology"),
         DATE_FORMAT("dates.error.format"),
         COMPUTER_ID("computer.id.negative");
@@ -44,6 +47,8 @@ public class ComputerValidator implements Validator {
             return mKey;
         }
     }
+
+    final Pattern         mIllegalCharPattern = Pattern.compile("^[~#*+%{}<>\\[\\]|\"\\?;:°§_]+");
 
     @Autowired
     private DateValidator mDateValidator;
@@ -67,12 +72,17 @@ public class ComputerValidator implements Validator {
     private void mValidateComputer(Computer computer, Errors errors) {
 
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", ErrorCodes.NAME_IS_EMPTY.toString());
+        final String name = computer.getName();
+        if (name.isEmpty() || mIllegalCharPattern.matcher(name).matches()) {
+            errors.rejectValue("name", ErrorCodes.NAME_IS_INVALID.toString());
+        }
+
         if (computer.getId() != null && computer.getId() <= 0) {
             errors.rejectValue("id", ErrorCodes.COMPUTER_ID.toString());
         }
 
-        if (computer.getReleaseDate() != null) {
-            if (computer.getReleaseDate().compareTo(computer.getDiscontinuedDate()) > 0) {
+        if (computer.getIntroduced() != null && computer.getDiscontinued() != null) {
+            if (computer.getIntroduced().compareTo(computer.getDiscontinued()) > 0) {
                 errors.rejectValue("introducedDate", ErrorCodes.DATE_CHRONOLOGY.toString());
                 errors.rejectValue("discontinuedDate", ErrorCodes.DATE_CHRONOLOGY.toString());
             }

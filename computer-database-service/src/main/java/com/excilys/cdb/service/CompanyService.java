@@ -1,6 +1,5 @@
 package com.excilys.cdb.service;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -12,8 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.persistence.ConnectionFactory;
-import com.excilys.cdb.persistence.Transaction;
 import com.excilys.cdb.persistence.dao.ICompanyDao;
 import com.excilys.cdb.persistence.dao.ICompanyDao.CompanyField;
 import com.excilys.cdb.persistence.dao.IComputerDao;
@@ -26,6 +23,7 @@ import com.excilys.cdb.persistence.dao.IComputerDao.ComputerField;
  *
  */
 @Service
+@Transactional
 public class CompanyService implements ICompanyService {
 
     private static final Logger LOG = LoggerFactory.getLogger(CompanyService.class);
@@ -38,8 +36,6 @@ public class CompanyService implements ICompanyService {
     private ICompanyDao             mCompanyDao;
     @Autowired
     private IComputerDao            mComputerDao;
-
-    private final ConnectionFactory mConnectionFactory = ConnectionFactory.getInstance();
 
 
     /* ***
@@ -178,35 +174,17 @@ public class CompanyService implements ICompanyService {
         LOG.info("delete(" + ids + ")");
         mAssertComputerDao();
 
-        final Transaction transaction = mConnectionFactory.getTransaction();
-
         // TODO use SQL to delete many
         for (final Long id : ids) {
-            try {
-                try {
-                    transaction.begin();
-                    final List<Computer> computers = mComputerDao
-                            .listEqual(ComputerField.COMPANY_ID,
+            final List<Computer> computers = mComputerDao.listEqual(ComputerField.COMPANY_ID,
                             Long.toString(id));
-                    // delete all computers that matches this company...
-                    for (final Computer computer : computers) {
-                        mComputerDao.delete(computer);
-                    }
-                    // ... & delete this company
-                    mCompanyDao.delete(id);
-                    transaction.commit();
-                    transaction.end();
-                } catch (final SQLException e) {
-                    transaction.rollback();
-                    throw new ServiceException(e.getMessage());
-                } finally {
-                    transaction.end();
-                }
-            } catch (final SQLException e) {
-                throw new NoSuchElementException(e.getMessage());
+            // delete all computers that matches this company...
+            for (final Computer computer : computers) {
+                mComputerDao.delete(computer);
             }
+            // ... & delete this company
+            mCompanyDao.delete(id);
         }
-        mConnectionFactory.close(transaction);
     }
 
 

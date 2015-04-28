@@ -25,7 +25,7 @@
                     <spring:message code="editComputer.form.placeholder.name" var="namePlaceholder" />
                     <spring:message code="editComputer.form.placeholder.introduced" var="introducedPlaceholder" />
                     <spring:message code="editComputer.form.placeholder.discontinued" var="discontinuedPlaceholder" />
-                    <spring:message code="computer.error.name.valid" var="nameError" />
+                    <spring:message code="computer.error.name.invalid" var="nameError" />
                     <spring:message code="dates.error.valid" var="dateError" />
                     <form:form id="editComputer" method="POST" action="editComputer" modelAttribute="computerDto"
                         onsubmit="return validate()">

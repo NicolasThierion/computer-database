@@ -14,23 +14,36 @@
     <!-- JDBC Data Source -->
     <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource"
         destroy-method="close">
-        <property name="username" value="${user}" />
-        <property name="password" value="${password}" />
-        <property name="url" value="${url}" />
-        <property name="driverClassName" value="{driverClassName}" />
+        <property name="username" value="${db.user}" />
+        <property name="password" value="${db.password}" />
+        <property name="url" value="${db.url}" />
+        <property name="driverClassName" value="${db.driverClassName}" />
     </bean>
 
-    <!-- JDBC Template mapping  -->
-    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-        <constructor-arg ref="dataSource"/>
-    </bean>
-
-    <!-- Transaction manager -->
-    <bean id="transactionManager"
-        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <!-- Hibernate session factory -->
+    <bean id="sessionFactory"
+        class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
         <property name="dataSource" ref="dataSource" />
-    </bean>
-    <tx:annotation-driven proxy-target-class="true"
-        transaction-manager="transactionManager" />
 
+        <property name="annotatedClasses">
+            <list>
+                <value>com.excilys.cdb.model.Company</value>
+                <value>com.excilys.cdb.model.Computer</value>
+                </list>
+        </property>
+        
+        <property name="hibernateProperties">
+            <value>
+                hibernate.format_sql=true
+                hibernate.show_sql=true
+                hibernate.dialect=org.hibernate.dialect.MySQLDialect
+            </value>
+        </property>
+    </bean>
+    <bean id="transactionManager"
+        class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <tx:annotation-driven transaction-manager="transactionManager" />
+    <context:annotation-config />
 </beans>

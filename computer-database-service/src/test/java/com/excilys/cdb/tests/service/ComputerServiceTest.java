@@ -7,15 +7,15 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.persistence.dao.mysql.CompanyDao;
-import com.excilys.cdb.persistence.dao.mysql.ComputerDao;
-import com.excilys.cdb.service.CompanyService;
-import com.excilys.cdb.service.ComputerService;
+import com.excilys.cdb.persistence.dao.DaoException;
 import com.excilys.cdb.service.ICompanyService;
 import com.excilys.cdb.service.IComputerService;
 
@@ -25,21 +25,16 @@ import com.excilys.cdb.service.IComputerService;
  * @version 0.2.0
  *
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"/applicationContext.xml"})
 public class ComputerServiceTest {
 
     /** Computer Service used for this tests. */
+    @Autowired
     private IComputerService mComputerService;
+    @Autowired
     private ICompanyService  mCompanyService;
 
-    /**
-     * init Computer service.
-     */
-    @Before
-    public final void init() {
-
-        mComputerService = new ComputerService(ComputerDao.getInstance());
-        mCompanyService = new CompanyService(CompanyDao.getInstance());
-    }
 
     /**
      * Test of ComputerService.listByName().
@@ -50,7 +45,7 @@ public class ComputerServiceTest {
         List<Computer> list;
 
         //test list construction of various size
-        for (final int count : new int[] {2, mComputerService.getCount(), 0}) {
+        for (final int count : new int[] {2, mComputerService.getCount()}) {
             list = mComputerService.listByName(0, count);
             assertTrue(list.size() == count);
         }
@@ -151,7 +146,7 @@ public class ComputerServiceTest {
         try {
             mComputerService.add(new Computer(compName, wrongCompany, null, null));
             passed = true;
-        } catch (final IllegalArgumentException e) {
+        } catch (final IllegalArgumentException | DaoException e) {
         }
         assertFalse(passed);
 
@@ -226,8 +221,8 @@ public class ComputerServiceTest {
 
         // update its properties.
         computer.setName(computerName);
-        computer.setReleaseDate(releaseDate);
-        computer.setDiscontinuedDate(discontinuedDate);
+        computer.setIntroduced(releaseDate);
+        computer.setDiscontinued(discontinuedDate);
         computer.setCompany(company);
         mComputerService.update(computer);
 

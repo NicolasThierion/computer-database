@@ -7,8 +7,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
@@ -17,29 +20,23 @@ import com.excilys.cdb.persistence.dao.ICompanyDao;
 import com.excilys.cdb.persistence.dao.ICompanyDao.CompanyField;
 import com.excilys.cdb.persistence.dao.IComputerDao;
 import com.excilys.cdb.persistence.dao.IComputerDao.ComputerField;
-import com.excilys.cdb.persistence.dao.mysql.CompanyDao;
-import com.excilys.cdb.persistence.dao.mysql.ComputerDao;
 
 /**
  * Unit test for ComputerDao methods.
+ *
  * @author Nicolas THIERION.
- * @version 0.2.0
+ * @version 0.3.0
  *
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"/applicationContext.xml"})
 public class ComputerDaoTest {
 
     /** Computer Dao used for this tests. */
+    @Autowired
     private IComputerDao mComputerDao;
+    @Autowired
     private ICompanyDao  mCompanyDao;
-
-    /**
-     * init Computer & Company Dao.
-     */
-    @Before
-    public final void init() {
-        mComputerDao = ComputerDao.getInstance();
-        mCompanyDao = CompanyDao.getInstance();
-    }
 
     /**
      * Test of ComputerDao.listBy().
@@ -49,7 +46,7 @@ public class ComputerDaoTest {
 
         List<Computer> list;
         //test list construction of various size
-        for (final int count : new int[]{2, mComputerDao.getCount(), 0}) {
+        for (final int count : new int[] {2, mComputerDao.getCount()}) {
             list = mComputerDao.listBy(ComputerField.NAME, 0, count);
             assertTrue(list.size() == count);
         }
@@ -208,8 +205,8 @@ public class ComputerDaoTest {
 
         // update its properties.
         computer.setName(computerName);
-        computer.setReleaseDate(releaseDate);
-        computer.setDiscontinuedDate(discontinuedDate);
+        computer.setIntroduced(releaseDate);
+        computer.setDiscontinued(discontinuedDate);
         computer.setCompany(company);
         mComputerDao.update(computer);
 

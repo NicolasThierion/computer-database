@@ -1,0 +1,1 @@
+DELETE FROM Computer WHERE id=:id

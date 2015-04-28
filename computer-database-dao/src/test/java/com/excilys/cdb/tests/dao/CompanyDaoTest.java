@@ -19,7 +19,7 @@ import com.excilys.cdb.persistence.dao.ICompanyDao.CompanyField;
  * Unit test for ComputerDao methods.
  *
  * @author Nicolas THIERION.
- * @version 0.2.0
+ * @version 0.3.0
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)

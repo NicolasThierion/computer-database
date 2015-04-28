@@ -3,14 +3,25 @@ package com.excilys.cdb.model;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import org.hibernate.validator.constraints.NotEmpty;
-import org.springframework.stereotype.Component;
 
 /**
  * @author Nicolas THIERION
  * @version 0.2.0
  */
-@Component
+@Entity
+@Table(name = "computer")
 public class Computer implements Serializable, Identifiable<Long> {
 
     /**
@@ -28,15 +39,25 @@ public class Computer implements Serializable, Identifiable<Long> {
 
     /** name of this computer. */
     @NotEmpty(message = "computer.error.name.empty")
-    private String              mName;
+    @Column(name = "name")
+    private String              name;
     /** manufacturer of this computer. */
-    private Company             mCompany;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "company_id")
+    private Company             company;
     /** release date. */
-    private LocalDate           mReleaseDate;
+    @Column(name = "introduced")
+    @Convert(converter = LocalDateToTimestampConverter.class)
+    private LocalDate           introduced;
     /** discontinuation date. */
-    private LocalDate           mDiscDate;
+    @Column(name = "discontinued")
+    @Convert(converter = LocalDateToTimestampConverter.class)
+    private LocalDate           discontinued;
     /** id of this computer. */
-    private Long                mId              = DEFAULT_ID;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    private Long                id              = DEFAULT_ID;
 
     /* ***
      * CONSTRUCTORS
@@ -61,12 +82,12 @@ public class Computer implements Serializable, Identifiable<Long> {
         }
 
         // set attributes
-        mName = name;
-        mId = id;
-        mCompany = (manufacturer != null ? new Company(manufacturer) : null);
-        mReleaseDate = (releaseDate != null ? LocalDate.from(releaseDate)
+        this.name = name;
+        this.id = id;
+        this.company = (manufacturer != null ? new Company(manufacturer) : null);
+        this.introduced = (releaseDate != null ? LocalDate.from(releaseDate)
                 : null);
-        mDiscDate = (discontinuedDate != null ? LocalDate.from(discontinuedDate) : null);
+        this.discontinued = (discontinuedDate != null ? LocalDate.from(discontinuedDate) : null);
     }
 
     /**
@@ -96,7 +117,7 @@ public class Computer implements Serializable, Identifiable<Long> {
      */
     public Computer(final Computer computer) {
         final Computer o = computer;
-        mNewComputer(o.mId, o.mName, o.mCompany, o.mReleaseDate, o.mDiscDate);
+        mNewComputer(o.id, o.name, o.company, o.introduced, o.discontinued);
     }
 
     /**
@@ -169,11 +190,11 @@ public class Computer implements Serializable, Identifiable<Long> {
      */
     @Override
     public Long getId() {
-        return mId;
+        return id;
     }
 
     public String getName() {
-        return mName;
+        return name;
     }
 
     /**
@@ -182,7 +203,7 @@ public class Computer implements Serializable, Identifiable<Long> {
      * @return the manufacturer of this computer.
      */
     public Company getCompany() {
-        return mCompany;
+        return company;
     }
 
     public Company getManufacturer() {
@@ -204,11 +225,11 @@ public class Computer implements Serializable, Identifiable<Long> {
      */
     @Deprecated
     public LocalDate getReleaseDate() {
-        return mReleaseDate;
+        return introduced;
     }
 
     public LocalDate getDiscontinued() {
-        return mDiscDate;
+        return discontinued;
     }
 
     /**
@@ -225,7 +246,7 @@ public class Computer implements Serializable, Identifiable<Long> {
      */
 
     public void setId(Long id) {
-        mId = id;
+        this.id = id;
     }
 
     /**
@@ -238,7 +259,7 @@ public class Computer implements Serializable, Identifiable<Long> {
             throw new IllegalArgumentException(
                     "Computer name must not be empty");
         }
-        mName = name;
+        this.name = name;
     }
 
     /**
@@ -248,7 +269,7 @@ public class Computer implements Serializable, Identifiable<Long> {
      *            The manufacturer of this computer.
      */
     public void setCompany(Company company) {
-        mCompany = company;
+        this.company = company;
     }
 
     public void setManufacturer(Company company) {
@@ -263,10 +284,10 @@ public class Computer implements Serializable, Identifiable<Long> {
      *             if date provided is posterior to discontinued date.
      */
     public void setIntroduced(LocalDate introduced) throws IllegalArgumentException {
-        if (mDiscDate != null && introduced != null && introduced.compareTo(mDiscDate) > 0) {
+        if (discontinued != null && introduced != null && introduced.compareTo(discontinued) > 0) {
             throw new IllegalArgumentException("release date must be prior to release date");
         }
-        mReleaseDate = introduced;
+        this.introduced = introduced;
     }
 
     /**
@@ -286,10 +307,10 @@ public class Computer implements Serializable, Identifiable<Long> {
      *             if date provided is prior to release date.
      */
     public void setDiscontinued(LocalDate discontinued) throws IllegalArgumentException {
-        if (mReleaseDate != null && discontinued != null && discontinued.compareTo(mReleaseDate) < 0) {
+        if (introduced != null && discontinued != null && discontinued.compareTo(introduced) < 0) {
             throw new IllegalArgumentException("Discontinuation date must be posterior to release date");
         }
-        mDiscDate = discontinued;
+        this.discontinued = discontinued;
     }
 
     /**
@@ -312,15 +333,15 @@ public class Computer implements Serializable, Identifiable<Long> {
      */
     @Deprecated
     public boolean isValid() {
-        boolean res = (mId != null && mId > 0);
-        if (res && mName != null) {
-            res = res && !mName.trim().isEmpty();
+        boolean res = (id != null && id > 0);
+        if (res && name != null) {
+            res = res && !name.trim().isEmpty();
         }
-        if (res && mReleaseDate != null && mDiscDate != null) {
-            res = res && mReleaseDate.compareTo(mDiscDate) < 0;
+        if (res && introduced != null && discontinued != null) {
+            res = res && introduced.compareTo(discontinued) < 0;
         }
-        if (res && mCompany != null) {
-            res = res && mCompany.isValid();
+        if (res && company != null) {
+            res = res && company.isValid();
         }
 
         return res;
@@ -334,10 +355,10 @@ public class Computer implements Serializable, Identifiable<Long> {
         final StringBuilder sb = new StringBuilder();
         sb.append("{");
         sb.append(getClass().getSimpleName()).append(" : ").append("id=")
-        .append(mId).append(" ; name=").append(mName);
-        sb.append(" ; manufacturer=").append(mCompany);
-        sb.append(" ; released=").append(mReleaseDate)
-        .append(" ; discontinued=").append(mDiscDate);
+        .append(id).append(" ; name=").append(name);
+        sb.append(" ; manufacturer=").append(company);
+        sb.append(" ; released=").append(introduced)
+        .append(" ; discontinued=").append(discontinued);
         sb.append("}");
         return sb.toString();
     }
@@ -347,13 +368,13 @@ public class Computer implements Serializable, Identifiable<Long> {
         final int prime = 31;
         int result = 1;
         result = prime * result
-                + ((mCompany == null) ? 0 : mCompany.hashCode());
+                + ((company == null) ? 0 : company.hashCode());
         result = prime * result
-                + ((mDiscDate == null) ? 0 : mDiscDate.hashCode());
-        result = prime * result + ((mId == null) ? 0 : mId.hashCode());
-        result = prime * result + ((mName == null) ? 0 : mName.hashCode());
+                + ((discontinued == null) ? 0 : discontinued.hashCode());
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result
-                + ((mReleaseDate == null) ? 0 : mReleaseDate.hashCode());
+                + ((introduced == null) ? 0 : introduced.hashCode());
         return result;
     }
 
@@ -370,39 +391,39 @@ public class Computer implements Serializable, Identifiable<Long> {
         }
 
         final Computer other = (Computer) obj;
-        if (mCompany == null) {
-            if (other.mCompany != null) {
+        if (company == null) {
+            if (other.company != null) {
                 return false;
             }
-        } else if (!mCompany.equals(other.mCompany)) {
+        } else if (!company.equals(other.company)) {
             return false;
         }
-        if (mDiscDate == null) {
-            if (other.mDiscDate != null) {
+        if (discontinued == null) {
+            if (other.discontinued != null) {
                 return false;
             }
-        } else if (!mDiscDate.equals(other.mDiscDate)) {
+        } else if (!discontinued.equals(other.discontinued)) {
             return false;
         }
-        if (mId == null) {
-            if (other.mId != null) {
+        if (id == null) {
+            if (other.id != null) {
                 return false;
             }
-        } else if (!mId.equals(other.mId)) {
+        } else if (!id.equals(other.id)) {
             return false;
         }
-        if (mName == null) {
-            if (other.mName != null) {
+        if (name == null) {
+            if (other.name != null) {
                 return false;
             }
-        } else if (!mName.equals(other.mName)) {
+        } else if (!name.equals(other.name)) {
             return false;
         }
-        if (mReleaseDate == null) {
-            if (other.mReleaseDate != null) {
+        if (introduced == null) {
+            if (other.introduced != null) {
                 return false;
             }
-        } else if (!mReleaseDate.equals(other.mReleaseDate)) {
+        } else if (!introduced.equals(other.introduced)) {
             return false;
         }
         return true;

@@ -5,15 +5,19 @@ import static org.junit.Assert.assertTrue;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.excilys.cdb.persistence.dao.mysql.ComputerDao;
-import com.excilys.cdb.service.ComputerService;
 import com.excilys.cdb.service.IComputerService;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"/applicationContext.xml"})
 public final class DashboardTest extends CdbViewTest {
 
     /* ***
@@ -24,6 +28,7 @@ public final class DashboardTest extends CdbViewTest {
     /* ***
      * ATTRIBUTES
      */
+    @Autowired
     private IComputerService    mService;
 
     /* ***
@@ -55,7 +60,6 @@ public final class DashboardTest extends CdbViewTest {
         mWebDriver = new HtmlUnitDriver();
         super.setUri(TEST_URI);
         mUrl = super.getUrl();
-        mService = new ComputerService(ComputerDao.getInstance());
     }
 
     /**

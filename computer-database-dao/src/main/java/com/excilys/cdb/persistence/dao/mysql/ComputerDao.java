@@ -1,24 +1,22 @@
 package com.excilys.cdb.persistence.dao.mysql;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.EntityField;
-import com.excilys.cdb.persistence.ConnectionFactory;
 import com.excilys.cdb.persistence.dao.DaoException;
 import com.excilys.cdb.persistence.dao.DaoException.ErrorType;
+import com.excilys.cdb.persistence.dao.ICompanyDao.CompanyField;
 import com.excilys.cdb.persistence.dao.IComputerDao;
 
 
@@ -29,27 +27,26 @@ import com.excilys.cdb.persistence.dao.IComputerDao;
  * @version 0.2.0
  */
 @Repository("computerDao")
-public final class ComputerDao implements IComputerDao {
+public class ComputerDao implements IComputerDao {
 
     /* ***
      * DB REQUESTS
      * ***/
 
     /** various sql script user to build preparedStatements. */
-    private static final String REQ_SELECT_COMPUTERS_FILENAME = "select_computers_paging.sql";
-    private static final String REQ_COUNT_COMPUTERS_FILENAME = "select_computer_count.sql";
-    private static final String REQ_UPDATE_COMPUTER_FILEMANE = "update_computer.sql";
-    private static final String REQ_INSERT_COMPUTER_FILENAME = "insert_computer.sql";
-    private static final String REQ_DELETE_COMPUTER_FILEMANE = "delete_computer_with_id.sql";
+    private static final String REQ_SELECT_COMPUTERS_FILENAME = "select_computers.hql";
+    private static final String REQ_COUNT_COMPUTERS_FILENAME  = "select_computer_count.hql";
+    private static final String REQ_DELETE_COMPUTER_FILENAME  = "delete_computer_with_id.hql";
 
     /* ***
      * ATTRIBUTES
      */
-    /** Singleton's instance. */
-    private static ComputerDao mInstance = null;
     /** SQL query strings. */
     private Map<String, String> mQueryStrings;
 
+    /** provides a session to submit HQL queries to datasource. */
+    @Autowired
+    private SessionFactory      mSessionFactory;
     /* ***
      * CONSTRUCTORS / DESTRUCTORS
      */
@@ -57,19 +54,35 @@ public final class ComputerDao implements IComputerDao {
      * loads SQL query strings from resources.
      */
     private ComputerDao() {
-        mLoadSqlQueries();
+        mLoadHqlQueries();
     }
 
     /**
+     * @deprecated this is no more a singleton.
      * @return unique instance of DAO.
      */
+    @Deprecated
     public static ComputerDao getInstance() {
-        synchronized (ComputerDao.class) {
-            if (mInstance == null) {
-                mInstance = new ComputerDao();
-            }
-        }
-        return mInstance;
+        return new ComputerDao();
+    }
+
+    /**
+     * Constructor with argument. Create a new ComputerDao that will use the
+     * given SessionFactory to submit queries to the DB.
+     *
+     * @param sessionFactory
+     *            SessionFactory to access the DB.
+     */
+    public ComputerDao(SessionFactory sessionFactory) {
+        mLoadHqlQueries();
+        mSessionFactory = sessionFactory;
+    }
+
+    /* ***
+     * ACCESSORS
+     */
+    public void setSessionFactory(SessionFactory sessionFactory) {
+        mSessionFactory = sessionFactory;
     }
 
     /* ***
@@ -79,13 +92,6 @@ public final class ComputerDao implements IComputerDao {
     @Override
     public List<Computer> listEqual(EntityField<Computer> field, String value, int offset, int count)
             throws IllegalArgumentException {
-        Connection dbConn = null;
-        PreparedStatement selectComputersStatement = null;
-        ResultSet result = null;
-        final List<Computer> resList = new LinkedList<Computer>();
-        String sqlStr = mQueryStrings.get(REQ_SELECT_COMPUTERS_FILENAME);
-        sqlStr = String.format(sqlStr, field.getLabel(), field.getLabel());
-
         // check offset parameter
         if (offset < 0) {
             throw new IllegalArgumentException("search offset cannot be negative");
@@ -96,206 +102,106 @@ public final class ComputerDao implements IComputerDao {
             throw new IllegalArgumentException("search parameter cannot be null");
         }
 
-        count = (count < 0 ? Integer.MAX_VALUE : count);
-        try {
-            // get a connection & prepare needed statement
-            dbConn = ConnectionFactory.getInstance().getConnection();
-            selectComputersStatement = dbConn.prepareStatement(sqlStr);
+        // check field validity
+        mCheckField(field);
 
-            // set "search by" parameter
-            int colId = 1;
+        // check count validity
+        count = (count <= 0 ? Integer.MAX_VALUE : count);
 
-            // set "range" parameter
-            selectComputersStatement.setString(colId++, value);
-            selectComputersStatement.setInt(colId++, offset);
-            selectComputersStatement.setInt(colId++, count);
+        // get HQL query string & format it
+        String hqlStr = mQueryStrings.get(REQ_SELECT_COMPUTERS_FILENAME);
+        // place field criteria by hand...
+        hqlStr = String.format(hqlStr, field.getLabel(), field.getLabel());
+        final Query query = mGetCurrentSession().createQuery(hqlStr);
 
-            //exec query
-            result = selectComputersStatement.executeQuery();
+        query.setString("value", value);
 
-            final HashMap<Long, Company> companiesMap = new HashMap<Long, Company>();
+        // set range parameters
+        query.setFirstResult(offset).setMaxResults(count);
 
-            //parse resultSet to build the list of computers.
-            while (result.next()) {
+        // exec query
+        @SuppressWarnings("unchecked")
+        final List<Computer> resList = query.list();
 
-                final ComputerMapper h = new ComputerMapper();
-                h.fromResultSet(result);
-
-                Company company = null;
-
-                //store used companies in a map in order to not construct same company twice.
-                if (h.getCompanyId() != null) {
-                    if (!companiesMap.containsKey(h.getCompanyId())) {
-                        company = new Company(h.getCompanyId(), h.getCompanyName());
-                        companiesMap.put(new Long(h.getCompanyId()), company);
-                    } else {
-                        company = companiesMap.get(new Long(h.getCompanyId()));
-                    }
-                }
-
-                //finally, create the computer & add it to the list
-                final Computer computer = new Computer(h.getId(), h.getName());
-                computer.setCompany(company);
-                computer.setReleaseDate(h.getReleaseDate());
-                computer.setDiscontinuedDate(h.getDiscDate());
-                resList.add(computer);
-            }
-        } catch (final SQLException e) {
-            throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
-        } finally {
-            QueryUtils.safeCloseAll(dbConn, selectComputersStatement, result);
-        }
         return resList;
     }
 
     @Override
     public int getCount() {
-        return getCountLike(ComputerMapper.Field.ID, "");
+        return getCountLike(ComputerField.ID, "");
     }
 
     @Override
     public int getCountEqual(EntityField<Computer> field, String value) throws IllegalArgumentException, DaoException {
-
-        Connection dbConn = null;
-        PreparedStatement countComputersStatement = null;
-        ResultSet result = null;
-        int count = 0;
-        String sqlStr = mQueryStrings.get(REQ_COUNT_COMPUTERS_FILENAME);
-        sqlStr = String.format(sqlStr, field.getLabel());
 
         // check name parameter
         if (value == null) {
             throw new IllegalArgumentException("value cannot be null");
         }
 
-        try {
-            // get a connection & prepare needed statement
-            dbConn = ConnectionFactory.getInstance().getConnection();
-            countComputersStatement = dbConn.prepareStatement(sqlStr);
+        // check field validity
+        mCheckField(field);
 
-            countComputersStatement.setString(1, value);
-            result = countComputersStatement.executeQuery();
-            if (result.first()) {
-                count = result.getInt(1);
-            }
-        } catch (final SQLException e) {
-            throw new DaoException(e.getMessage(), DaoException.ErrorType.SQL_ERROR);
-        } finally {
-            QueryUtils.safeCloseAll(dbConn, countComputersStatement, result);
-        }
-        return count;
+        // get HQL query string & format it
+        String hqlStr = mQueryStrings.get(REQ_COUNT_COMPUTERS_FILENAME);
+        // place field criteria & order by hand...
+        hqlStr = String.format(hqlStr, field.getLabel());
+        final Query query = mGetCurrentSession().createQuery(hqlStr);
+        query.setString("value", value);
+
+        // execute the query
+        final Long count = (Long) query.uniqueResult();
+        return count.intValue();
     }
 
     @Override
     public Computer add(Computer computer) throws DaoException {
-        Connection dbConn = null;
-        PreparedStatement insertComputerStatement = null;
-        ResultSet result = null;
-        final String sqlStr = mQueryStrings.get(REQ_INSERT_COMPUTER_FILENAME);
-        try {
-            // get a connection & prepare needed statement
-            dbConn = ConnectionFactory.getInstance().getConnection();
-            insertComputerStatement = dbConn.prepareStatement(sqlStr, PreparedStatement.RETURN_GENERATED_KEYS);
-
-            // ensure that we are attempting to add a NEW computer (with id
-            // field = null)"
-            final Long id = computer.getId();
-            if (id != null) {
-                throw new IllegalArgumentException("Trying to add a computer : " + computer
-                        + " with non-blank field \"computer id\"");
-            }
-
-            // build SQL request :
-            // INSERT INTO computer (name, introduced, discontinued, company_id)
-            // get computer properties
-
-            final ComputerMapper h = new ComputerMapper();
-            h.fromEntity(computer);
-
-            // ensure company id is valid
-            if (h.getCompany() != null && h.getCompanyId() < 1) {
-                throw new IllegalArgumentException("Company id must be positive.");
-            }
-            int colId = 1;
-            insertComputerStatement.setString(colId++, h.getName());
-            insertComputerStatement.setTimestamp(colId++, h.getSqlReleaseDate());
-            insertComputerStatement.setTimestamp(colId++, h.getSqlDiscDate());
-
-            if (h.getCompanyId() == null) {
-                insertComputerStatement.setNull(colId++, java.sql.Types.INTEGER);
-            } else {
-                insertComputerStatement.setLong(colId++, h.getCompanyId());
-            }
-            if (insertComputerStatement.executeUpdate() != 1) {
-                throw new DaoException("Something went wrong when adding computer " + computer
-                        + ". No changes commited.", ErrorType.SQL_ERROR);
-            }
-
-            //get generated id...
-            result = insertComputerStatement.getGeneratedKeys();
-            if (result.next()) {
-                //& update this computer with new generated id.
-                computer.setId(result.getLong(1));
-            }
-            result.close();
-            return computer;
-        } catch (final SQLException e) {
-            throw new DaoException("Something went wrong when adding computer " + computer + " : " + e.getMessage(),
-                    ErrorType.UNKNOWN_ERROR);
-        } finally {
-            QueryUtils.safeCloseAll(dbConn, insertComputerStatement, result);
+        // ensure that we are attempting to add a NEW computer (with id
+        // field = null)"
+        final Long id = computer.getId();
+        if (id != null) {
+            throw new IllegalArgumentException("Trying to add a computer : " + computer
+                    + " with non-blank field \"computer id\"");
         }
+
+        // save computer
+        try {
+            mGetCurrentSession().save(computer);
+        } catch (final Exception e) {
+
+        }
+        // ensure computer has been saved
+        if (computer.getId() == null || computer.getId() == 0) {
+            throw new DaoException(new StringBuilder().append("Something went wrong when adding computer ")
+                    .append(computer).append(". No changes commited.").toString(), ErrorType.SQL_ERROR);
+        }
+
+
+        return computer;
     }
 
     /**
      * Update the given computer from DB.
      *
-     * @throws DaoException
-     *             if update failed or if provided computer is invalid or
-     *             doesn't exist.
      */
     @Override
-    public Computer update(Computer computer) throws DaoException, IllegalArgumentException {
-        Connection dbConn = null;
-        PreparedStatement updateComputerStatement = null;
-        // Update computer by id : ensure computer has id != null
+    public Computer update(Computer computer) {
         if (computer.getId() == null) {
-            throw new IllegalArgumentException("Computer id is null. Cannot update this computer");
+            throw new IllegalArgumentException("Cannot update computer with id = null");
         }
-        final String sqlStr = mQueryStrings.get(REQ_UPDATE_COMPUTER_FILEMANE);
+
+        if (getCountEqual(ComputerField.ID, "" + computer.getId()) == 0 ){
+            throw new NoSuchElementException("No computer with id = " + computer.getId());
+        }
+
+        // save computer
         try {
-            // get a connection & prepare needed statement
-            dbConn = ConnectionFactory.getInstance().getConnection();
-            updateComputerStatement = dbConn.prepareStatement(sqlStr);
-
-            //retrieve computer information
-            final ComputerMapper h = new ComputerMapper();
-            h.fromEntity(computer);
-
-            //build query
-            //UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? WHERE id = ?;
-
-            int colId = 1;
-            updateComputerStatement.setString(colId++, h.getName());
-            updateComputerStatement.setTimestamp(colId++, h.getSqlReleaseDate());
-            updateComputerStatement.setTimestamp(colId++, h.getSqlDiscDate());
-
-            if (h.getCompanyId() == null) {
-                updateComputerStatement.setNull(colId++, java.sql.Types.INTEGER);
-            } else {
-                updateComputerStatement.setLong(colId++, h.getCompanyId());
-            }
-            updateComputerStatement.setLong(colId++, h.getId());
-
-            if (updateComputerStatement.executeUpdate() != 1) {
-                throw new NoSuchElementException("Something went wrong while updating computer " + computer
-                        + ". Maybe this computer doesn't exist?");
-            }
-        } catch (final SQLException e) {
-            throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
-        } finally {
-            QueryUtils.safeCloseAll(dbConn, updateComputerStatement, null);
+            mGetCurrentSession().update(computer);
+        } catch (final Exception e) {
+            throw new DaoException(new StringBuilder().append("Something went wrong when updating computer ")
+                    .append(computer).append(". No changes commited.").toString(), ErrorType.SQL_ERROR);
         }
+
         return computer;
     }
 
@@ -308,27 +214,19 @@ public final class ComputerDao implements IComputerDao {
      */
     @Override
     public void delete(Long id) throws DaoException, IllegalArgumentException {
-        Connection dbConn = null;
-        PreparedStatement deleteComputerStatement = null;
-        //Delete computer by id : ensure computer has id != null
+
+        // Delete computer by id : ensure computer has id != null
         if (id == null) {
             throw new IllegalArgumentException("Computer id is null. Cannot delete this computer");
         }
-        final String sqlStr = mQueryStrings.get(REQ_DELETE_COMPUTER_FILEMANE);
-        try {
-            // get a connection & prepare needed statement
-            dbConn = ConnectionFactory.getInstance().getConnection();
-            deleteComputerStatement = dbConn.prepareStatement(sqlStr);
 
-            deleteComputerStatement.setLong(1, id);
-            if (deleteComputerStatement.executeUpdate() != 1) {
-                throw new NoSuchElementException("Something went wrong while deleting computer no " + id
-                        + ". Maybe this computer doesn't exist?");
-            }
-        } catch (final SQLException e) {
-            throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
-        } finally {
-            QueryUtils.safeCloseAll(dbConn, deleteComputerStatement, null);
+        final String hqlStr = mQueryStrings.get(REQ_DELETE_COMPUTER_FILENAME);
+        final Query query = mGetCurrentSession().createQuery(hqlStr);
+        query.setParameter("id", id);
+
+        if (query.executeUpdate() != 1) {
+            throw new NoSuchElementException("Something went wrong while deleting computer no " + id
+                    + ". Maybe this computer doesn't exist?");
         }
     }
 
@@ -339,19 +237,30 @@ public final class ComputerDao implements IComputerDao {
     /**
      * init prepared statement used for various DAO services.
      */
-    private void mLoadSqlQueries() {
+    private void mLoadHqlQueries() {
 
         mQueryStrings = new HashMap<String, String>();
 
         try {
-            QueryUtils.loadSqlQuery(REQ_SELECT_COMPUTERS_FILENAME, mQueryStrings);
-            QueryUtils.loadSqlQuery(REQ_COUNT_COMPUTERS_FILENAME, mQueryStrings);
-            QueryUtils.loadSqlQuery(REQ_INSERT_COMPUTER_FILENAME, mQueryStrings);
-            QueryUtils.loadSqlQuery(REQ_UPDATE_COMPUTER_FILEMANE, mQueryStrings);
-            QueryUtils.loadSqlQuery(REQ_DELETE_COMPUTER_FILEMANE, mQueryStrings);
+            QueryUtils.loadHqlQuery(REQ_SELECT_COMPUTERS_FILENAME, mQueryStrings);
+            QueryUtils.loadHqlQuery(REQ_COUNT_COMPUTERS_FILENAME, mQueryStrings);
+            QueryUtils.loadHqlQuery(REQ_DELETE_COMPUTER_FILENAME, mQueryStrings);
 
         } catch (final IOException e) {
             throw new DaoException(e.getMessage(), ErrorType.DAO_ERROR);
         }
+    }
+
+    private void mCheckField(EntityField<Computer> field) {
+        if (!(field instanceof ComputerField)) {
+            throw new IllegalArgumentException("Field must be of type " + CompanyField.class.getName());
+        }
+    }
+
+    private Session mGetCurrentSession() {
+        if (mSessionFactory == null || mSessionFactory.isClosed()) {
+            throw new InstantiationError("No session has been given to this dao. Abording...");
+        }
+        return mSessionFactory.getCurrentSession();
     }
 }

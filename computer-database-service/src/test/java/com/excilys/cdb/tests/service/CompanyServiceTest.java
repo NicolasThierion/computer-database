@@ -6,14 +6,13 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.excilys.cdb.model.Company;
-import com.excilys.cdb.persistence.dao.mysql.CompanyDao;
-import com.excilys.cdb.persistence.dao.mysql.ComputerDao;
-import com.excilys.cdb.service.CompanyService;
-import com.excilys.cdb.service.ComputerService;
 import com.excilys.cdb.service.ICompanyService;
 import com.excilys.cdb.service.IComputerService;
 
@@ -23,21 +22,16 @@ import com.excilys.cdb.service.IComputerService;
  * @version 0.2.0
  *
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"/applicationContext.xml"})
 public class CompanyServiceTest {
 
     /** Computer Service used for this tests. */
+    @Autowired
     private IComputerService mComputerService;
+    @Autowired
     private ICompanyService  mCompanyService;
 
-    /**
-     * init Computer service.
-     */
-    @Before
-    public final void init() {
-
-        mComputerService = new ComputerService(ComputerDao.getInstance());
-        mCompanyService = new CompanyService(CompanyDao.getInstance(), ComputerDao.getInstance());
-    }
 
     /**
      * Test of CompanyService.listByName().
@@ -48,7 +42,7 @@ public class CompanyServiceTest {
         List<Company> list;
 
         //test list construction of various size
-        for (final int count : new int[] {2, mCompanyService.getCount(), 0}) {
+        for (final int count : new int[] {2, mCompanyService.getCount()}) {
             list = mCompanyService.listByName(0, count);
             assertTrue(list.size() == count);
         }
@@ -148,7 +142,7 @@ public class CompanyServiceTest {
     @Test(expected = NoSuchElementException.class)
     public final void testDelete() {
         final String companyName = "Xiaomi";
-        final int count = mComputerService.listLikeName(0, 0, companyName).size();
+        final int count = mCompanyService.listLikeName(0, 0, companyName).size();
 
         final Company company = new Company(companyName);
         mCompanyService.add(company);

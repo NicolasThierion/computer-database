@@ -8,22 +8,21 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.Select;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.excilys.cdb.dto.ComputerDto;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.persistence.dao.mysql.CompanyDao;
-import com.excilys.cdb.persistence.dao.mysql.ComputerDao;
-import com.excilys.cdb.service.CompanyService;
-import com.excilys.cdb.service.ComputerService;
 import com.excilys.cdb.service.ICompanyService;
 import com.excilys.cdb.service.IComputerService;
 
@@ -33,6 +32,8 @@ import com.excilys.cdb.service.IComputerService;
  * @author Nicolas THIERION.
  *
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"/applicationContext.xml"})
 public final class AddComputerTest extends CdbViewTest {
 
     private static final Logger LOG            = LoggerFactory.getLogger(AddComputerTest.class);
@@ -57,7 +58,9 @@ public final class AddComputerTest extends CdbViewTest {
     /**
      * Computer & Company service used for fetching entities in this test suite.
      */
+    @Autowired
     private IComputerService    mComputerService;
+    @Autowired
     private ICompanyService     mCompanyService;
 
     /**
@@ -65,9 +68,7 @@ public final class AddComputerTest extends CdbViewTest {
      */
     @Before
     public void init() {
-        mWebDriver = new HtmlUnitDriver();
-        mComputerService = new ComputerService(ComputerDao.getInstance());
-        mCompanyService = new CompanyService(CompanyDao.getInstance());
+        mWebDriver = new FirefoxDriver();
 
         super.setUri(TEST_URI);
         mUrl = super.getUrl();
@@ -88,7 +89,7 @@ public final class AddComputerTest extends CdbViewTest {
      * test if adding wrong values fails.
      */
     @Test
-    @Ignore("not working cause javascript desactivated")
+    // @Ignore("not working cause javascript desactivated")
     public void testAddWrongComputer() {
 
         for (final String name : new String[] {"", "?"}) {
@@ -96,7 +97,7 @@ public final class AddComputerTest extends CdbViewTest {
         }
 
         final String name = "Valid name";
-        for (final String rd : new String[] {"", "azerty", "40-40-4000"}) {
+        for (final String rd : new String[] {"azerty", "40-40-4000"}) {
             assertTrue(!mAddComputer(name, rd, "", 1L));
         }
 

@@ -7,15 +7,17 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.excilys.cdb.dto.ComputerDto;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.persistence.dao.mysql.ComputerDao;
-import com.excilys.cdb.service.ComputerService;
 import com.excilys.cdb.service.IComputerService;
 import com.excilys.cdb.servlet.ViewConfig;
 
@@ -25,6 +27,8 @@ import com.excilys.cdb.servlet.ViewConfig;
  * @author Nicolas THIERION.
  *
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"/applicationContext.xml"})
 public final class DeleteComputerTest extends CdbViewTest {
 
     /* ***
@@ -51,6 +55,7 @@ public final class DeleteComputerTest extends CdbViewTest {
     /**
      * Computer & Company service used for fetching entities in this test suite.
      */
+    @Autowired
     private IComputerService    mComputerService;
 
     /**
@@ -59,7 +64,6 @@ public final class DeleteComputerTest extends CdbViewTest {
     @Before
     public void init() {
         mWebDriver = new FirefoxDriver();
-        mComputerService = new ComputerService(ComputerDao.getInstance());
 
         super.setUri(TEST_URI);
         mUrl = super.getUrl();

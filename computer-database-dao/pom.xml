@@ -58,7 +58,7 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
         </dependency>
-    
+
         <!-- local session factory -->
         <dependency>
             <groupId>org.springframework</groupId>

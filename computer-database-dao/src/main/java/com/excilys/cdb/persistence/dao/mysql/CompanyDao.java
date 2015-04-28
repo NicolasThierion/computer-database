@@ -63,7 +63,7 @@ public class CompanyDao implements ICompanyDao {
 
     /**
      * Constructor with argument. Create a new CompanyDao that will use the
-     * given SessionFactory to submid query to the DB.
+     * given SessionFactory to submit queries to the DB.
      *
      * @param sessionFactory
      *            SessionFactory to access the DB.
@@ -93,11 +93,10 @@ public class CompanyDao implements ICompanyDao {
     /* ***
      * DAO SERVICES
      */
-    @SuppressWarnings("unchecked")
     @Override
     public List<Company> listEqual(EntityField<Company> field, String value, int offset, int count) {
 
-        List<Company> resList;
+
         // check offset parameter
         if (offset < 0) {
             throw new IllegalArgumentException("search offset cannot be negative");
@@ -125,9 +124,10 @@ public class CompanyDao implements ICompanyDao {
 
         // set range parameters
         query.setFirstResult(offset).setMaxResults(count);
-        // execute the query
 
-        resList = query.list();
+        // execute the query
+        @SuppressWarnings("unchecked")
+        final List<Company> resList = query.list();
         return resList;
     }
 
@@ -150,7 +150,6 @@ public class CompanyDao implements ICompanyDao {
         // place field criteria by hand...
         hqlStr = String.format(hqlStr, field.getLabel());
         final Query query = mGetCurrentSession().createQuery(hqlStr);
-
         query.setString("value", value);
 
         // execute the query
@@ -168,8 +167,10 @@ public class CompanyDao implements ICompanyDao {
             throw new IllegalArgumentException("Trying to add a company : " + company
                     + " with non-blank field \"company id\"");
         }
+
+        // save company
         mGetCurrentSession().save(company);
-        // save computer
+        // ensure company has been saved.
         if (company.getId() == null || company.getId() == 0) {
             throw new DaoException(new StringBuilder().append("Something went wrong when adding company ")
                     .append(company).append(". No changes commited.").toString(), ErrorType.SQL_ERROR);
@@ -188,7 +189,7 @@ public class CompanyDao implements ICompanyDao {
     @Override
     public void delete(Long id) throws DaoException, IllegalArgumentException {
 
-        // Delete computer by id : ensure computer has id != null
+        // Delete company by id : ensure computer has id != null
         if (id == null) {
             throw new IllegalArgumentException("Company id is null. Cannot delete this company");
         }

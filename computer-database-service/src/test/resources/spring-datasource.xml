@@ -29,12 +29,18 @@
             <list>
                 <value>com.excilys.cdb.model.Company</value>
                 <value>com.excilys.cdb.model.Computer</value>
-            </list>
-
+                </list>
+            
         </property>
-        <!-- <property name="mappingResources"> <list> <value>Computer.hbm.xml</value> 
-            <value>Company.hbm.xml</value> </list> </property> -->
-
+        <!-- 
+        <property name="mappingResources">
+            <list>
+                <value>Computer.hbm.xml</value>
+                <value>Company.hbm.xml</value>
+            </list>
+        </property>
+         -->
+        
         <property name="hibernateProperties">
             <value>
                 hibernate.format_sql=true

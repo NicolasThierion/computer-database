@@ -9,18 +9,18 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.support.ui.Select;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.excilys.cdb.dto.ComputerDto;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.persistence.dao.mysql.CompanyDao;
-import com.excilys.cdb.persistence.dao.mysql.ComputerDao;
-import com.excilys.cdb.service.CompanyService;
-import com.excilys.cdb.service.ComputerService;
 import com.excilys.cdb.service.ICompanyService;
 import com.excilys.cdb.service.IComputerService;
 
@@ -30,6 +30,8 @@ import com.excilys.cdb.service.IComputerService;
  * @author Nicolas THIERION.
  *
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"/applicationContext.xml"})
 public final class EditComputerTest extends CdbViewTest {
 
     /* ***
@@ -56,7 +58,9 @@ public final class EditComputerTest extends CdbViewTest {
     /**
      * Computer & Company service used for fetching entities in this test suite.
      */
+    @Autowired
     private IComputerService    mComputerService;
+    @Autowired
     private ICompanyService     mCompanyService;
 
 
@@ -66,8 +70,7 @@ public final class EditComputerTest extends CdbViewTest {
     @Before
     public void init() {
         mWebDriver = new HtmlUnitDriver();
-        mComputerService = new ComputerService(ComputerDao.getInstance());
-        mCompanyService = new CompanyService(CompanyDao.getInstance());
+
     }
 
     /**
