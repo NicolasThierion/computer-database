@@ -106,10 +106,8 @@ public class ComputerDto implements Serializable {
             final Company company = computer.getCompany();
             final Long id = computer.getId();
             final String name = computer.getName();
-            final String releaseDate = (computer.getReleaseDate() != null
-                    ? computer.getReleaseDate().toString() : "");
-            final String discontDate = (computer.getDiscontinuedDate() != null
-                    ? computer.getDiscontinuedDate().toString() : "");
+            final String releaseDate = (computer.getIntroduced() != null ? computer.getIntroduced().toString() : "");
+            final String discontDate = (computer.getDiscontinued() != null ? computer.getDiscontinued().toString() : "");
             final CompanyDto companyDto = (company != null ? CompanyDto.fromCompany(company) : null);
             dto.mNewComputerDto(id, name, releaseDate, discontDate, companyDto);
         }
@@ -157,10 +155,10 @@ public class ComputerDto implements Serializable {
             computer.setName(this.name);
         }
         if (mReleaseDate != null && !mReleaseDate.trim().isEmpty()) {
-            computer.setReleaseDate(LocalDate.parse(mReleaseDate));
+            computer.setIntroduced(LocalDate.parse(mReleaseDate));
         }
         if (mDiscDate != null && !mDiscDate.trim().isEmpty()) {
-            computer.setDiscontinuedDate(LocalDate.parse(mDiscDate));
+            computer.setDiscontinued(LocalDate.parse(mDiscDate));
         }
         if (mCompanyDto != null) {
             company.setId(mCompanyDto.getId());
@@ -221,6 +219,7 @@ public class ComputerDto implements Serializable {
         return (mCompanyDto != null ? new CompanyDto(mCompanyDto) : null);
     }
 
+    @SuppressWarnings("deprecation")
     public boolean isValid() {
         return this.name != null && !this.name.trim().isEmpty() && toComputer().isValid();
     }

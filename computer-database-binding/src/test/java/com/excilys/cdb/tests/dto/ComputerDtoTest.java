@@ -6,11 +6,13 @@ import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.List;
 
+import org.hibernate.SessionFactory;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.excilys.cdb.dto.ComputerDto;
 import com.excilys.cdb.model.Company;
@@ -31,6 +33,9 @@ public class ComputerDtoTest {
     /** Logger used in these tests. */
     private Logger mLogger;
 
+    @Autowired
+    private SessionFactory mSessionFactory;
+
     @Before
     public final void initLogger() {
         mLogger = LoggerFactory.getLogger(ComputerDtoTest.class);
@@ -39,6 +44,7 @@ public class ComputerDtoTest {
     /**
      * Test of ComputerDto constructors.
      */
+    @SuppressWarnings("deprecation")
     @Test
     public final void testNewComputerDto() {
         final String name = "Surface pro 4";
@@ -74,8 +80,8 @@ public class ComputerDtoTest {
                             if (iName != null) {
                                 computer.setName(iName);
                             }
-                            computer.setReleaseDate(rd);
-                            computer.setDiscontinuedDate(dd);
+                            computer.setIntroduced(rd);
+                            computer.setDiscontinued(dd);
                             computer.setCompany(iCompany);
 
                             dto = ComputerDto.fromComputer(computer);
@@ -91,7 +97,7 @@ public class ComputerDtoTest {
     @Test
     @Ignore("should mock Dao")
     public final void testDtoFromList() {
-        final List<Computer> computers = ComputerDao.getInstance().listBy(ComputerField.NAME);
+        final List<Computer> computers = new ComputerDao(mSessionFactory).listBy(ComputerField.NAME);
         final List<ComputerDto> dtos = ComputerDto.fromComputers(computers);
         assertTrue(computers.size() == dtos.size());
         final Iterator<ComputerDto> dtoIt = dtos.iterator();
