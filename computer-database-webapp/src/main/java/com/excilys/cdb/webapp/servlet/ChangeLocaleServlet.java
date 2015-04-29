@@ -1,4 +1,4 @@
-package com.excilys.cdb.servlet;
+package com.excilys.cdb.webapp.servlet;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.excilys.cdb.servlet.ViewConfig.LocaleChanger.Get;
+import com.excilys.cdb.webapp.servlet.ViewConfig.LocaleChanger.Get;
 /**
  * Servlet implementation to handle dashboard page.
  */

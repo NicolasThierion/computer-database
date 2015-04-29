@@ -1,5 +1,7 @@
 package com.excilys.cdb.persistence.dao;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.EntityField;
 
@@ -11,7 +13,8 @@ import com.excilys.cdb.model.EntityField;
  * @author Nicolas THIERION
  * @version 0.3.0
  */
-public interface ICompanyDao extends ICrudDao<Company> {
+@Transactional
+public interface ICompanyDao extends ICrudDao<Long, Company> {
 
     public enum CompanyField implements EntityField<Company> {
         ID("company.id"), NAME("company.name");

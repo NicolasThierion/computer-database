@@ -1,16 +1,10 @@
 package com.excilys.cdb.persistence.dao.mysql;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.cdb.model.Company;
@@ -26,26 +20,15 @@ import com.excilys.cdb.persistence.dao.ICompanyDao;
  * @version 0.3.0
  */
 @Repository("companyDao")
-public class CompanyDao implements ICompanyDao {
+public class CompanyDao extends AbstractMySqlDao<Company> implements ICompanyDao {
 
     /* ***
      * DB REQUESTS
      */
-    /** various sql script user to build preparedStatements. */
+    /** hql scripts needed by this DAO. */
     private static final String REQ_SELECT_COMPANIES_FILENAME = "select_companies.hql";
     private static final String REQ_COUNT_COMPANIES_FILENAME  = "select_company_count.hql";
     private static final String REQ_DELETE_COMPANY_FILENAME   = "delete_company_with_id.hql";
-
-    /* ***
-     * ATTRIBUTES
-     */
-    /** Singleton's instance. */
-    private Map<String, String> mQueryStrings;
-
-    /** provides a session to submit HQL queries to datasource. */
-    @Autowired
-    private SessionFactory      mSessionFactory;
-
 
     /* ***
      * CONSTRUCTORS / DESTRUCTORS
@@ -58,7 +41,7 @@ public class CompanyDao implements ICompanyDao {
      * DB.
      */
     public CompanyDao() {
-        mLoadHqlQueries();
+        super(REQ_SELECT_COMPANIES_FILENAME, REQ_COUNT_COMPANIES_FILENAME, REQ_DELETE_COMPANY_FILENAME);
     }
 
     /**
@@ -69,15 +52,8 @@ public class CompanyDao implements ICompanyDao {
      *            SessionFactory to access the DB.
      */
     public CompanyDao(SessionFactory sessionFactory) {
-        mLoadHqlQueries();
-        mSessionFactory = sessionFactory;
-    }
-
-    /* ***
-     * ACCESSORS
-     */
-    public void setSessionFactory(SessionFactory sessionFactory) {
-        mSessionFactory = sessionFactory;
+        super(REQ_SELECT_COMPANIES_FILENAME, REQ_COUNT_COMPANIES_FILENAME, REQ_DELETE_COMPANY_FILENAME);
+        super.setSessionFactory(sessionFactory);
     }
 
 
@@ -115,10 +91,10 @@ public class CompanyDao implements ICompanyDao {
         // get a connection & prepare needed statement
 
         // get HQL query string & format it
-        String hqlStr = mQueryStrings.get(REQ_SELECT_COMPANIES_FILENAME);
+        String hqlStr = getQuery(REQ_SELECT_COMPANIES_FILENAME);
         // place field criteria & order by hand...
         hqlStr = String.format(hqlStr, field.getLabel(), field.getLabel());
-        final Query query = mGetCurrentSession().createQuery(hqlStr);
+        final Query query = createQuery(hqlStr);
 
         query.setString("value", value);
 
@@ -146,10 +122,10 @@ public class CompanyDao implements ICompanyDao {
         mCheckField(field);
 
         // get HQL query string & format it
-        String hqlStr = mQueryStrings.get(REQ_COUNT_COMPANIES_FILENAME);
+        String hqlStr = getQuery(REQ_COUNT_COMPANIES_FILENAME);
         // place field criteria by hand...
         hqlStr = String.format(hqlStr, field.getLabel());
-        final Query query = mGetCurrentSession().createQuery(hqlStr);
+        final Query query = createQuery(hqlStr);
         query.setString("value", value);
 
         // execute the query
@@ -169,7 +145,7 @@ public class CompanyDao implements ICompanyDao {
         }
 
         // save company
-        mGetCurrentSession().save(company);
+        daoSave(company);
         // ensure company has been saved.
         if (company.getId() == null || company.getId() == 0) {
             throw new DaoException(new StringBuilder().append("Something went wrong when adding company ")
@@ -194,8 +170,8 @@ public class CompanyDao implements ICompanyDao {
             throw new IllegalArgumentException("Company id is null. Cannot delete this company");
         }
 
-        final String hqlStr = mQueryStrings.get(REQ_DELETE_COMPANY_FILENAME);
-        final Query query = mGetCurrentSession().createQuery(hqlStr);
+        final String hqlStr = getQuery(REQ_DELETE_COMPANY_FILENAME);
+        final Query query = createQuery(hqlStr);
         query.setParameter("id", id);
 
         if (query.executeUpdate() != 1) {
@@ -205,27 +181,8 @@ public class CompanyDao implements ICompanyDao {
     }
 
     /* ***
-     * PRIVATE METHODS
+     * PRIVATE METHOD
      */
-    private Session mGetCurrentSession() {
-        if (mSessionFactory == null || mSessionFactory.isClosed()) {
-            throw new InstantiationError("No session has been given to this dao. Abording...");
-        }
-        return mSessionFactory.getCurrentSession();
-    }
-
-    private void mLoadHqlQueries() {
-        mQueryStrings = new HashMap<String, String>();
-        new File(".").getAbsolutePath();
-        try {
-            QueryUtils.loadHqlQuery(REQ_SELECT_COMPANIES_FILENAME, mQueryStrings);
-            QueryUtils.loadHqlQuery(REQ_COUNT_COMPANIES_FILENAME, mQueryStrings);
-            QueryUtils.loadHqlQuery(REQ_DELETE_COMPANY_FILENAME, mQueryStrings);
-
-        } catch (final IOException e) {
-            throw new DaoException(e.getMessage(), ErrorType.SQL_ERROR);
-        }
-    }
 
     private void mCheckField(EntityField<Company> field) {
         if (!(field instanceof CompanyField)) {

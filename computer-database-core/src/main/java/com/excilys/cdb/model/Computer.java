@@ -16,6 +16,8 @@ import javax.persistence.Table;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import utils.LocalDateToTimestampConverter;
+
 /**
  * @author Nicolas THIERION
  * @version 0.2.0

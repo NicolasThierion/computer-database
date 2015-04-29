@@ -1,5 +1,7 @@
 package com.excilys.cdb.persistence.dao;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.EntityField;
 
@@ -11,7 +13,8 @@ import com.excilys.cdb.model.EntityField;
  * @author Nicolas THIERION
  * @version 0.3.0
  */
-public interface IComputerDao extends ICrudDao<Computer> {
+@Transactional
+public interface IComputerDao extends ICrudDao<Long, Computer> {
 
 
     public enum ComputerField implements EntityField<Computer> {

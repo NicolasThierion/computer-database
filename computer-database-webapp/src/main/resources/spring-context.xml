@@ -13,14 +13,12 @@
 
     <import resource="classpath:spring-datasource.xml" />
     <import resource="classpath:spring-message.xml" />
-
+    <import resource="classpath:spring-security.xml" />
+    
     <!-- enable Autowiring -->
-    <context:component-scan base-package="com.excilys.cdb.persistence.dao.mysql" />
-    <context:component-scan base-package="com.excilys.cdb.model" />
-    <context:component-scan base-package="com.excilys.cdb.dto" />
     <context:component-scan base-package="com.excilys.cdb.service" />
     <context:component-scan base-package="com.excilys.cdb.validator" />
-    <context:component-scan base-package="com.excilys.cdb.servlet" />
+    <context:component-scan base-package="com.excilys.cdb.webapp.servlet" />
     <context:annotation-config />
 
     <!-- Enable @requestMapping, @Controller annotations  -->

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:security="http://www.springframework.org/schema/security"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/security
+		http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <import resource="classpath:spring-datasource.xml" />
+    <import resource="classpath:spring-message.xml" />
+    
+    
+    <security:authentication-manager>
+        <security:authentication-provider user-service-ref="userService" />
+    </security:authentication-manager>
+
+    <bean id="userService"
+        class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+
+    <!-- DigestAuthentication -->
+    <bean id="digestFilter"
+        class="org.springframework.security.web.authentication.www.DigestAuthenticationFilter">
+        <property name="userDetailsService" ref="userService" />
+        <property name="authenticationEntryPoint" ref="digestEntryPoint" />
+        <property name="passwordAlreadyEncoded" value="true" />        
+    </bean>
+    <bean id="digestEntryPoint"
+        class="org.springframework.security.web.authentication.www.DigestAuthenticationEntryPoint">
+        <property name="realmName" value="Computer database" />
+        <property name="key" value="realmsalt" />
+    </bean>
+
+
+    <!-- the security namespace configuration -->
+    <security:http use-expressions="true" entry-point-ref="digestEntryPoint">
+        <security:intercept-url pattern="/**"
+            access="isAuthenticated()" />
+        <security:access-denied-handler
+            error-page="/WEB-INF/views/403.jsp" />
+        <security:intercept-url pattern="/dashboard*"
+            method="GET" access="hasRole('USER')" />
+        <security:intercept-url pattern="/admin/deleteComputer*"
+            method="POST" access="hasRole('ADMIN')" />
+        <security:intercept-url pattern="/addComputer*"
+            access="hasRole('USER')" />
+        <security:intercept-url pattern="/editComputer*"
+            access="hasRole('USER')" />
+        <security:custom-filter ref="digestFilter"
+            after="BASIC_AUTH_FILTER" />
+    </security:http>
+
+
+</beans>

@@ -1,4 +1,4 @@
-package com.excilys.cdb.servlet;
+package com.excilys.cdb.webapp.servlet;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -21,9 +21,9 @@ import com.excilys.cdb.dto.ComputerDto;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.service.ICompanyService;
 import com.excilys.cdb.service.IComputerService;
-import com.excilys.cdb.servlet.ViewConfig.EditComputer.Get;
-import com.excilys.cdb.servlet.ViewConfig.EditComputer.Set;
 import com.excilys.cdb.validator.ComputerValidator;
+import com.excilys.cdb.webapp.servlet.ViewConfig.EditComputer.Get;
+import com.excilys.cdb.webapp.servlet.ViewConfig.EditComputer.Set;
 
 /**
  * Servlet implementation to handle 'edit computer' page. Handle

@@ -1,4 +1,4 @@
-package com.excilys.cdb.servlet;
+package com.excilys.cdb.webapp.servlet;
 
 
 /**
@@ -58,7 +58,7 @@ public final class ViewConfig {
     }
 
     public static class DeleteComputer {
-        public static final String MAPPING = "/deleteComputer";
+        public static final String MAPPING = "/admin/deleteComputer";
 
         /** input parameters. sent by JSP. */
         public static final class Get extends GetParam {

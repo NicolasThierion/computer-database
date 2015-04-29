@@ -29,6 +29,7 @@
             <list>
                 <value>com.excilys.cdb.model.Company</value>
                 <value>com.excilys.cdb.model.Computer</value>
+                <value>com.excilys.cdb.model.User</value>
             </list>
 
         </property>

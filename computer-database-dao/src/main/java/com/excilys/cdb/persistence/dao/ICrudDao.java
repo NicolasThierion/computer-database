@@ -16,7 +16,7 @@ import com.excilys.cdb.model.Identifiable;
  * @version 0.3.0
  */
 @Transactional
-public interface ICrudDao<T extends Identifiable<Long>> {
+public interface ICrudDao<I, T extends Identifiable<I>> {
 
 
     /**
@@ -219,7 +219,7 @@ public interface ICrudDao<T extends Identifiable<Long>> {
      * @throws IllegalArgumentException
      *             if provided entity is invalid.
      */
-    default void delete(Long id) throws DaoException, IllegalArgumentException {
+    default void delete(I id) throws DaoException, IllegalArgumentException {
         throw new UnsupportedOperationException();
     }
 

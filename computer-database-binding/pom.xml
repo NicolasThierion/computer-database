@@ -22,7 +22,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>computer-database-dao</artifactId>
+            <artifactId>computer-database-persistence</artifactId>
         </dependency>
 
         <!-- apache common validator -->

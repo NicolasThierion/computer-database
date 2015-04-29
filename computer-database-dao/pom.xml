@@ -7,7 +7,7 @@
         <artifactId>computer-database</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>computer-database-dao</artifactId>
+    <artifactId>computer-database-persistence</artifactId>
     <name>computer-database-dao</name>
     <url>http://maven.apache.org</url>
     <properties>

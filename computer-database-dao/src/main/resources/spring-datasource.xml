@@ -12,12 +12,12 @@
     <context:property-placeholder location="classpath:mysql.properties" />
 
     <!-- JDBC Data Source -->
-    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource"
-        destroy-method="close">
+    <bean id="dataSource" class="com.jolbox.bonecp.BoneCPDataSource"
+        lazy-init="true" destroy-method="close">
         <property name="username" value="${db.user}" />
         <property name="password" value="${db.password}" />
-        <property name="url" value="${db.url}" />
-        <property name="driverClassName" value="${db.driverClassName}" />
+        <property name="jdbcUrl" value="${db.url}" />
+        <property name="driverClass" value="${db.driverClassName}" />
     </bean>
 
     <!-- Hibernate session factory -->
@@ -25,13 +25,15 @@
         class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
         <property name="dataSource" ref="dataSource" />
 
+
         <property name="annotatedClasses">
             <list>
                 <value>com.excilys.cdb.model.Company</value>
                 <value>com.excilys.cdb.model.Computer</value>
-                </list>
+                <value>com.excilys.cdb.model.User</value>
+            </list>
         </property>
-        
+
         <property name="hibernateProperties">
             <value>
                 hibernate.format_sql=true
@@ -45,5 +47,9 @@
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
     <tx:annotation-driven transaction-manager="transactionManager" />
+
+
     <context:annotation-config />
+    <context:component-scan base-package="com.excilys.cdb.persistence.dao.mysql" />
+
 </beans>

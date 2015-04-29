@@ -1,15 +1,10 @@
 package com.excilys.cdb.persistence.dao.mysql;
 
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.cdb.model.Computer;
@@ -27,26 +22,17 @@ import com.excilys.cdb.persistence.dao.IComputerDao;
  * @version 0.2.0
  */
 @Repository("computerDao")
-public class ComputerDao implements IComputerDao {
+public class ComputerDao extends AbstractMySqlDao<Computer> implements IComputerDao {
 
     /* ***
      * DB REQUESTS
      * ***/
 
-    /** various sql script user to build preparedStatements. */
+    /** hql scripts needed by this DAO. */
     private static final String REQ_SELECT_COMPUTERS_FILENAME = "select_computers.hql";
     private static final String REQ_COUNT_COMPUTERS_FILENAME  = "select_computer_count.hql";
     private static final String REQ_DELETE_COMPUTER_FILENAME  = "delete_computer_with_id.hql";
 
-    /* ***
-     * ATTRIBUTES
-     */
-    /** SQL query strings. */
-    private Map<String, String> mQueryStrings;
-
-    /** provides a session to submit HQL queries to datasource. */
-    @Autowired
-    private SessionFactory      mSessionFactory;
     /* ***
      * CONSTRUCTORS / DESTRUCTORS
      */
@@ -54,7 +40,7 @@ public class ComputerDao implements IComputerDao {
      * loads SQL query strings from resources.
      */
     private ComputerDao() {
-        mLoadHqlQueries();
+        super(REQ_SELECT_COMPUTERS_FILENAME, REQ_COUNT_COMPUTERS_FILENAME, REQ_DELETE_COMPUTER_FILENAME);
     }
 
     /**
@@ -74,15 +60,8 @@ public class ComputerDao implements IComputerDao {
      *            SessionFactory to access the DB.
      */
     public ComputerDao(SessionFactory sessionFactory) {
-        mLoadHqlQueries();
-        mSessionFactory = sessionFactory;
-    }
-
-    /* ***
-     * ACCESSORS
-     */
-    public void setSessionFactory(SessionFactory sessionFactory) {
-        mSessionFactory = sessionFactory;
+        super(REQ_SELECT_COMPUTERS_FILENAME, REQ_COUNT_COMPUTERS_FILENAME, REQ_DELETE_COMPUTER_FILENAME);
+        super.setSessionFactory(sessionFactory);
     }
 
     /* ***
@@ -109,10 +88,10 @@ public class ComputerDao implements IComputerDao {
         count = (count <= 0 ? Integer.MAX_VALUE : count);
 
         // get HQL query string & format it
-        String hqlStr = mQueryStrings.get(REQ_SELECT_COMPUTERS_FILENAME);
+        String hqlStr = getQuery(REQ_SELECT_COMPUTERS_FILENAME);
         // place field criteria by hand...
         hqlStr = String.format(hqlStr, field.getLabel(), field.getLabel());
-        final Query query = mGetCurrentSession().createQuery(hqlStr);
+        final Query query = createQuery(hqlStr);
 
         query.setString("value", value);
 
@@ -143,10 +122,10 @@ public class ComputerDao implements IComputerDao {
         mCheckField(field);
 
         // get HQL query string & format it
-        String hqlStr = mQueryStrings.get(REQ_COUNT_COMPUTERS_FILENAME);
+        String hqlStr = getQuery(REQ_COUNT_COMPUTERS_FILENAME);
         // place field criteria & order by hand...
         hqlStr = String.format(hqlStr, field.getLabel());
-        final Query query = mGetCurrentSession().createQuery(hqlStr);
+        final Query query = createQuery(hqlStr);
         query.setString("value", value);
 
         // execute the query
@@ -166,7 +145,7 @@ public class ComputerDao implements IComputerDao {
 
         // save computer
         try {
-            mGetCurrentSession().save(computer);
+            daoSave(computer);
         } catch (final Exception e) {
 
         }
@@ -196,7 +175,7 @@ public class ComputerDao implements IComputerDao {
 
         // save computer
         try {
-            mGetCurrentSession().update(computer);
+            daoUpdate(computer);
         } catch (final Exception e) {
             throw new DaoException(new StringBuilder().append("Something went wrong when updating computer ")
                     .append(computer).append(". No changes commited.").toString(), ErrorType.SQL_ERROR);
@@ -220,8 +199,8 @@ public class ComputerDao implements IComputerDao {
             throw new IllegalArgumentException("Computer id is null. Cannot delete this computer");
         }
 
-        final String hqlStr = mQueryStrings.get(REQ_DELETE_COMPUTER_FILENAME);
-        final Query query = mGetCurrentSession().createQuery(hqlStr);
+        final String hqlStr = getQuery(REQ_DELETE_COMPUTER_FILENAME);
+        final Query query = createQuery(hqlStr);
         query.setParameter("id", id);
 
         if (query.executeUpdate() != 1) {
@@ -234,33 +213,11 @@ public class ComputerDao implements IComputerDao {
      * PRIVATE METHODS
      */
 
-    /**
-     * init prepared statement used for various DAO services.
-     */
-    private void mLoadHqlQueries() {
-
-        mQueryStrings = new HashMap<String, String>();
-
-        try {
-            QueryUtils.loadHqlQuery(REQ_SELECT_COMPUTERS_FILENAME, mQueryStrings);
-            QueryUtils.loadHqlQuery(REQ_COUNT_COMPUTERS_FILENAME, mQueryStrings);
-            QueryUtils.loadHqlQuery(REQ_DELETE_COMPUTER_FILENAME, mQueryStrings);
-
-        } catch (final IOException e) {
-            throw new DaoException(e.getMessage(), ErrorType.DAO_ERROR);
-        }
-    }
-
     private void mCheckField(EntityField<Computer> field) {
         if (!(field instanceof ComputerField)) {
             throw new IllegalArgumentException("Field must be of type " + CompanyField.class.getName());
         }
     }
 
-    private Session mGetCurrentSession() {
-        if (mSessionFactory == null || mSessionFactory.isClosed()) {
-            throw new InstantiationError("No session has been given to this dao. Abording...");
-        }
-        return mSessionFactory.getCurrentSession();
-    }
+
 }

@@ -19,7 +19,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.excilys.cdb.dto.ComputerDto;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.service.IComputerService;
-import com.excilys.cdb.servlet.ViewConfig;
+import com.excilys.cdb.webapp.servlet.ViewConfig;
 
 /**
  * Test if addComputer Page loads correctly.
