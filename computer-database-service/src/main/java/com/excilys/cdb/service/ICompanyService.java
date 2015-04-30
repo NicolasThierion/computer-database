@@ -10,7 +10,7 @@ import com.excilys.cdb.model.Company;
  * @author Nicolas THIERION
  * @version 0.3.0
  */
-public interface ICompanyService extends ICrudService<Company> {
+public interface ICompanyService extends ICrudService<Long, Company> {
 
     @Override
     default List<Company> listByName() {
@@ -61,18 +61,18 @@ public interface ICompanyService extends ICrudService<Company> {
      *             if the given id is invalid. Valid id must be positive.
      */
     @Override
-    Company search(long companyId) throws IllegalArgumentException;
+    Company search(Long companyId) throws IllegalArgumentException;
 
     /**
      * Delete the given compute from DB.
      *
-     * @param id
+     * @param ids
      *            The id of company to delete.
      * @throws NoSuchElementException
      *             if no company with this id can be found.
      */
     @Override
-    void delete(long... id) throws NoSuchElementException;
+    void delete(List<Long> ids) throws NoSuchElementException;
 
     /**
      * @param name

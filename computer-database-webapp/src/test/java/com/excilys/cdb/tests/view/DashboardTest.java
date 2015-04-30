@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -57,8 +57,8 @@ public final class DashboardTest extends CdbViewTest {
      */
     @Before
     public void init() {
-        mWebDriver = new HtmlUnitDriver();
-        super.setUri(TEST_URI);
+        mWebDriver = new FirefoxDriver();
+        super.setUri(TEST_URI).authAsAsmin();
         mUrl = super.getUrl();
     }
 

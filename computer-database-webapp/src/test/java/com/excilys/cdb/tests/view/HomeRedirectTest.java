@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 
 /**
  * Test if homepage is reachable from any page of the website.
@@ -39,7 +39,8 @@ public final class HomeRedirectTest extends CdbViewTest {
      */
     @Before
     public void init() {
-        mWebDriver = new HtmlUnitDriver();
+        mWebDriver = new FirefoxDriver();
+
     }
 
     /**
@@ -54,7 +55,7 @@ public final class HomeRedirectTest extends CdbViewTest {
     public void testRedirect() {
 
         for (final String uri : TEST_URI) {
-            super.setUri(uri);
+            super.setUri(uri).authAsAsmin();
             mUrl = super.getUrl();
             mWebDriver.get(mUrl);
             assertTrue(!mWebDriver.getCurrentUrl().equals("about:blank"));
@@ -64,7 +65,7 @@ public final class HomeRedirectTest extends CdbViewTest {
             final WebElement homeLink = mWebDriver.findElements(By.tagName("a")).get(0);
             final String href = homeLink.getAttribute("href");
 
-            super.setUri(uri);
+            super.setUri(uri).authAsAsmin();
             mWebDriver.get(href);
             assertTrue(mWebDriver.getTitle().equals(PAGE_TITLE));
             final String searchTitle = mWebDriver.findElement(By.id(SEARCH_TITLE_ID)).getText();

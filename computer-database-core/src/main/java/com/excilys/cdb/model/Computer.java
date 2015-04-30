@@ -22,6 +22,9 @@ import utils.LocalDateToTimestampConverter;
  * @author Nicolas THIERION
  * @version 0.2.0
  */
+
+// TODO Builder
+// TODO ComputerDaoDto
 @Entity
 @Table(name = "computer")
 public class Computer implements Serializable, Identifiable<Long> {

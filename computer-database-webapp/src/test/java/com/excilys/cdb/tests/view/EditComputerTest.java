@@ -13,7 +13,7 @@ import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.Select;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -69,8 +69,7 @@ public final class EditComputerTest extends CdbViewTest {
      */
     @Before
     public void init() {
-        mWebDriver = new HtmlUnitDriver();
-
+        mWebDriver = new FirefoxDriver();
     }
 
     /**
@@ -90,7 +89,7 @@ public final class EditComputerTest extends CdbViewTest {
     public void testWrongUrl() {
         for (final Long currentId : new Long[] {-1L, Long.MAX_VALUE, 0L}) {
             final String uri = String.format(TEST_URI, currentId);
-            super.setUri(uri);
+            super.setUri(uri).authAsAsmin();
             mUrl = super.getUrl();
             mWebDriver.get(mUrl);
             try {
@@ -105,7 +104,7 @@ public final class EditComputerTest extends CdbViewTest {
     @Test
     public void testCompanyListFilled() {
         final String uri = String.format(TEST_URI, 1L);
-        super.setUri(uri);
+        super.setUri(uri).authAsAsmin();
         mUrl = super.getUrl();
         mWebDriver.get(mUrl);
 
@@ -136,7 +135,7 @@ public final class EditComputerTest extends CdbViewTest {
         for (final Long currentComputerId : computerIds) {
             final ComputerDto computer = ComputerDto.fromComputer(computerIterator.next());
             final String uri = String.format(TEST_URI, currentComputerId);
-            super.setUri(uri);
+            super.setUri(uri).authAsAsmin();
             mUrl = super.getUrl();
             mWebDriver.get(mUrl);
             assertTrue(!mWebDriver.getCurrentUrl().equals("about:blank"));

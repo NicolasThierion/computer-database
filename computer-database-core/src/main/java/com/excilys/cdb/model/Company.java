@@ -16,6 +16,8 @@ import javax.persistence.Table;
  * TODO doc
  *
  */
+// TODO CompanyDaoDto
+// TODO Builder
 @Entity
 @Table(name = "company")
 public class Company implements Serializable, Identifiable<Long> {

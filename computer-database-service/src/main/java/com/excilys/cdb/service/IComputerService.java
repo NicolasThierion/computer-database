@@ -10,7 +10,7 @@ import com.excilys.cdb.model.Computer;
  * @author Nicolas THIERION
  * @version 0.3.0
  */
-public interface IComputerService extends ICrudService<Computer> {
+public interface IComputerService extends ICrudService<Long, Computer> {
 
 
     @Override
@@ -62,7 +62,7 @@ public interface IComputerService extends ICrudService<Computer> {
      *             if the given id is invalid. Valid id must be positive.
      */
     @Override
-    Computer search(long computerId) throws IllegalArgumentException;
+    Computer search(Long computerId) throws IllegalArgumentException;
 
     /**
      * Update the given computer.
@@ -85,7 +85,8 @@ public interface IComputerService extends ICrudService<Computer> {
      *             if no computer with this id can be found.
      */
     @Override
-    void delete(long... ids) throws NoSuchElementException;
+    void delete(List<Long> ids) throws NoSuchElementException;
+
 
     /**
      * @param name

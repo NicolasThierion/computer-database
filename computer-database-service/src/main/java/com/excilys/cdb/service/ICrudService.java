@@ -1,5 +1,6 @@
 package com.excilys.cdb.service;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -11,7 +12,7 @@ import com.excilys.cdb.model.Identifiable;
  * @version 0.2.0
  *
  */
-public interface ICrudService<T extends Identifiable<Long>> {
+public interface ICrudService<I, T extends Identifiable<I>> {
 
     /**
      * List entities. Order results by name.
@@ -85,7 +86,7 @@ public interface ICrudService<T extends Identifiable<Long>> {
      * @throws IllegalArgumentException
      *             if the given id is invalid. Valid id must be positive.
      */
-    default T retrieve(long entityId) throws NoSuchElementException, IllegalArgumentException {
+    default T retrieve(I entityId) throws NoSuchElementException, IllegalArgumentException {
         final T entity;
         entity = search(entityId);
         if (entity == null) {
@@ -104,7 +105,7 @@ public interface ICrudService<T extends Identifiable<Long>> {
      * @throws IllegalArgumentException
      *             if the given id is invalid. Valid id must be positive.
      */
-    default T search(long entityId) throws IllegalArgumentException {
+    default T search(I entityId) throws IllegalArgumentException {
         throw new UnsupportedOperationException();
     }
 
@@ -141,7 +142,13 @@ public interface ICrudService<T extends Identifiable<Long>> {
      * @throws NoSuchElementException
      *             if no entity with this id can be found.
      */
-    default void delete(long... ids) throws NoSuchElementException {
+    default void delete(I id) throws NoSuchElementException {
+        final LinkedList<I> list = new LinkedList<I>();
+        list.add(id);
+        delete(list);
+    }
+
+    default void delete(List<I> ids) throws NoSuchElementException {
         throw new UnsupportedOperationException();
     }
 

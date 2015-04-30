@@ -31,5 +31,20 @@
             <artifactId>commons-validator</artifactId>
             <version>${apache.commons.commons-validator}</version>
         </dependency>
+
+        <!-- Spring mvc -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+        </dependency>
+
+        <!-- Spring test -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
+        
     </dependencies>
 </project>

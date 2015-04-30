@@ -3,23 +3,21 @@ package com.excilys.cdb.persistence.dao.mysql;
 import java.util.List;
 
 import org.hibernate.Query;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.cdb.model.EntityField;
 import com.excilys.cdb.model.User;
+import com.excilys.cdb.model.UserAuthoritiesAssoc;
 import com.excilys.cdb.persistence.dao.DaoException;
 import com.excilys.cdb.persistence.dao.IUserDao;
 
 
-
+//TODO doc
 @Repository("userDao")
 public class UserDao extends AbstractMySqlDao<User> implements IUserDao {
-    private static final Logger LOG = LoggerFactory.getLogger(UserDao.class);
 
-    static final String         REQ_SELECT_USERS_FILENAME = "select_users.hql";
-    static final String         REQ_COUNT_USERS_FILENAME = "select_user_count.hql";
+    static final String REQ_SELECT_USERS_FILENAME  = "select_users.hql";
+    static final String REQ_COUNT_USERS_FILENAME   = "select_user_count.hql";
 
     public UserDao() {
         super(REQ_SELECT_USERS_FILENAME, REQ_COUNT_USERS_FILENAME);
@@ -28,21 +26,29 @@ public class UserDao extends AbstractMySqlDao<User> implements IUserDao {
     @Override
     public User add(User user) {
         mAssertUserValid(user);
-
-        LOG.trace("create : {} ", user);
         daoSave(user);
+
+        for (final User.Authority role : user.getAuthorities()) {
+            getCurrentSession().save(new UserAuthoritiesAssoc(user, role));
+        }
+
         return user;
     }
 
 
     @Override
     public void delete(String userName) {
-        LOG.trace("delete : {} ", userName);
         final List<User> userList = listEqual(UserField.NAME, userName);
         if (userList.isEmpty()) {
             return;
         }
-        daoDelete(userList.get(0));
+        final User user = userList.get(0);
+
+        // delete authorities from this user first.
+        for (final User.Authority role : user.getAuthorities()) {
+            getCurrentSession().delete(new UserAuthoritiesAssoc(user, role));
+        }
+        daoDelete(user);
     }
 
     @Override
@@ -104,7 +110,7 @@ public class UserDao extends AbstractMySqlDao<User> implements IUserDao {
     }
 
     /* ***
-     * PRIVATE METHOD
+     * PRIVATE METHODS
      */
 
     private void mCheckField(EntityField<User> field) {
@@ -114,7 +120,7 @@ public class UserDao extends AbstractMySqlDao<User> implements IUserDao {
     }
 
     private void mAssertUserValid(User user) {
-        if (user.getUserName() == null || user.getUserName().trim().isEmpty()) {
+        if (user.getUserame() == null || user.getUserame().trim().isEmpty()) {
             throw new IllegalArgumentException("username must not be empty.");
         }
         if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {

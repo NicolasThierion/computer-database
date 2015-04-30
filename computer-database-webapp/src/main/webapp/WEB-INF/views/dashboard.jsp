@@ -2,12 +2,14 @@
 <%
     //jsp directives
 %>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1" session="false"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" session="false"%>
 <%
     //jsp imports
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="mylib"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+
 <%
     //java imports
 %>
@@ -65,14 +67,14 @@
                 </div>
             </div>
         </div>
-        <form id="deleteForm" action="deleteComputer" method="POST">
+        <form:form id="deleteForm" action="deleteComputer" method="POST">
             <input type="hidden" name="selection" value="" />
             <input type="hidden" name="offset" value="${pageBean.offset}"/>
             <input type="hidden" name="search" value="${pageBean.search}"/>
             <input type="hidden" name="sortBy" value="${pageBean.sortBy}"/>
             <input type="hidden" name="order" value="${pageBean.sortOrder}"/>
             <input type="hidden" name="size" value="${pageBean.size}"/>
-        </form>
+        </form:form>
         <!-- search results page list -->
         <div class="container" style="margin-top: 10px;">
             <table class="table table-striped table-bordered">

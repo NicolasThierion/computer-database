@@ -11,7 +11,7 @@ import com.excilys.cdb.model.User;
 public interface IUserDao extends ICrudDao<String, User> {
 
     public enum UserField implements EntityField<User> {
-        NAME("user.username"), ID(NAME.getLabel()), PASSWORD("user.password");
+        NAME("user.username"), ID(NAME.getLabel()), PASSWORD("user.password"), ROLE("authorities.authority");
 
         String mLabel;
 
@@ -29,6 +29,7 @@ public interface IUserDao extends ICrudDao<String, User> {
             return mLabel;
         }
     }
+
 
     @Override
     public User add(User user);

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -45,7 +46,12 @@ public class AbstractMySqlDao<T> {
     }
 
     protected String getQuery(String filename) {
-        return mQueryStrings.get(filename);
+        final String str = mQueryStrings.get(filename);
+        if (str == null) {
+            throw new NoSuchElementException("Query '" + filename
+                    + "' has not been registered. Forgot to pass it through super() constructor ?");
+        }
+        return str;
     }
 
     protected void daoSave(T model) {

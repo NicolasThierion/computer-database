@@ -12,7 +12,6 @@ import com.excilys.cdb.model.EntityField;
 import com.excilys.cdb.persistence.dao.DaoException;
 import com.excilys.cdb.persistence.dao.DaoException.ErrorType;
 import com.excilys.cdb.persistence.dao.ICompanyDao;
-
 /**
  * MySQL immplementation of ICompanyDao.
  *

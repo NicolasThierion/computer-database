@@ -106,7 +106,7 @@ public class ComputerService implements IComputerService {
     }
 
     @Override
-    public void delete(long... ids) throws NoSuchElementException {
+    public void delete(List<Long> ids) throws NoSuchElementException {
         LOG.info("delete(" + ids + ")");
 
         // TODO use SQL to delete many
@@ -132,7 +132,7 @@ public class ComputerService implements IComputerService {
     }
 
     @Override
-    public Computer search(long computerId) throws IllegalArgumentException {
+    public Computer search(Long computerId) throws IllegalArgumentException {
         LOG.info("search(" + computerId + ")");
         if (computerId < 0) {
             throw new IllegalArgumentException("Computer id must be positive");

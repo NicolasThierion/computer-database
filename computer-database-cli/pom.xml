@@ -23,6 +23,12 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>computer-database-service</artifactId>
         </dependency>
+
+        <!-- Hibernate Validator -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

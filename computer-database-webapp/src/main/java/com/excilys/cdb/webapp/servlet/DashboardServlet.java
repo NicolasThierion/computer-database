@@ -1,5 +1,6 @@
 package com.excilys.cdb.webapp.servlet;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -94,10 +95,10 @@ public class DashboardServlet {
             value = {ViewConfig.DeleteComputer.MAPPING, ViewConfig.SearchComputer.MAPPING},
             method = RequestMethod.POST)
     public ModelAndView doDeleteComputer(
-            @RequestParam(value = ViewConfig.DeleteComputer.Get.COMPUTER_IDS, required = true) long[] computerIds,
+            @RequestParam(value = ViewConfig.DeleteComputer.Get.COMPUTER_IDS, required = true) Long[] computerIds,
             @ModelAttribute(Get.PAGE_BEAN) Page<?> page) {
 
-        mComputerService.delete(computerIds);
+        mComputerService.delete(Arrays.asList(computerIds));
 
         // we will redirect to dashboard. As dashboard is handled by GET, it
         // cannot get attributes from this POST context. We have to pass

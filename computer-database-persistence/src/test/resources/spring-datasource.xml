@@ -30,7 +30,8 @@
                 <value>com.excilys.cdb.model.Company</value>
                 <value>com.excilys.cdb.model.Computer</value>
                 <value>com.excilys.cdb.model.User</value>
-            </list>
+                <value>com.excilys.cdb.model.UserAuthoritiesAssoc</value>
+                </list>
 
         </property>
         <!-- <property name="mappingResources"> <list> <value>Computer.hbm.xml</value> 

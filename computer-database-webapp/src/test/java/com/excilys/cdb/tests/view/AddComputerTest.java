@@ -69,8 +69,7 @@ public final class AddComputerTest extends CdbViewTest {
     @Before
     public void init() {
         mWebDriver = new FirefoxDriver();
-
-        super.setUri(TEST_URI);
+        super.setUri(TEST_URI).authAsAsmin();
         mUrl = super.getUrl();
         mWebDriver.get(mUrl);
     }

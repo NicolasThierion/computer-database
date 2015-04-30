@@ -142,7 +142,7 @@ public class CompanyService implements ICompanyService {
     }
 
     @Override
-    public Company retrieve(long companyId) {
+    public Company retrieve(Long companyId) {
         final Company company = search(companyId);
         if (company == null) {
             throw new NoSuchElementException("no company with id = " + companyId + " can be found");
@@ -151,7 +151,7 @@ public class CompanyService implements ICompanyService {
     }
 
     @Override
-    public Company search(long companyId) {
+    public Company search(Long companyId) {
         LOG.info("search(" + companyId + ")");
         if (companyId <= 0) {
             throw new IllegalArgumentException("Company id must be positive");
@@ -172,7 +172,7 @@ public class CompanyService implements ICompanyService {
      */
     @Transactional
     @Override
-    public void delete(long... ids) throws NoSuchElementException {
+    public void delete(List<Long> ids) throws NoSuchElementException {
         LOG.info("delete(" + ids + ")");
         mAssertComputerDao();
 

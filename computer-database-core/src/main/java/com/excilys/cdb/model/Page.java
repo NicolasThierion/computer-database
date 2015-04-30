@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.stereotype.Component;
+import javax.persistence.Entity;
 
 
 /**
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  *         results according some search & display parameters.
  * @param <T>
  */
-@Component
+@Entity
 public class Page<T> implements Serializable {
 
     public enum SortOrder {
