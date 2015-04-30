@@ -20,13 +20,13 @@
                 <li class="dropdown">
                 <a href="#" class="dropdown-toggle " data-toggle="dropdown" role="button" aria-expanded="false">
                     <spring:message code="flag" var="flag" />
-                        <img src="resources/${flag}.png" alt="uk flag" style="width:25px;height:20px">
+                        <img src="${APP_ROOT}/resources/${flag}.png" alt="uk flag" style="width:25px;height:20px">
                     <spring:message code="language" />
                     <span class="caret"></span>
                 </a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="?${queryString}lang=en"><img src="resources/uk.png" alt="uk flag" style="width:25px;height:20px"> English</a></li>
-                        <li><a href="?${queryString}lang=fr"><img src="resources/fr.png" alt="fr flag" style="width:25px;height:20px"> Français</a></li>
+                        <li><a href="?${queryString}lang=en"><img src="${APP_ROOT}/resources/uk.png" alt="uk flag" style="width:25px;height:20px"> English</a></li>
+                        <li><a href="?${queryString}lang=fr"><img src="${APP_ROOT}/resources/fr.png" alt="fr flag" style="width:25px;height:20px"> FranÃ§ais</a></li>
                     </ul></li>
             </ul>
         </div>
